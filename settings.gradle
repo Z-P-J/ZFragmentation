@@ -1,0 +1,3 @@
+include ':demo',
+        ':fragmentation',
+        ':fragmentation-dialog'

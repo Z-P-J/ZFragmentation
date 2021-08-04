@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/XPopupTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Title"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <com.zpj.fragmentation.dialog.widget.CustomScrollView
+            android:id="@+id/_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            >
+
+            <FrameLayout
+                android:id="@+id/fl_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.zpj.fragmentation.dialog.widget.CustomScrollView>
+
+        <View style="@style/layout_shadow_bottom"
+            android:id="@+id/view_shadow_bottom"
+            android:visibility="gone"
+            />
+
+        <View style="@style/layout_shadow_up"
+            android:id="@+id/view_shadow_up"
+            android:layout_gravity="bottom"
+            android:visibility="gone"
+            />
+
+    </FrameLayout>
+
+    <include layout="@layout/_dialog_buttons_simple" />
+
+</LinearLayout>
