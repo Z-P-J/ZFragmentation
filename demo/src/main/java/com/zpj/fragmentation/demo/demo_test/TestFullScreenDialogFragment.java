@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.zpj.fragmentation.demo.R;
 import com.zpj.fragmentation.dialog.impl.FullScreenDialogFragment;
+import com.zpj.fragmentation.swipeback.SwipeBackLayout;
 
 public class TestFullScreenDialogFragment extends FullScreenDialogFragment {
 
@@ -30,5 +31,7 @@ public class TestFullScreenDialogFragment extends FullScreenDialogFragment {
                 dismiss();
             }
         });
+        setEnableSwipeBack(true);
+        setEdgeOrientation(SwipeBackLayout.EDGE_LEFT);
     }
 }

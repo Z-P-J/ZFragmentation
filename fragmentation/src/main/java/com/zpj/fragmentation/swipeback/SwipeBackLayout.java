@@ -1,6 +1,7 @@
 package com.zpj.fragmentation.swipeback;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -218,14 +219,14 @@ public class SwipeBackLayout extends FrameLayout {
         if (orientation == EDGE_RIGHT || orientation == EDGE_ALL) {
             setShadow(R.drawable.shadow_right, EDGE_RIGHT);
         }
-        if (orientation == EDGE_BOTTOM) {
-            setShadow(R.drawable.shadow_bottom, orientation);
+        if (orientation == EDGE_BOTTOM || orientation == EDGE_ALL) {
+            setShadow(R.drawable.shadow_bottom, EDGE_BOTTOM);
         }
-        if (orientation == EDGE_TOP) {
-            setShadow(R.drawable.shadow_top, orientation);
+        if (orientation == EDGE_TOP || orientation == EDGE_ALL) {
+            setShadow(R.drawable.shadow_top, EDGE_TOP);
         }
-        if (orientation == EDGE_LEFT) {
-            setShadow(R.drawable.shadow_left, orientation);
+        if (orientation == EDGE_LEFT || orientation == EDGE_ALL) {
+            setShadow(R.drawable.shadow_left, EDGE_LEFT);
         }
 
         setEdgeLevel(mCurrentEdgeLevel);
@@ -243,14 +244,17 @@ public class SwipeBackLayout extends FrameLayout {
         mShadowLeft = null;
         mShadowRight = null;
         mShadowTop = null;
-        mShadowBottom = shadow;
+        mShadowBottom = null;
         if ((edgeFlag & EDGE_LEFT) != 0) {
             mShadowLeft = shadow;
-        } else if ((edgeFlag & EDGE_RIGHT) != 0) {
+        }
+        if ((edgeFlag & EDGE_RIGHT) != 0) {
             mShadowRight = shadow;
-        } else if ((edgeFlag & EDGE_TOP) != 0) {
+        }
+        if ((edgeFlag & EDGE_TOP) != 0) {
             mShadowTop = shadow;
-        } else if ((edgeFlag & EDGE_BOTTOM) != 0) {
+        }
+        if ((edgeFlag & EDGE_BOTTOM) != 0) {
             mShadowBottom = shadow;
         }
         invalidate();
@@ -464,11 +468,11 @@ public class SwipeBackLayout extends FrameLayout {
         mContentView = view;
     }
 
-    public void setEnableGesture(boolean enable) {
+    public void setEnableSwipeBack(boolean enable) {
         mEnable = enable;
     }
 
-    public boolean isGestureEnable() {
+    public boolean isSwipeBackEnable() {
         return mEnable;
     }
 
@@ -478,6 +482,11 @@ public class SwipeBackLayout extends FrameLayout {
 
     public void setEdgeLevel(int widthPixel) {
         validateEdgeLevel(widthPixel, null);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     private void validateEdgeLevel(int widthPixel, EdgeLevel edgeLevel) {
@@ -504,7 +513,7 @@ public class SwipeBackLayout extends FrameLayout {
                         mEdgeSize.setInt(mHelper, metrics.heightPixels / 2);
                     }
                 } else {
-                    mEdgeSize.setInt(mHelper, ((int) (20 * metrics.density + 0.5f)));
+                    mEdgeSize.setInt(mHelper, ((int) (24 * metrics.density + 0.5f)));
                 }
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -575,7 +584,7 @@ public class SwipeBackLayout extends FrameLayout {
                 ret = Math.min(getPaddingRight(), Math.max(left, -child.getWidth()));
                 Log.d(TAG, "clampViewPositionHorizontal right");
             }
-            Log.d(TAG, "clampViewPositionHorizontal ret=" + ret);
+            Log.d(TAG, "clampViewPositionHorizontal ret=" + ret + " dx=" + dx + " left=" + left);
             return ret;
         }
 
@@ -587,6 +596,7 @@ public class SwipeBackLayout extends FrameLayout {
             } else if ((mCurrentSwipeOrientation & EDGE_BOTTOM) != 0 && !canViewScrollDown(downX, downY)) {
                 ret = Math.min(getPaddingBottom(), Math.max(top, -child.getHeight()));
             }
+            Log.d(TAG, "clampViewPositionVertical ret=" + ret + " dy=" + dy + " top=" + top);
             return ret;
         }
 

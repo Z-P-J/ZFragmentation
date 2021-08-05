@@ -7,7 +7,7 @@
 A powerful library that manage Fragment for Android!
 本项目fork于[Fragmentation框架](https://github.com/YoKeyword/Fragmentation)，综合了几个module的代码，修改了包名，优化滑动返回，解决某些情况下的打开fragment延迟问题。除此之外，还新增了postOnEnterAnimationEnd和postOnSupportVisible方法，让你提前加载数据，待fragment动画结束或可见时显示数据，解决加载数据卡顿问题。
 
-### [English README.md](https://github.com/Z-P-J/Fragmentation/blob/master/README_EN.md)
+### [English README.md](https://github.com/Z-P-J/ZFragmentation/blob/master/README_EN.md)
 
 为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，简化开发，轻松解决动画、嵌套、事务相关等问题。
 
@@ -55,7 +55,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat-v7包是必须的
-implementation 'com.github.Z-P-J:Fragmentation:1.0.0'
+implementation 'com.github.Z-P-J:ZFragmentation:1.0.0'
 ````
 
 **2. Activity `extends` SupportActivity或者 `implements` ISupportActivity：(实现方式可参考[MySupportActivity](https://github.com/Z-P-J/Fragmentation/blob/master/demo/src/main/java/com/zpj/fragmentation/demo/demo_flow/base/MySupportActivity.java))**
@@ -107,7 +107,7 @@ public class HomeFragment extends SupportFragment {
 }
 ````
 
-### [进一步使用、ChangeLog，查看wiki](https://github.com/Z-P-J/Fragmentation/wiki)
+### [进一步使用、ChangeLog，查看wiki](https://github.com/Z-P-J/ZFragmentation/wiki)
 
 ### LICENSE
 ````

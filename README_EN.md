@@ -6,7 +6,7 @@
 
 # ZFragmentation
 
-### [中文版 README.md](https://github.com/Z-P-J/Fragmentation/blob/master/README_CN.md)
+### [中文版 README.md](https://github.com/Z-P-J/ZFragmentation/blob/master/README_CN.md)
 
 ![](/gif/logo.png)
 
@@ -47,7 +47,7 @@ The first demo shows the basic usage of the library. The second one shows the wa
 **1、build.gradle**
 ````gradle
 // appcompat-v7 is required
-implementation 'com.github.Z-P-J:Fragmentation:1.0.0'
+implementation 'com.github.Z-P-J:ZFragmentation:1.0.0'
 ````
 
 **2. Activity `extends` SupportActivity or `implements` ISupportActivity：(refer to [MySupportActivity](https://github.com/Z-P-J/Fragmentation/blob/master/demo/src/main/java/com/zpj/fragmentation/demo/demo_flow/base/MySupportActivity.java))**
@@ -86,7 +86,7 @@ public class HomeFragment extends SupportFragment {
 }
 ````
 
-## [WIKI](https://github.com/Z-P-J/Fragmentation/wiki) , [CHANGELOG](https://github.com/Z-P-J/Fragmentation/blob/master/CHANGELOG.md)
+## [WIKI](https://github.com/Z-P-J/ZFragmentation/wiki) , [CHANGELOG](https://github.com/Z-P-J/ZFragmentation/blob/master/CHANGELOG.md)
 
 ## LICENSE
 ````

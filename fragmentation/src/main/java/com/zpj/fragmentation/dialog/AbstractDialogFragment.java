@@ -1,6 +1,7 @@
 package com.zpj.fragmentation.dialog;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -28,7 +29,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     @SuppressLint("ResourceType")
     @Nullable
     @Override
-    public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (getLayoutId() > 0) {
             view = inflater.inflate(getLayoutId(), container, false);
         } else {
@@ -67,16 +68,6 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     public void onShowAnimationEnd(Bundle savedInstanceState) {
         super.onEnterAnimationEnd(savedInstanceState);
     }
-
-//    @Override
-//    public void onSupportVisible() {
-//        super.onSupportVisible();
-//    }
-//
-//    @Override
-//    public void onSupportInvisible() {
-//        super.onSupportInvisible();
-//    }
 
     @Override
     public final boolean onBackPressedSupport() {

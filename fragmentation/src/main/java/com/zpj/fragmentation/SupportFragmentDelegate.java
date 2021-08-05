@@ -218,7 +218,6 @@ public class SupportFragmentDelegate {
         if (view != null) {
             mRootViewClickable = view.isClickable();
             view.setClickable(true);
-            setBackground(view);
         }
 
 
@@ -661,22 +660,6 @@ public class SupportFragmentDelegate {
         notifyEnterAnimEnd();
     }
 
-    public void setBackground(View view) {
-//        if ((mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:")) ||
-//                mRootStatus != STATUS_UN_ROOT ||
-//                view.getBackground() != null) {
-//            return;
-//        }
-//
-//        int defaultBg = mSupport.getSupportDelegate().getDefaultFragmentBackground();
-//        if (defaultBg == 0) {
-//            int background = getWindowBackground();
-//            view.setBackgroundResource(background);
-//        } else {
-//            view.setBackgroundResource(defaultBg);
-//        }
-    }
-
     private int getWindowBackground() {
         TypedArray a = _mActivity.getTheme().obtainStyledAttributes(new int[]{
                 android.R.attr.windowBackground
@@ -687,11 +670,6 @@ public class SupportFragmentDelegate {
     }
 
     private void notifyEnterAnimEnd() {
-//        RxHandler.post(() -> {
-//            if (mNotifyEnterAnimEndRunnable != null) {
-//                mNotifyEnterAnimEndRunnable.run();
-//            }
-//        });
         getHandler().post(mNotifyEnterAnimEndRunnable);
         mSupport.getSupportDelegate().mFragmentClickable = true;
     }

@@ -45,8 +45,13 @@ public class SwipeBackActivity extends SupportActivity implements ISwipeBack {
      * @param enable
      */
     @Override
-    public void setSwipeBackEnable(boolean enable) {
-        mSwipeBackLayout.setEnableGesture(enable);
+    public void setEnableSwipeBack(boolean enable) {
+        mSwipeBackLayout.setEnableSwipeBack(enable);
+    }
+
+    @Override
+    public boolean isSwipeBackEnable() {
+        return mSwipeBackLayout.isSwipeBackEnable();
     }
 
     @Override
