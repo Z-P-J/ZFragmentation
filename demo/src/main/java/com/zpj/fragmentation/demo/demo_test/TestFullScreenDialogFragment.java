@@ -32,6 +32,6 @@ public class TestFullScreenDialogFragment extends FullScreenDialogFragment {
             }
         });
         setEnableSwipeBack(true);
-        setEdgeOrientation(SwipeBackLayout.EDGE_LEFT);
+        setEdgeOrientation(SwipeBackLayout.EDGE_TOP | SwipeBackLayout.EDGE_LEFT);
     }
 }

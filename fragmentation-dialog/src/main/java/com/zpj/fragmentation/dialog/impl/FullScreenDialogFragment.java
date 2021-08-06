@@ -107,7 +107,7 @@ public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullSc
     }
 
     @Override
-    public void setEdgeOrientation(@SwipeBackLayout.EdgeOrientation int orientation) {
+    public void setEdgeOrientation(int orientation) {
         mSwipeBackLayout.setEdgeOrientation(orientation);
     }
 

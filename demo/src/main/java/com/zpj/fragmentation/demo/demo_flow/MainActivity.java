@@ -165,8 +165,8 @@ public class MainActivity extends MySupportActivity
                         myHome.startWithPopTo(ShopFragment.newInstance(), HomeFragment.class, false);
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start,也可以用popTo
-//                        start(fragment, SupportFragment.SINGLETASK);
-                        myHome.popTo(ShopFragment.class, false);
+                        start(fragment, SupportFragment.SINGLETASK);
+//                        myHome.popTo(ShopFragment.class, false);
                     }
                 } else if (id == R.id.nav_login) {
                     goLogin();
