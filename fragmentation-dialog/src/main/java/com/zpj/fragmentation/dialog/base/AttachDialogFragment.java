@@ -8,18 +8,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.SupportFragment;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScrollScaleAnimator;
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
-import com.zpj.fragmentation.dialog.enums.PopupPosition;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.PartShadowContainer;
 import com.zpj.utils.ScreenUtils;
 
@@ -39,7 +37,7 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     protected View attachView;
     protected PointF touchPoint = null;
 
-    protected PopupPosition popupPosition = null;
+    protected DialogPosition dialogPosition = null;
 
     protected AtViewGravity atViewGravity = AtViewGravity.TOP;
 
@@ -213,10 +211,10 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
             getImplView().setTranslationX(translationX);
             getImplView().setTranslationY(translationY);
 
-            popupContentAnimator = getDialogAnimator((ViewGroup) getImplView());
-            if (popupContentAnimator != null) {
-                popupContentAnimator.initAnimator();
-                popupContentAnimator.animateShow();
+            mDialogAnimator = onCreateDialogAnimator((ViewGroup) getImplView());
+            if (mDialogAnimator != null) {
+                mDialogAnimator.initAnimator();
+                mDialogAnimator.animateToShow();
             }
             getImplView().setAlpha(1f);
 
@@ -302,10 +300,10 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
             getImplView().setTranslationY(translationY);
 
 
-            popupContentAnimator = getDialogAnimator((ViewGroup) getImplView());
-            if (popupContentAnimator != null) {
-                popupContentAnimator.initAnimator();
-                popupContentAnimator.animateShow();
+            mDialogAnimator = onCreateDialogAnimator((ViewGroup) getImplView());
+            if (mDialogAnimator != null) {
+                mDialogAnimator.initAnimator();
+                mDialogAnimator.animateToShow();
             }
             getImplView().setAlpha(1f);
 
@@ -313,26 +311,26 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     }
 
     protected boolean isShowUpToTarget() {
-        return (isShowUp || popupPosition == PopupPosition.Top)
-                && popupPosition != PopupPosition.Bottom;
+        return (isShowUp || dialogPosition == DialogPosition.Top)
+                && dialogPosition != DialogPosition.Bottom;
     }
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
-        PopupAnimator animator;
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+        DialogAnimator<?> animator;
         if (isShowUpToTarget()) {
             // 在上方展示
             if (isShowLeft) {
-                animator = new ScrollScaleAnimator(getImplView(), PopupAnimation.ScrollAlphaFromLeftBottom);
+                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromLeftBottom);
             } else {
-                animator = new ScrollScaleAnimator(getImplView(), PopupAnimation.ScrollAlphaFromRightBottom);
+                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRightBottom);
             }
         } else {
             // 在下方展示
             if (isShowLeft) {
-                animator = new ScrollScaleAnimator(getImplView(), PopupAnimation.ScrollAlphaFromLeftTop);
+                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromLeftTop);
             } else {
-                animator = new ScrollScaleAnimator(getImplView(), PopupAnimation.ScrollAlphaFromRightTop);
+                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRightTop);
             }
         }
         return animator;
@@ -379,8 +377,8 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         return self();
     }
 
-    public T setPopupPosition(PopupPosition popupPosition) {
-        this.popupPosition = popupPosition;
+    public T setDialogPosition(DialogPosition dialogPosition) {
+        this.dialogPosition = dialogPosition;
         return self();
     }
 

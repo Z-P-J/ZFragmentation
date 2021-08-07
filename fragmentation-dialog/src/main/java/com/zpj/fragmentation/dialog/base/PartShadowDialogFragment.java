@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.TranslateAnimator;
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
-import com.zpj.fragmentation.dialog.enums.PopupPosition;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.interfaces.OnClickOutsideListener;
 import com.zpj.utils.ScreenUtils;
 import com.zpj.utils.StatusBarUtils;
@@ -39,7 +39,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
             throw new IllegalArgumentException("atView must not be null for PartShadowPopupView！");
 
         // 指定阴影动画的目标View
-        shadowBgAnimator.targetView = getImplView();
+        mShadowAnimator.setTargetView(getImplView());
 
         //1. apply width and height
         int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
@@ -70,7 +70,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
         getRootView().getLocationOnScreen(rootLocations);
         int offset = rootLocations[1];
 
-        if ((centerY > getImplView().getMeasuredHeight() || popupPosition == PopupPosition.Top) && popupPosition != PopupPosition.Bottom) {
+        if ((centerY > getImplView().getMeasuredHeight() || dialogPosition == DialogPosition.Top) && dialogPosition != DialogPosition.Bottom) {
             // 说明atView在Window下半部分，PartShadow应该显示在它上方，计算atView之上的高度
             params.height = rect.top - offset;
             params.width = MATCH_PARENT;
@@ -125,21 +125,14 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
             }
         });
 
-//        post(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        });
-
-        popupContentAnimator = getDialogAnimator((ViewGroup) contentView);
-        if (popupContentAnimator != null) {
-            popupContentAnimator.initAnimator();
-            popupContentAnimator.animateShow();
+        mDialogAnimator = onCreateDialogAnimator((ViewGroup) contentView);
+        if (mDialogAnimator != null) {
+            mDialogAnimator.initAnimator();
+            mDialogAnimator.animateToShow();
         }
-        if (shadowBgAnimator != null) {
-            shadowBgAnimator.initAnimator();
-            shadowBgAnimator.animateShow();
+        if (mShadowAnimator != null) {
+            mShadowAnimator.initAnimator();
+            mShadowAnimator.animateToShow();
         }
         getImplView().setAlpha(1f);
     }
@@ -154,9 +147,9 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 //    }
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
         return new TranslateAnimator(contentView, isShowUp ?
-                PopupAnimation.TranslateFromBottom : PopupAnimation.TranslateFromTop);
+                DialogAnimation.TranslateFromBottom : DialogAnimation.TranslateFromTop);
     }
 
 }

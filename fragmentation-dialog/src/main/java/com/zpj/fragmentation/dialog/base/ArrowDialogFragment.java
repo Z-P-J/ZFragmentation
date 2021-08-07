@@ -8,16 +8,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
-import com.zpj.fragmentation.dialog.enums.PopupPosition;
-import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
-import com.zpj.fragmentation.dialog.model.OptionMenu;
+import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.PopLayout;
 import com.zpj.utils.ScreenUtils;
 
@@ -35,7 +32,7 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     protected View attachView;
     protected PointF touchPoint = null;
 
-    protected PopupPosition popupPosition = null;
+    protected DialogPosition dialogPosition = null;
 
     protected PopLayout mPopLayout;
 
@@ -54,7 +51,7 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     protected abstract int getContentLayoutId();
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
         return null;
     }
 
@@ -205,9 +202,9 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
         getImplView().setTranslationX(x);
         getImplView().setTranslationY(y);
         getImplView().setAlpha(1f);
-        popupContentAnimator = new ScaleAlphaAnimator(getImplView(), pivotX, pivotY);
-        popupContentAnimator.initAnimator();
-        popupContentAnimator.animateShow();
+        mDialogAnimator = new ScaleAlphaAnimator(getImplView(), pivotX, pivotY);
+        mDialogAnimator.initAnimator();
+        mDialogAnimator.animateToShow();
     }
 
 //    private void show(View anchor, float xOff, float yOff, int mode) {
@@ -364,8 +361,8 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
         return self();
     }
 
-    public T setPopupPosition(PopupPosition popupPosition) {
-        this.popupPosition = popupPosition;
+    public T setDialogPosition(DialogPosition dialogPosition) {
+        this.dialogPosition = dialogPosition;
         return self();
     }
 

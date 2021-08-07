@@ -11,7 +11,7 @@ import android.view.View;
  * Description: 背景Shadow动画器，负责执行半透明的渐入渐出动画
  * Create by dance, at 2018/12/9
  */
-public class ShadowBgAnimator extends PopupAnimator {
+public class ShadowBgAnimator extends AbsDialogAnimator<Animator> {
 
     private static final int shadowBgColor = Color.parseColor("#60000000");
 
@@ -19,11 +19,12 @@ public class ShadowBgAnimator extends PopupAnimator {
     public int startColor = Color.TRANSPARENT;
     public boolean isZeroDuration = false;
 
-    public ShadowBgAnimator(View target) {
-        super(target);
+    public ShadowBgAnimator() {
+        super(null);
     }
 
-    public ShadowBgAnimator() {
+    public ShadowBgAnimator(View target) {
+        super(target);
     }
 
     @Override
@@ -31,8 +32,71 @@ public class ShadowBgAnimator extends PopupAnimator {
         targetView.setBackgroundColor(startColor);
     }
 
+//    @Override
+//    public void animateToShow() {
+//        ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, startColor, shadowBgColor);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                targetView.setBackgroundColor((Integer) animation.getAnimatedValue());
+//            }
+//        });
+//        animator.setInterpolator(new FastOutSlowInInterpolator());
+//        animator.setDuration(isZeroDuration ? 0 : getShowDuration()).start();
+//    }
+//
+//    @Override
+//    public void animateToDismiss() {
+//        ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, shadowBgColor, startColor);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                targetView.setBackgroundColor((Integer) animation.getAnimatedValue());
+//            }
+//        });
+//        animator.setInterpolator(new FastOutSlowInInterpolator());
+//        animator.setDuration(isZeroDuration ? 0 : getDismissDuration()).start();
+//    }
+
+//    public void animateDismiss(Runnable runnable) {
+//        ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, shadowBgColor, startColor);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                targetView.setBackgroundColor((Integer) animation.getAnimatedValue());
+//            }
+//        });
+//        animator.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                runnable.run();
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//
+//            }
+//        });
+//        animator.setInterpolator(new FastOutSlowInInterpolator());
+//        animator.setDuration(isZeroDuration ? 0 : getDismissDuration()).start();
+//    }
+
+    public int calculateBgColor(float fraction) {
+        return (int) argbEvaluator.evaluate(fraction, startColor, shadowBgColor);
+    }
+
     @Override
-    public void animateShow() {
+    public Animator onCreateShowAnimator() {
         ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, startColor, shadowBgColor);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -41,11 +105,12 @@ public class ShadowBgAnimator extends PopupAnimator {
             }
         });
         animator.setInterpolator(new FastOutSlowInInterpolator());
-        animator.setDuration(isZeroDuration ? 0 : getShowDuration()).start();
+        animator.setDuration(isZeroDuration ? 0 : getShowDuration());
+        return animator;
     }
 
     @Override
-    public void animateDismiss() {
+    public Animator onCreateDismissAnimator() {
         ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, shadowBgColor, startColor);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -54,44 +119,7 @@ public class ShadowBgAnimator extends PopupAnimator {
             }
         });
         animator.setInterpolator(new FastOutSlowInInterpolator());
-        animator.setDuration(isZeroDuration ? 0 : getDismissDuration()).start();
+        animator.setDuration(isZeroDuration ? 0 : getDismissDuration());
+        return animator;
     }
-
-    public void animateDismiss(Runnable runnable) {
-        ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, shadowBgColor, startColor);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                targetView.setBackgroundColor((Integer) animation.getAnimatedValue());
-            }
-        });
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                runnable.run();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        animator.setInterpolator(new FastOutSlowInInterpolator());
-        animator.setDuration(isZeroDuration ? 0 : getDismissDuration()).start();
-    }
-
-    public int calculateBgColor(float fraction) {
-        return (int) argbEvaluator.evaluate(fraction, startColor, shadowBgColor);
-    }
-
 }

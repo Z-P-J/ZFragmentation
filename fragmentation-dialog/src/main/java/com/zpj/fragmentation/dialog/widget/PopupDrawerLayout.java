@@ -19,7 +19,7 @@ import android.widget.HorizontalScrollView;
 
 import com.zpj.fragmentation.dialog.animator.ShadowBgAnimator;
 import com.zpj.fragmentation.dialog.enums.LayoutStatus;
-import com.zpj.fragmentation.dialog.enums.PopupPosition;
+import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.utils.StatusBarUtils;
 import com.zpj.utils.ViewUtils;
 
@@ -33,7 +33,7 @@ public class PopupDrawerLayout extends FrameLayout {
     LayoutStatus status = null;
     ViewDragHelper dragHelper;
     View placeHolder, mChild;
-    public PopupPosition position = PopupPosition.Left;
+    public DialogPosition position = DialogPosition.Left;
     ShadowBgAnimator bgAnimator = new ShadowBgAnimator();
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     int defaultColor = Color.TRANSPARENT;
@@ -54,7 +54,7 @@ public class PopupDrawerLayout extends FrameLayout {
         dragHelper = ViewDragHelper.create(this, callback);
     }
 
-    public void setDrawerPosition(PopupPosition position) {
+    public void setDrawerPosition(DialogPosition position) {
         this.position = position;
     }
 
@@ -77,7 +77,7 @@ public class PopupDrawerLayout extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         placeHolder.layout(0,0, placeHolder.getMeasuredWidth(), placeHolder.getMeasuredHeight());
         if (!hasLayout) {
-            if (position == PopupPosition.Left) {
+            if (position == DialogPosition.Left) {
                 mChild.layout(-mChild.getMeasuredWidth(), 0, 0, getMeasuredHeight());
             } else {
                 mChild.layout(getMeasuredWidth(), 0, getMeasuredWidth() + mChild.getMeasuredWidth(), getMeasuredHeight());
@@ -181,13 +181,13 @@ public class PopupDrawerLayout extends FrameLayout {
 
         private void calcFraction(int left){
             // fraction = (now - start) * 1f / (end - start)
-            if (position == PopupPosition.Left) {
+            if (position == DialogPosition.Left) {
                 fraction = (left + mChild.getMeasuredWidth()) * 1f / mChild.getMeasuredWidth();
                 if (left == -mChild.getMeasuredWidth() && listener != null && status != LayoutStatus.Close) {
                     status = LayoutStatus.Close;
                     listener.onClose();
                 }
-            } else if (position == PopupPosition.Right) {
+            } else if (position == DialogPosition.Right) {
                 fraction = (getMeasuredWidth() - left) * 1f / mChild.getMeasuredWidth();
                 if (left == getMeasuredWidth() && listener != null && status != LayoutStatus.Close) {
                     status = LayoutStatus.Close;
@@ -218,7 +218,7 @@ public class PopupDrawerLayout extends FrameLayout {
 
             int centerLeft = 0;
             int finalLeft = 0;
-            if (position == PopupPosition.Left) {
+            if (position == DialogPosition.Left) {
                 if (xvel < -1000) {
                     finalLeft = -mChild.getMeasuredWidth();
                 } else {
@@ -239,10 +239,10 @@ public class PopupDrawerLayout extends FrameLayout {
     };
 
     private int fixLeft(int left) {
-        if (position == PopupPosition.Left) {
+        if (position == DialogPosition.Left) {
             if (left < -mChild.getMeasuredWidth()) left = -mChild.getMeasuredWidth();
             if (left > 0) left = 0;
-        } else if (position == PopupPosition.Right) {
+        } else if (position == DialogPosition.Right) {
             if (left < (getMeasuredWidth() - mChild.getMeasuredWidth()))
                 left = (getMeasuredWidth() - mChild.getMeasuredWidth());
             if (left > getMeasuredWidth()) left = getMeasuredWidth();
@@ -289,7 +289,7 @@ public class PopupDrawerLayout extends FrameLayout {
         post(new Runnable() {
             @Override
             public void run() {
-                dragHelper.smoothSlideViewTo(mChild, position == PopupPosition.Left ? 0 : (mChild.getLeft() - mChild.getMeasuredWidth()), 0);
+                dragHelper.smoothSlideViewTo(mChild, position == DialogPosition.Left ? 0 : (mChild.getLeft() - mChild.getMeasuredWidth()), 0);
                 ViewCompat.postInvalidateOnAnimation(PopupDrawerLayout.this);
             }
         });
@@ -305,7 +305,7 @@ public class PopupDrawerLayout extends FrameLayout {
         post(new Runnable() {
             @Override
             public void run() {
-                dragHelper.smoothSlideViewTo(mChild, position == PopupPosition.Left ? -mChild.getMeasuredWidth() : getMeasuredWidth(), 0);
+                dragHelper.smoothSlideViewTo(mChild, position == DialogPosition.Left ? -mChild.getMeasuredWidth() : getMeasuredWidth(), 0);
                 ViewCompat.postInvalidateOnAnimation(PopupDrawerLayout.this);
             }
         });

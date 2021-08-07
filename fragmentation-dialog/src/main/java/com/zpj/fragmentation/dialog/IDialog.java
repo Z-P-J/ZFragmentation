@@ -33,11 +33,11 @@ public interface IDialog {
         void onViewCreate(T fragment, View view);
     }
 
-    public interface OnMultiSelectListener<T, S> {
+    interface OnMultiSelectListener<T, S> {
         void onSelect(S dialog, List<Integer> selected, List<T> list);
     }
 
-    public interface OnSingleSelectListener<T, S> {
+    interface OnSingleSelectListener<T, S> {
         void onSelect(S dialog, int position, T item);
     }
 

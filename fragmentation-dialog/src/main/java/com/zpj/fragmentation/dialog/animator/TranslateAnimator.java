@@ -2,27 +2,28 @@ package com.zpj.fragmentation.dialog.animator;
 
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 /**
  * Description: 平移动画，不带渐变
  * Create by dance, at 2018/12/9
  */
-public class TranslateAnimator extends PopupAnimator {
+public class TranslateAnimator extends DialogPropertyAnimator {
     //动画起始坐标
     private float startTranslationX, startTranslationY;
     private int oldWidth, oldHeight;
     private float initTranslationX, initTranslationY;
     private boolean hasInitDefTranslation = false;
 
-    public TranslateAnimator(View target, PopupAnimation popupAnimation) {
-        super(target, popupAnimation);
+    public TranslateAnimator(View target, DialogAnimation dialogAnimation) {
+        super(target, dialogAnimation);
     }
 
     @Override
     public void initAnimator() {
-        if(!hasInitDefTranslation){
+        if (!hasInitDefTranslation) {
             initTranslationX = targetView.getTranslationX();
             initTranslationY = targetView.getTranslationY();
             hasInitDefTranslation = true;
@@ -37,7 +38,7 @@ public class TranslateAnimator extends PopupAnimator {
     }
 
     private void applyTranslation() {
-        switch (popupAnimation) {
+        switch (dialogAnimation) {
             case TranslateFromLeft:
                 targetView.setTranslationX(-targetView.getRight());
                 break;
@@ -53,17 +54,50 @@ public class TranslateAnimator extends PopupAnimator {
         }
     }
 
+//    @Override
+//    public void animateToShow() {
+//        targetView.animate().translationX(initTranslationX).translationY(initTranslationY)
+//                .setInterpolator(new FastOutSlowInInterpolator())
+//                .setDuration(getShowDuration()).start();
+//    }
+//
+//    @Override
+//    public void animateToDismiss() {
+//        //执行消失动画的时候，宽高可能改变了，所以需要修正动画的起始值
+//        switch (dialogAnimation) {
+//            case TranslateFromLeft:
+//                startTranslationX -= targetView.getMeasuredWidth() - oldWidth;
+//                break;
+//            case TranslateFromTop:
+//                startTranslationY -= targetView.getMeasuredHeight() - oldHeight;
+//                break;
+//            case TranslateFromRight:
+//                startTranslationX += targetView.getMeasuredWidth() - oldWidth;
+//                break;
+//            case TranslateFromBottom:
+//                startTranslationY += targetView.getMeasuredHeight() - oldHeight;
+//                break;
+//        }
+//
+//        targetView.animate()
+//                .translationX(startTranslationX)
+//                .translationY(startTranslationY)
+//                .setInterpolator(new FastOutSlowInInterpolator())
+//                .setDuration(getDismissDuration()).start();
+//    }
+
     @Override
-    public void animateShow() {
-        targetView.animate().translationX(initTranslationX).translationY(initTranslationY)
-                .setInterpolator(new FastOutSlowInInterpolator())
-                .setDuration(getShowDuration()).start();
+    public ViewPropertyAnimator onCreateShowAnimator() {
+        return targetView.animate()
+                .translationX(initTranslationX)
+                .translationY(initTranslationY)
+                .setInterpolator(new FastOutSlowInInterpolator());
     }
 
     @Override
-    public void animateDismiss() {
+    public ViewPropertyAnimator onCreateDismissAnimator() {
         //执行消失动画的时候，宽高可能改变了，所以需要修正动画的起始值
-        switch (popupAnimation) {
+        switch (dialogAnimation) {
             case TranslateFromLeft:
                 startTranslationX -= targetView.getMeasuredWidth() - oldWidth;
                 break;
@@ -78,8 +112,9 @@ public class TranslateAnimator extends PopupAnimator {
                 break;
         }
 
-        targetView.animate().translationX(startTranslationX).translationY(startTranslationY)
-                .setInterpolator(new FastOutSlowInInterpolator())
-                .setDuration(getDismissDuration()).start();
+        return targetView.animate()
+                .translationX(startTranslationX)
+                .translationY(startTranslationY)
+                .setInterpolator(new FastOutSlowInInterpolator());
     }
 }

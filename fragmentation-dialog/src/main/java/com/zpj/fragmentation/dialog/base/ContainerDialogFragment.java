@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.anim.DefaultNoAnimator;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
+import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.fragmentation.dialog.widget.SmartDragLayout;
 import com.zpj.utils.ScreenUtils;
@@ -57,19 +57,19 @@ public abstract class ContainerDialogFragment<T extends ContainerDialogFragment<
     protected abstract int getContentLayoutId();
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
         if (isDragDialog()) {
             return null;
         }
-        return new ScaleAlphaAnimator(contentView, PopupAnimation.ScaleAlphaFromCenter);
+        return new ScaleAlphaAnimator(contentView, DialogAnimation.ScaleAlphaFromCenter);
     }
 
     @Override
-    protected PopupAnimator getShadowAnimator(FrameLayout flContainer) {
+    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
         if (isDragDialog()) {
             return null;
         }
-        return super.getShadowAnimator(flContainer);
+        return super.onCreateShadowAnimator(flContainer);
     }
 
     @Override

@@ -10,10 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
+import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.TranslateAnimator;
 import com.zpj.fragmentation.dialog.base.BaseDialogFragment;
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.swipeback.ISwipeBack;
 import com.zpj.fragmentation.swipeback.SwipeBackLayout;
 
@@ -49,12 +50,12 @@ public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullSc
     }
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
-        return new TranslateAnimator(contentView, PopupAnimation.TranslateFromBottom);
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+        return new TranslateAnimator(contentView, DialogAnimation.TranslateFromBottom);
     }
 
     @Override
-    protected PopupAnimator getShadowAnimator(FrameLayout flContainer) {
+    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
         return null;
     }
 

@@ -14,6 +14,9 @@ import com.zpj.fragmentation.SupportFragment;
 import com.zpj.fragmentation.anim.DefaultNoAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
 
+/**
+ * This class is exposed to ZFragmentation-Dialog library.
+ */
 public abstract class AbstractDialogFragment extends SupportFragment {
 
     protected long showAnimDuration = 360;

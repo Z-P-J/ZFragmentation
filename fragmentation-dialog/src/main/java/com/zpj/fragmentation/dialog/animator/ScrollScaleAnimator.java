@@ -1,28 +1,29 @@
 package com.zpj.fragmentation.dialog.animator;
 
+import android.animation.Animator;
 import android.animation.FloatEvaluator;
 import android.animation.IntEvaluator;
 import android.animation.ValueAnimator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 /**
  * Description: 像系统的PopupMenu那样的动画
  * Create by lxj, at 2018/12/12
  */
-public class ScrollScaleAnimator extends PopupAnimator {
+public class ScrollScaleAnimator extends AbsDialogAnimator<Animator> {
 
-    private FloatEvaluator floatEvaluator = new FloatEvaluator();
+    private final FloatEvaluator floatEvaluator = new FloatEvaluator();
     private IntEvaluator intEvaluator = new IntEvaluator();
     private int startScrollX, startScrollY;
     private float startAlpha = .2f;
     private float startScale = 0f;
 
     public boolean isOnlyScaleX = false;
-    public ScrollScaleAnimator(View target, PopupAnimation popupAnimation) {
-        super(target, popupAnimation);
+    public ScrollScaleAnimator(View target, DialogAnimation dialogAnimation) {
+        super(target, dialogAnimation);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class ScrollScaleAnimator extends PopupAnimator {
     }
 
     private void applyPivot(){
-        switch (popupAnimation){
+        switch (dialogAnimation){
             case ScrollAlphaFromLeft:
                 targetView.setPivotX(0f);
                 targetView.setPivotY(targetView.getMeasuredHeight()/2f);
@@ -100,8 +101,54 @@ public class ScrollScaleAnimator extends PopupAnimator {
         }
     }
 
+//    @Override
+//    public void animateToShow() {
+//        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                float fraction = animation.getAnimatedFraction();
+////                targetView.setAlpha(floatEvaluator.evaluate(fraction, startAlpha, 1f));
+////                targetView.scrollTo(intEvaluator.evaluate(fraction, startScrollX, 0),
+////                        intEvaluator.evaluate(fraction, startScrollY, 0));
+//                float scale = floatEvaluator.evaluate(fraction, startScale, 1f);
+//                targetView.setScaleX(scale);
+//                targetView.setAlpha(scale);
+//                if(!isOnlyScaleX)targetView.setScaleY(scale);
+////                if(fraction>=.9f && targetView.getBackground()!=null) {
+////                    float alphaFraction = (fraction - .9f) / .1f;
+////                    targetView.getBackground().setAlpha((int) (alphaFraction*255));
+////                }
+//            }
+//        });
+//        animator.setDuration(getShowDuration()).setInterpolator(new FastOutSlowInInterpolator());
+//        animator.start();
+//    }
+//
+//    @Override
+//    public void animateToDismiss() {
+//        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                float fraction = animation.getAnimatedFraction();
+////                targetView.setAlpha(floatEvaluator.evaluate(fraction, 1f, startAlpha));
+////                targetView.scrollTo(intEvaluator.evaluate(fraction, 0, startScrollX),
+////                        intEvaluator.evaluate(fraction, 0, startScrollY));
+//                float scale = floatEvaluator.evaluate(fraction, 1f, startScale);
+//                targetView.setScaleX(scale);
+//                targetView.setAlpha(scale);
+//                if(!isOnlyScaleX)targetView.setScaleY(scale);
+////                if(targetView.getBackground()!=null)targetView.getBackground().setAlpha((int) (fraction*255));
+//            }
+//        });
+//        animator.setDuration(getDismissDuration())
+//                .setInterpolator(new FastOutSlowInInterpolator());
+//        animator.start();
+//    }
+
     @Override
-    public void animateShow() {
+    public Animator onCreateShowAnimator() {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -121,11 +168,11 @@ public class ScrollScaleAnimator extends PopupAnimator {
             }
         });
         animator.setDuration(getShowDuration()).setInterpolator(new FastOutSlowInInterpolator());
-        animator.start();
+        return animator;
     }
 
     @Override
-    public void animateDismiss() {
+    public Animator onCreateDismissAnimator() {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -143,7 +190,6 @@ public class ScrollScaleAnimator extends PopupAnimator {
         });
         animator.setDuration(getDismissDuration())
                 .setInterpolator(new FastOutSlowInInterpolator());
-        animator.start();
+        return animator;
     }
-
 }

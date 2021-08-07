@@ -4,7 +4,7 @@ package com.zpj.fragmentation.dialog.enums;
  * Description:
  * Create by dance, at 2018/12/9
  */
-public enum PopupAnimation {
+public enum DialogAnimation {
     // 缩放 + 透明渐变
     ScaleAlphaFromCenter, // 从中心进行缩放+透明渐变
     ScaleAlphaFromLeftTop, //从左上角进行缩放+透明渐变

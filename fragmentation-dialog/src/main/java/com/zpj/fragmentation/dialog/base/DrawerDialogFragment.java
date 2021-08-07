@@ -2,21 +2,19 @@ package com.zpj.fragmentation.dialog.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.anim.DefaultNoAnimator;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
-import com.zpj.fragmentation.dialog.enums.PopupPosition;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.PopupDrawerLayout;
 
 public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> extends BaseDialogFragment<T> {
 
 
-    protected PopupPosition popupPosition = PopupPosition.Left;
+    protected DialogPosition dialogPosition = DialogPosition.Left;
     protected PopupDrawerLayout drawerLayout;
     protected FrameLayout drawerContentContainer;
 
@@ -31,7 +29,7 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
     protected abstract int getContentLayoutId();
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
         return null;
     }
 
@@ -72,7 +70,7 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
             }
         });
 
-        drawerLayout.setDrawerPosition(popupPosition);
+        drawerLayout.setDrawerPosition(dialogPosition);
         drawerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,8 +104,8 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
         return self();
     }
 
-    public T setPopupPosition(PopupPosition popupPosition) {
-        this.popupPosition = popupPosition;
+    public T setDialogPosition(DialogPosition dialogPosition) {
+        this.dialogPosition = dialogPosition;
         return self();
     }
 }

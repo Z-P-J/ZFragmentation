@@ -2,15 +2,15 @@ package com.zpj.fragmentation.dialog.animator;
 
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.OvershootInterpolator;
 
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 /**
- * Description: 缩放透明
- * Create by dance, at 2018/12/9
+ * 缩放透明动画
  */
-public class ScaleAlphaAnimator extends PopupAnimator {
+public class ScaleAlphaAnimator extends DialogPropertyAnimator {
 
     private float pivotX = 0;
     private float pivotY = 0;
@@ -27,8 +27,8 @@ public class ScaleAlphaAnimator extends PopupAnimator {
         this.pivotY = pivotY;
     }
 
-    public ScaleAlphaAnimator(View target, PopupAnimation popupAnimation) {
-        super(target, popupAnimation);
+    public ScaleAlphaAnimator(View target, DialogAnimation dialogAnimation) {
+        super(target, dialogAnimation);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ScaleAlphaAnimator extends PopupAnimator {
         targetView.post(new Runnable() {
             @Override
             public void run() {
-                if (popupAnimation == null) {
+                if (dialogAnimation == null) {
                     targetView.setPivotX(pivotX);
                     targetView.setPivotY(pivotY);
                 } else {
@@ -55,7 +55,7 @@ public class ScaleAlphaAnimator extends PopupAnimator {
      * 根据不同的PopupAnimation来设定对应的pivot
      */
     private void applyPivot() {
-        switch (popupAnimation) {
+        switch (dialogAnimation) {
             case ScaleAlphaFromCenter:
                 targetView.setPivotX(targetView.getMeasuredWidth() / 2f);
                 targetView.setPivotY(targetView.getMeasuredHeight() / 2f);
@@ -81,25 +81,21 @@ public class ScaleAlphaAnimator extends PopupAnimator {
     }
 
     @Override
-    public void animateShow() {
-        targetView.animate()
+    public ViewPropertyAnimator onCreateShowAnimator() {
+        return targetView.animate()
                 .scaleX(1f)
                 .scaleY(1f)
                 .alpha(1f)
-                .setDuration(getShowDuration())
                 .setInterpolator(new OvershootInterpolator(tension))
-                .start();
+                .setListener(mAnimatorListener);
     }
 
     @Override
-    public void animateDismiss() {
-        targetView.animate()
+    public ViewPropertyAnimator onCreateDismissAnimator() {
+        return targetView.animate()
                 .scaleX(0f)
                 .scaleY(0f)
                 .alpha(0f)
-                .setDuration(getDismissDuration())
-                .setInterpolator(new FastOutSlowInInterpolator())
-                .start();
+                .setInterpolator(new FastOutSlowInInterpolator());
     }
-
 }

@@ -3,10 +3,10 @@ package com.zpj.fragmentation.dialog.base;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
-import com.zpj.fragmentation.dialog.animator.PopupAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScrollScaleAnimator;
-import com.zpj.fragmentation.dialog.enums.PopupAnimation;
-import com.zpj.fragmentation.dialog.enums.PopupPosition;
+import com.zpj.fragmentation.dialog.enums.DialogAnimation;
+import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.utils.ScreenUtils;
 
 /**
@@ -18,12 +18,12 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
         extends AttachDialogFragment<T> {
 
     @Override
-    protected PopupAnimator getDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
         ScrollScaleAnimator animator;
         if (isShowLeftToTarget()) {
-            animator = new ScrollScaleAnimator(getImplView(), PopupAnimation.ScrollAlphaFromRight);
+            animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRight);
         } else {
-            animator = new ScrollScaleAnimator(getImplView(), PopupAnimation.ScrollAlphaFromLeft);
+            animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromLeft);
         }
         animator.isOnlyScaleX = true;
         return animator;
@@ -65,8 +65,8 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
     }
 
     private boolean isShowLeftToTarget() {
-        return (isShowLeft || popupPosition == PopupPosition.Left)
-                && popupPosition != PopupPosition.Right;
+        return (isShowLeft || dialogPosition == DialogPosition.Left)
+                && dialogPosition != DialogPosition.Right;
     }
 
 }
