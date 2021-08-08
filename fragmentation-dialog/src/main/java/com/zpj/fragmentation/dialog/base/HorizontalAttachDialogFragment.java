@@ -18,7 +18,7 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
         extends AttachDialogFragment<T> {
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         ScrollScaleAnimator animator;
         if (isShowLeftToTarget()) {
             animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRight);

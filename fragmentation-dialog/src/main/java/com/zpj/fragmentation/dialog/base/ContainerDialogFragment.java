@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
@@ -57,7 +56,7 @@ public abstract class ContainerDialogFragment<T extends ContainerDialogFragment<
     protected abstract int getContentLayoutId();
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         if (isDragDialog()) {
             return null;
         }
@@ -65,7 +64,7 @@ public abstract class ContainerDialogFragment<T extends ContainerDialogFragment<
     }
 
     @Override
-    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
         if (isDragDialog()) {
             return null;
         }

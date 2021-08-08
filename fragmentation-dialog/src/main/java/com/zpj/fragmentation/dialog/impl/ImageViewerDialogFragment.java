@@ -31,7 +31,6 @@ import android.widget.ProgressBar;
 
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.base.BaseDialogFragment;
 import com.zpj.fragmentation.dialog.interfaces.IProgressViewHolder;
@@ -100,12 +99,12 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
     }
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         return null;
     }
 
     @Override
-    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
         return null;
     }
 

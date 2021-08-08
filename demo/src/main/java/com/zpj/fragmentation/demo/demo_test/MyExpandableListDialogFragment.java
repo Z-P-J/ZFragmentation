@@ -35,7 +35,7 @@ public class MyExpandableListDialogFragment extends ListDialogFragment<MultiData
     }
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         if (anchorView == null) {
             return new ScaleAlphaAnimator(contentView, DialogAnimation.ScaleAlphaFromRightBottom);
         }

@@ -55,7 +55,7 @@ public class ImageViewContainer extends FrameLayout {
 //        progressView = progressBar;
     }
 
-    public void setProgressViewHolder(IProgressViewHolder progressViewHolder) {
+    public void setProgressViewHolder(IProgressViewHolder<?> progressViewHolder) {
         this.progressViewHolder = progressViewHolder;
         if (progressViewHolder != null) {
             progressView = progressViewHolder.createProgressView(getContext());

@@ -9,13 +9,13 @@ import android.widget.FrameLayout;
 import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
-import com.zpj.fragmentation.dialog.widget.PopupDrawerLayout;
+import com.zpj.fragmentation.dialog.widget.DialogDrawerLayout;
 
 public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> extends BaseDialogFragment<T> {
 
 
     protected DialogPosition dialogPosition = DialogPosition.Left;
-    protected PopupDrawerLayout drawerLayout;
+    protected DialogDrawerLayout drawerLayout;
     protected FrameLayout drawerContentContainer;
 
     private boolean enableShadow = true;
@@ -29,7 +29,7 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
     protected abstract int getContentLayoutId();
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         return null;
     }
 
@@ -48,7 +48,7 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
 
         drawerLayout.enableShadow = enableShadow;
         drawerLayout.isCanClose = cancelableInTouchOutside;
-        drawerLayout.setOnCloseListener(new PopupDrawerLayout.OnCloseListener() {
+        drawerLayout.setOnCloseListener(new DialogDrawerLayout.OnCloseListener() {
             @Override
             public void onClose() {
 //                dismiss();

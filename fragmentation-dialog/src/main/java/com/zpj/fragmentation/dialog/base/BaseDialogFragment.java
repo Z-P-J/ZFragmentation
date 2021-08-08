@@ -21,9 +21,8 @@ import com.zpj.fragmentation.SupportFragment;
 import com.zpj.fragmentation.dialog.AbstractDialogFragment;
 import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
-import com.zpj.fragmentation.dialog.animator.ShadowBgAnimator;
+import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.ScreenUtils;
 
@@ -34,8 +33,8 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extends AbstractDialogFragment {
 
-    protected DialogAnimator<?> mDialogAnimator;
-    protected AbsDialogAnimator<?> mShadowAnimator;
+    protected DialogAnimator mDialogAnimator;
+    protected DialogAnimator mShadowAnimator;
 
     private FrameLayout rootView;
     private ViewGroup implView;
@@ -65,10 +64,10 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
 
     protected abstract int getImplLayoutId();
 
-    protected abstract DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView);
+    protected abstract DialogAnimator onCreateDialogAnimator(ViewGroup contentView);
 
-    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
-        return new ShadowBgAnimator(flContainer);
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
+        return new ShadowMaskAnimator(flContainer);
     }
 
     @Override
@@ -109,15 +108,32 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getRootView().getViewTreeObserver()
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//        getRootView().getViewTreeObserver()
+//                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                    @Override
+//                    public void onGlobalLayout() {
+//                        getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                        doShowAnimation();
+//                    }
+//                });
+
+
+        getRootView()
+                .getViewTreeObserver()
+                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                     @Override
-                    public void onGlobalLayout() {
-                        getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    public boolean onPreDraw() {
+                        getRootView().getViewTreeObserver().removeOnPreDrawListener(this);
+//                        onDialogPreDraw();
                         doShowAnimation();
+                        return false;
                     }
                 });
     }
+
+//    public void onDialogPreDraw() {
+//        doShowAnimation();
+//    }
 
     @Override
     public void onStart() {
@@ -207,20 +223,24 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
         mDialogAnimator = onCreateDialogAnimator(implView);
         if (mDialogAnimator != null) {
             mDialogAnimator.initAnimator();
+            mDialogAnimator.setShowDuration(getShowAnimDuration());
             mDialogAnimator.animateToShow();
         }
 
         if (mShadowAnimator != null) {
             mShadowAnimator.initAnimator();
+            mShadowAnimator.setShowDuration(getShowAnimDuration());
             mShadowAnimator.animateToShow();
         }
     }
 
     public void doDismissAnimation() {
         if (mDialogAnimator != null) {
+            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
             mDialogAnimator.animateToDismiss();
         }
         if (mShadowAnimator != null) {
+            mShadowAnimator.setDismissDuration(getDismissAnimDuration());
             mShadowAnimator.animateToDismiss();
         }
     }

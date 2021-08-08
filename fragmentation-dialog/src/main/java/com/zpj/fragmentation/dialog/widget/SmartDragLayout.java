@@ -12,7 +12,7 @@ import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 import android.widget.OverScroller;
 
-import com.zpj.fragmentation.dialog.animator.ShadowBgAnimator;
+import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.fragmentation.dialog.enums.LayoutStatus;
 import com.zpj.utils.ViewUtils;
 
@@ -23,11 +23,14 @@ import com.zpj.utils.ViewUtils;
 public class SmartDragLayout extends FrameLayout implements NestedScrollingParent {
 
     private static final String TAG = "SmartDragLayout";
+
+    private final ShadowMaskAnimator bgAnimator = new ShadowMaskAnimator(null);
+
     private View child;
     private View contentView;
     OverScroller scroller;
     VelocityTracker tracker;
-    ShadowBgAnimator bgAnimator = new ShadowBgAnimator();
+
     boolean enableDrag = true;//是否启用手势
     boolean dismissOnTouchOutside = true;
     private boolean handleTouchOutsideEvent = true;

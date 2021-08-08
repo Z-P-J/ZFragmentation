@@ -10,7 +10,7 @@ import com.zpj.fragmentation.dialog.enums.DialogAnimation;
  * Description: 平移动画，不带渐变
  * Create by dance, at 2018/12/9
  */
-public class TranslateAnimator extends DialogPropertyAnimator {
+public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, ViewPropertyAnimator> {
     //动画起始坐标
     private float startTranslationX, startTranslationY;
     private int oldWidth, oldHeight;
@@ -53,38 +53,6 @@ public class TranslateAnimator extends DialogPropertyAnimator {
                 break;
         }
     }
-
-//    @Override
-//    public void animateToShow() {
-//        targetView.animate().translationX(initTranslationX).translationY(initTranslationY)
-//                .setInterpolator(new FastOutSlowInInterpolator())
-//                .setDuration(getShowDuration()).start();
-//    }
-//
-//    @Override
-//    public void animateToDismiss() {
-//        //执行消失动画的时候，宽高可能改变了，所以需要修正动画的起始值
-//        switch (dialogAnimation) {
-//            case TranslateFromLeft:
-//                startTranslationX -= targetView.getMeasuredWidth() - oldWidth;
-//                break;
-//            case TranslateFromTop:
-//                startTranslationY -= targetView.getMeasuredHeight() - oldHeight;
-//                break;
-//            case TranslateFromRight:
-//                startTranslationX += targetView.getMeasuredWidth() - oldWidth;
-//                break;
-//            case TranslateFromBottom:
-//                startTranslationY += targetView.getMeasuredHeight() - oldHeight;
-//                break;
-//        }
-//
-//        targetView.animate()
-//                .translationX(startTranslationX)
-//                .translationY(startTranslationY)
-//                .setInterpolator(new FastOutSlowInInterpolator())
-//                .setDuration(getDismissDuration()).start();
-//    }
 
     @Override
     public ViewPropertyAnimator onCreateShowAnimator() {

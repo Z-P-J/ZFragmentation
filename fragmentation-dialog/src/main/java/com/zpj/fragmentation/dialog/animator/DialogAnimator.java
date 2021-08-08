@@ -1,10 +1,12 @@
 package com.zpj.fragmentation.dialog.animator;
 
-public interface DialogAnimator<T> {
+public interface DialogAnimator {
 
     void initAnimator();
-    T onCreateShowAnimator();
-    T onCreateDismissAnimator();
+
+    void setShowDuration(long showAnimDuration);
+
+    void setDismissDuration(long dismissAnimDuration);
 
     void animateToShow();
 

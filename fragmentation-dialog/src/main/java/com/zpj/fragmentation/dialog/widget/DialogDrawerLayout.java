@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 
-import com.zpj.fragmentation.dialog.animator.ShadowBgAnimator;
+import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.fragmentation.dialog.enums.LayoutStatus;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.utils.StatusBarUtils;
@@ -28,28 +28,29 @@ import com.zpj.utils.ViewUtils;
  * 动画是根据手势滑动而发生的
  * Create by dance, at 2018/12/20
  */
-public class PopupDrawerLayout extends FrameLayout {
+public class DialogDrawerLayout extends FrameLayout {
+
+    private final ShadowMaskAnimator bgAnimator = new ShadowMaskAnimator(null);
 
     LayoutStatus status = null;
     ViewDragHelper dragHelper;
     View placeHolder, mChild;
     public DialogPosition position = DialogPosition.Left;
-    ShadowBgAnimator bgAnimator = new ShadowBgAnimator();
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     int defaultColor = Color.TRANSPARENT;
     public boolean isDrawStatusBarShadow = false;
     float fraction = 0f;
     public boolean enableShadow = true;
 
-    public PopupDrawerLayout(Context context) {
+    public DialogDrawerLayout(Context context) {
         this(context, null);
     }
 
-    public PopupDrawerLayout(Context context, AttributeSet attrs) {
+    public DialogDrawerLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PopupDrawerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DialogDrawerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         dragHelper = ViewDragHelper.create(this, callback);
     }
@@ -234,7 +235,7 @@ public class PopupDrawerLayout extends FrameLayout {
                 }
             }
             dragHelper.smoothSlideViewTo(mChild, finalLeft, releasedChild.getTop());
-            ViewCompat.postInvalidateOnAnimation(PopupDrawerLayout.this);
+            ViewCompat.postInvalidateOnAnimation(DialogDrawerLayout.this);
         }
     };
 
@@ -290,7 +291,7 @@ public class PopupDrawerLayout extends FrameLayout {
             @Override
             public void run() {
                 dragHelper.smoothSlideViewTo(mChild, position == DialogPosition.Left ? 0 : (mChild.getLeft() - mChild.getMeasuredWidth()), 0);
-                ViewCompat.postInvalidateOnAnimation(PopupDrawerLayout.this);
+                ViewCompat.postInvalidateOnAnimation(DialogDrawerLayout.this);
             }
         });
     }
@@ -306,7 +307,7 @@ public class PopupDrawerLayout extends FrameLayout {
             @Override
             public void run() {
                 dragHelper.smoothSlideViewTo(mChild, position == DialogPosition.Left ? -mChild.getMeasuredWidth() : getMeasuredWidth(), 0);
-                ViewCompat.postInvalidateOnAnimation(PopupDrawerLayout.this);
+                ViewCompat.postInvalidateOnAnimation(DialogDrawerLayout.this);
             }
         });
     }

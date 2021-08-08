@@ -51,7 +51,7 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     protected abstract int getContentLayoutId();
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         return null;
     }
 
@@ -64,7 +64,6 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
         if (attachView == null && touchPoint == null) {
-//            throw new IllegalArgumentException("atView() or touchPoint must not be null for AttachPopupView ！");
             dismiss();
             return;
         }
@@ -85,27 +84,13 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
 
     }
 
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        mPopLayout
-//                .getViewTreeObserver()
-//                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                    @Override
-//                    public void onGlobalLayout() {
-//                        mPopLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                        show(attachView, null, touchPoint);
-//                    }
-//                });
-//    }
-
     @Override
     public void doShowAnimation() {
         super.doShowAnimation();
         show(attachView, null, touchPoint);
     }
 
-    public void show(View anchor, RectF frame, PointF origin) {
+    private void show(View anchor, RectF frame, PointF origin) {
 
         if (origin == null) {
             origin = new PointF(-1, -1);

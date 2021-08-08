@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.fragmentation.dialog.animator.TranslateAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
@@ -32,6 +33,11 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
     }
 
     @Override
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
+        return new ShadowMaskAnimator(getImplView());
+    }
+
+    @Override
     protected void doAttach() {
 //        Log.d(TAG, "screenHeight=" + ScreenUtils.getScreenHeight(context) + " getRootView().getMeasuredHeight()=" + getRootView().getMeasuredHeight());
 
@@ -39,7 +45,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
             throw new IllegalArgumentException("atView must not be null for PartShadowPopupView！");
 
         // 指定阴影动画的目标View
-        mShadowAnimator.setTargetView(getImplView());
+//        mShadowAnimator.setTargetView(getImplView());
 
         //1. apply width and height
         int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
@@ -147,7 +153,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 //    }
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         return new TranslateAnimator(contentView, isShowUp ?
                 DialogAnimation.TranslateFromBottom : DialogAnimation.TranslateFromTop);
     }

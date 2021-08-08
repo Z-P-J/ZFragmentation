@@ -10,7 +10,7 @@ import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 /**
  * 缩放透明动画
  */
-public class ScaleAlphaAnimator extends DialogPropertyAnimator {
+public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, ViewPropertyAnimator> {
 
     private float pivotX = 0;
     private float pivotY = 0;

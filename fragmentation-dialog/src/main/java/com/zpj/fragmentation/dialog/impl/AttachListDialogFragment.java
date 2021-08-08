@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.lihang.ShadowLayout;
 import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
+import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.base.AttachDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.recyclerview.EasyRecyclerView;
@@ -54,7 +54,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
     }
 
     @Override
-    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
         return null;
     }
 

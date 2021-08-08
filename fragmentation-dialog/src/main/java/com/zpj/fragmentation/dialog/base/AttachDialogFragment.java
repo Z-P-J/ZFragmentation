@@ -4,13 +4,11 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.R;
@@ -90,20 +88,20 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         view.setClickable(true);
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        contentView
-                .getViewTreeObserver()
-                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        contentView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        doAttach();
-                        return false;
-                    }
-                });
-    }
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        contentView
+//                .getViewTreeObserver()
+//                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//                    @Override
+//                    public boolean onPreDraw() {
+//                        contentView.getViewTreeObserver().removeOnPreDrawListener(this);
+//                        doAttach();
+//                        return false;
+//                    }
+//                });
+//    }
 
     public boolean isShowUp;
     boolean isShowLeft;
@@ -118,9 +116,15 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     float maxY = 0;
     float maxX = 0; // 显示在右边时候的最大值
 
+//    @Override
+//    public void onDialogPreDraw() {
+//        super.onDialogPreDraw();
+//
+//    }
+
     @Override
     public void doShowAnimation() {
-
+        doAttach();
     }
 
     protected void doAttach() {
@@ -316,8 +320,8 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     }
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
-        DialogAnimator<?> animator;
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
+        DialogAnimator animator;
         if (isShowUpToTarget()) {
             // 在上方展示
             if (isShowLeft) {

@@ -10,11 +10,12 @@ import com.zpj.fragmentation.dialog.enums.DialogAnimation;
  * Description: 平移动画
  * Create by dance, at 2018/12/9
  */
-public class TranslateAlphaAnimator extends DialogPropertyAnimator {
+public class TranslateAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, ViewPropertyAnimator> {
 
     //动画起始坐标
     private float startTranslationX, startTranslationY;
     private float defTranslationX, defTranslationY;
+
     public TranslateAlphaAnimator(View target, DialogAnimation dialogAnimation) {
         super(target, dialogAnimation);
     }
@@ -50,31 +51,21 @@ public class TranslateAlphaAnimator extends DialogPropertyAnimator {
         }
     }
 
-//    @Override
-//    public void animateToShow() {
-//        targetView.animate().translationX(defTranslationX).translationY(defTranslationY).alpha(1f)
-//                .setInterpolator(new FastOutSlowInInterpolator())
-//                .setDuration(getShowDuration()).start();
-//    }
-//
-//    @Override
-//    public void animateToDismiss() {
-//        targetView.animate().translationX(startTranslationX).translationY(startTranslationY).alpha(0f)
-//                .setInterpolator(new FastOutSlowInInterpolator())
-//                .setDuration(getDismissDuration()).start();
-//    }
-
     @Override
     public ViewPropertyAnimator onCreateShowAnimator() {
-        return targetView.animate().translationX(defTranslationX).translationY(defTranslationY).alpha(1f)
-                .setInterpolator(new FastOutSlowInInterpolator())
-                .setDuration(getShowDuration());
+        return targetView.animate()
+                .translationX(defTranslationX)
+                .translationY(defTranslationY)
+                .alpha(1f)
+                .setInterpolator(new FastOutSlowInInterpolator());
     }
 
     @Override
     public ViewPropertyAnimator onCreateDismissAnimator() {
-        return targetView.animate().translationX(startTranslationX).translationY(startTranslationY).alpha(0f)
-                .setInterpolator(new FastOutSlowInInterpolator())
-                .setDuration(getDismissDuration());
+        return targetView.animate()
+                .translationX(startTranslationX)
+                .translationY(startTranslationY)
+                .alpha(0f)
+                .setInterpolator(new FastOutSlowInInterpolator());
     }
 }

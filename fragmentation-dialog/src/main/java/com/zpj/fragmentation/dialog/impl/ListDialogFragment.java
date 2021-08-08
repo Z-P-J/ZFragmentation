@@ -31,6 +31,7 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
     protected String title;
     protected String negativeText, neutralText, positiveText;
 
+    protected RecyclerView mRecyclerView;
     protected TextView tvTitle;
     protected TextView tvOk;
     private View shadowBottomView;
@@ -117,27 +118,27 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
 
         }
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 initShadow(recyclerView);
             }
         });
-        initRecyclerView(recyclerView, list);
+        initRecyclerView(mRecyclerView, list);
 
-        recyclerView.getViewTreeObserver()
-                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        recyclerView.getViewTreeObserver()
-                                .removeOnPreDrawListener(this);
-                        ListDialogFragment.super.doShowAnimation();
-                        postOnEnterAnimationEnd(() -> initShadow(recyclerView));
-                        return false;
-                    }
-                });
+//        recyclerView.getViewTreeObserver()
+//                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//                    @Override
+//                    public boolean onPreDraw() {
+//                        recyclerView.getViewTreeObserver()
+//                                .removeOnPreDrawListener(this);
+//                        ListDialogFragment.super.doShowAnimation();
+//                        postOnEnterAnimationEnd(() -> initShadow(recyclerView));
+//                        return false;
+//                    }
+//                });
     }
 
     private void initShadow(RecyclerView recyclerView) {
@@ -166,7 +167,8 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
 
     @Override
     public void doShowAnimation() {
-
+        super.doShowAnimation();
+        postOnEnterAnimationEnd(() -> initShadow(findViewById(R.id.recyclerView)));
     }
 
     protected void onNegativeButtonClick(View view) {

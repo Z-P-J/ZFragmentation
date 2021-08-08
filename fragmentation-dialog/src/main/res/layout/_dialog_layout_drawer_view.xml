@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.zpj.fragmentation.dialog.widget.PopupDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zpj.fragmentation.dialog.widget.DialogDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -18,4 +18,4 @@
 
     </FrameLayout>
 
-</com.zpj.fragmentation.dialog.widget.PopupDrawerLayout>
+</com.zpj.fragmentation.dialog.widget.DialogDrawerLayout>

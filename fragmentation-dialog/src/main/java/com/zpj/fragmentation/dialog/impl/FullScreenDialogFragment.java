@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.TranslateAnimator;
 import com.zpj.fragmentation.dialog.base.BaseDialogFragment;
@@ -50,12 +49,12 @@ public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullSc
     }
 
     @Override
-    protected DialogAnimator<?> onCreateDialogAnimator(ViewGroup contentView) {
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         return new TranslateAnimator(contentView, DialogAnimation.TranslateFromBottom);
     }
 
     @Override
-    protected AbsDialogAnimator<?> onCreateShadowAnimator(FrameLayout flContainer) {
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
         return null;
     }
 

@@ -6,7 +6,7 @@ import android.view.ViewPropertyAnimator;
 
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
-public abstract class AbsDialogAnimator<T> implements DialogAnimator<T> {
+public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
 
     protected View targetView;
 
@@ -26,18 +26,16 @@ public abstract class AbsDialogAnimator<T> implements DialogAnimator<T> {
         this.dialogAnimation = dialogAnimation;
     }
 
-    public void setTargetView(View targetView) {
-        this.targetView = targetView;
-    }
-
     public void setAnimatorListener(Animator.AnimatorListener mAnimatorListener) {
         this.mAnimatorListener = mAnimatorListener;
     }
 
+    @Override
     public void setShowDuration(long showAnimDuration) {
         this.mShowDuration = showAnimDuration;
     }
 
+    @Override
     public void setDismissDuration(long dismissAnimDuration) {
         this.mDismissDuration = dismissAnimDuration;
     }
@@ -52,7 +50,7 @@ public abstract class AbsDialogAnimator<T> implements DialogAnimator<T> {
 
     @Override
     public void animateToShow() {
-        T animator = onCreateShowAnimator();
+        S animator = onCreateShowAnimator();
         startAnimator(animator);
     }
 
@@ -62,7 +60,7 @@ public abstract class AbsDialogAnimator<T> implements DialogAnimator<T> {
         startAnimator(animator);
     }
 
-    protected void startAnimator(T animator) {
+    protected void startAnimator(Object animator) {
         if (animator instanceof Animator) {
             if (mAnimatorListener != null) {
                 ((Animator) animator).addListener(mAnimatorListener);
@@ -77,5 +75,8 @@ public abstract class AbsDialogAnimator<T> implements DialogAnimator<T> {
     }
 
     public abstract void initAnimator();
+
+    public abstract S onCreateShowAnimator();
+    public abstract T onCreateDismissAnimator();
 
 }

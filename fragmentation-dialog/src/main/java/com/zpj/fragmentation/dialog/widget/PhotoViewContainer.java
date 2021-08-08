@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.interfaces.OnDragChangeListener;
+import com.zpj.utils.ScreenUtils;
 
 /**
  * wrap ViewPager, process drag event.
@@ -37,7 +38,7 @@ public class PhotoViewContainer extends FrameLayout {
     }
 
     private void init() {
-        HideTopThreshold = dip2px(HideTopThreshold);
+        HideTopThreshold = ScreenUtils.dp2pxInt(HideTopThreshold);
         dragHelper = ViewDragHelper.create(this, cb);
         setBackgroundColor(Color.TRANSPARENT);
     }
@@ -88,10 +89,6 @@ public class PhotoViewContainer extends FrameLayout {
 //        return photoView!=null && (photoView.attacher.isTopEnd || photoView.attacher.isBottomEnd);
     }
 
-//    private PhotoView getCurrentPhotoView(){
-//        return  (PhotoView) viewPager.getChildAt(viewPager.getCurrentItem());
-//    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         boolean result = dragHelper.shouldInterceptTouchEvent(ev);
@@ -110,7 +107,7 @@ public class PhotoViewContainer extends FrameLayout {
         return true;
     }
 
-    ViewDragHelper.Callback cb = new ViewDragHelper.Callback() {
+    private final ViewDragHelper.Callback cb = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(@NonNull View view, int i) {
             return !isReleasing;
@@ -168,11 +165,6 @@ public class PhotoViewContainer extends FrameLayout {
         if (dragHelper.continueSettling(false)) {
             ViewCompat.postInvalidateOnAnimation(PhotoViewContainer.this);
         }
-    }
-
-    public int dip2px(float dpValue) {
-        float scale = getContext().getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
     }
 
     public void setOnDragChangeListener(OnDragChangeListener listener) {

@@ -13,7 +13,7 @@ import com.zpj.fragmentation.dialog.enums.DialogAnimation;
  * Description: 像系统的PopupMenu那样的动画
  * Create by lxj, at 2018/12/12
  */
-public class ScrollScaleAnimator extends AbsDialogAnimator<Animator> {
+public class ScrollScaleAnimator extends AbsDialogAnimator<Animator, Animator> {
 
     private final FloatEvaluator floatEvaluator = new FloatEvaluator();
     private IntEvaluator intEvaluator = new IntEvaluator();
@@ -167,7 +167,7 @@ public class ScrollScaleAnimator extends AbsDialogAnimator<Animator> {
 //                }
             }
         });
-        animator.setDuration(getShowDuration()).setInterpolator(new FastOutSlowInInterpolator());
+        animator.setInterpolator(new FastOutSlowInInterpolator());
         return animator;
     }
 
@@ -188,8 +188,7 @@ public class ScrollScaleAnimator extends AbsDialogAnimator<Animator> {
 //                if(targetView.getBackground()!=null)targetView.getBackground().setAlpha((int) (fraction*255));
             }
         });
-        animator.setDuration(getDismissDuration())
-                .setInterpolator(new FastOutSlowInInterpolator());
+        animator.setInterpolator(new FastOutSlowInInterpolator());
         return animator;
     }
 }
