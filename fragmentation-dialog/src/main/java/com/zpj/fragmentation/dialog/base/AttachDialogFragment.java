@@ -124,11 +124,7 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
 
     @Override
     public void doShowAnimation() {
-        doAttach();
-    }
-
-    protected void doAttach() {
-//        int offset = ScreenUtils.getScreenHeight(context) - getRootView().getMeasuredHeight();
+        //        int offset = ScreenUtils.getScreenHeight(context) - getRootView().getMeasuredHeight();
         int[] rootLocations = new int[2];
         getRootView().getLocationOnScreen(rootLocations);
         int offset = rootLocations[1];
@@ -215,9 +211,8 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
             getImplView().setTranslationX(translationX);
             getImplView().setTranslationY(translationY);
 
-            mDialogAnimator = onCreateDialogAnimator((ViewGroup) getImplView());
+            mDialogAnimator = onCreateDialogAnimator(getImplView());
             if (mDialogAnimator != null) {
-                mDialogAnimator.initAnimator();
                 mDialogAnimator.animateToShow();
             }
             getImplView().setAlpha(1f);
@@ -304,9 +299,8 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
             getImplView().setTranslationY(translationY);
 
 
-            mDialogAnimator = onCreateDialogAnimator((ViewGroup) getImplView());
+            mDialogAnimator = onCreateDialogAnimator(getImplView());
             if (mDialogAnimator != null) {
-                mDialogAnimator.initAnimator();
                 mDialogAnimator.animateToShow();
             }
             getImplView().setAlpha(1f);
@@ -372,7 +366,7 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     }
 
     public T setTouchPoint(float x, float y) {
-        this.touchPoint = new PointF(x, y);;
+        this.touchPoint = new PointF(x, y);
         return self();
     }
 

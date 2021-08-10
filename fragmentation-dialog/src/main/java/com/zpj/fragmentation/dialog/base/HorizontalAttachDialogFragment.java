@@ -29,11 +29,8 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
         return animator;
     }
 
-    /**
-     * 执行附着逻辑
-     */
     @Override
-    protected void doAttach() {
+    public void doShowAnimation() {
         float translationX = 0, translationY = 0;
         int w = getImplView().getMeasuredWidth();
         int h = getImplView().getMeasuredHeight();

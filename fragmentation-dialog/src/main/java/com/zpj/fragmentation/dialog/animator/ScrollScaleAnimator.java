@@ -22,28 +22,37 @@ public class ScrollScaleAnimator extends AbsDialogAnimator<Animator, Animator> {
     private float startScale = 0f;
 
     public boolean isOnlyScaleX = false;
+
     public ScrollScaleAnimator(View target, DialogAnimation dialogAnimation) {
         super(target, dialogAnimation);
-    }
-
-    @Override
-    public void initAnimator() {
-//        targetView.setAlpha(startAlpha);
+        //        targetView.setAlpha(startAlpha);
         targetView.setScaleX(startScale);
         if(!isOnlyScaleX){
             targetView.setScaleY(startScale);
         }
 
-        targetView.post(new Runnable() {
-            @Override
-            public void run() {
-                // 设置参考点
-                applyPivot();
-//                targetView.scrollTo(startScrollX, startScrollY);
-//                if(targetView.getBackground()!=null)targetView.getBackground().setAlpha(0);
-            }
-        });
+        // 设置参考点
+        applyPivot();
     }
+
+//    @Override
+//    public void initAnimator() {
+////        targetView.setAlpha(startAlpha);
+//        targetView.setScaleX(startScale);
+//        if(!isOnlyScaleX){
+//            targetView.setScaleY(startScale);
+//        }
+//
+//        targetView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                // 设置参考点
+//                applyPivot();
+////                targetView.scrollTo(startScrollX, startScrollY);
+////                if(targetView.getBackground()!=null)targetView.getBackground().setAlpha(0);
+//            }
+//        });
+//    }
 
     private void applyPivot(){
         switch (dialogAnimation){
@@ -100,52 +109,6 @@ public class ScrollScaleAnimator extends AbsDialogAnimator<Animator, Animator> {
                 break;
         }
     }
-
-//    @Override
-//    public void animateToShow() {
-//        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                float fraction = animation.getAnimatedFraction();
-////                targetView.setAlpha(floatEvaluator.evaluate(fraction, startAlpha, 1f));
-////                targetView.scrollTo(intEvaluator.evaluate(fraction, startScrollX, 0),
-////                        intEvaluator.evaluate(fraction, startScrollY, 0));
-//                float scale = floatEvaluator.evaluate(fraction, startScale, 1f);
-//                targetView.setScaleX(scale);
-//                targetView.setAlpha(scale);
-//                if(!isOnlyScaleX)targetView.setScaleY(scale);
-////                if(fraction>=.9f && targetView.getBackground()!=null) {
-////                    float alphaFraction = (fraction - .9f) / .1f;
-////                    targetView.getBackground().setAlpha((int) (alphaFraction*255));
-////                }
-//            }
-//        });
-//        animator.setDuration(getShowDuration()).setInterpolator(new FastOutSlowInInterpolator());
-//        animator.start();
-//    }
-//
-//    @Override
-//    public void animateToDismiss() {
-//        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                float fraction = animation.getAnimatedFraction();
-////                targetView.setAlpha(floatEvaluator.evaluate(fraction, 1f, startAlpha));
-////                targetView.scrollTo(intEvaluator.evaluate(fraction, 0, startScrollX),
-////                        intEvaluator.evaluate(fraction, 0, startScrollY));
-//                float scale = floatEvaluator.evaluate(fraction, 1f, startScale);
-//                targetView.setScaleX(scale);
-//                targetView.setAlpha(scale);
-//                if(!isOnlyScaleX)targetView.setScaleY(scale);
-////                if(targetView.getBackground()!=null)targetView.getBackground().setAlpha((int) (fraction*255));
-//            }
-//        });
-//        animator.setDuration(getDismissDuration())
-//                .setInterpolator(new FastOutSlowInInterpolator());
-//        animator.start();
-//    }
 
     @Override
     public Animator onCreateShowAnimator() {

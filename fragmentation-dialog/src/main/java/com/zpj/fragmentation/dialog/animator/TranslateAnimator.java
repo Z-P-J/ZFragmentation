@@ -19,10 +19,6 @@ public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, V
 
     public TranslateAnimator(View target, DialogAnimation dialogAnimation) {
         super(target, dialogAnimation);
-    }
-
-    @Override
-    public void initAnimator() {
         if (!hasInitDefTranslation) {
             initTranslationX = targetView.getTranslationX();
             initTranslationY = targetView.getTranslationY();
@@ -36,6 +32,22 @@ public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, V
         oldWidth = targetView.getMeasuredWidth();
         oldHeight = targetView.getMeasuredHeight();
     }
+
+//    @Override
+//    public void initAnimator() {
+//        if (!hasInitDefTranslation) {
+//            initTranslationX = targetView.getTranslationX();
+//            initTranslationY = targetView.getTranslationY();
+//            hasInitDefTranslation = true;
+//        }
+//        // 设置起始坐标
+//        applyTranslation();
+//        startTranslationX = targetView.getTranslationX();
+//        startTranslationY = targetView.getTranslationY();
+//
+//        oldWidth = targetView.getMeasuredWidth();
+//        oldHeight = targetView.getMeasuredHeight();
+//    }
 
     private void applyTranslation() {
         switch (dialogAnimation) {

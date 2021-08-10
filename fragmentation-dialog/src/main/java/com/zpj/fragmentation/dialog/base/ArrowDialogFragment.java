@@ -188,7 +188,6 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
         getImplView().setTranslationY(y);
         getImplView().setAlpha(1f);
         mDialogAnimator = new ScaleAlphaAnimator(getImplView(), pivotX, pivotY);
-        mDialogAnimator.initAnimator();
         mDialogAnimator.animateToShow();
     }
 

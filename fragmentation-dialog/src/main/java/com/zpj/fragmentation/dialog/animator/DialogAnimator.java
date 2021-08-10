@@ -2,7 +2,7 @@ package com.zpj.fragmentation.dialog.animator;
 
 public interface DialogAnimator {
 
-    void initAnimator();
+//    void setListener(Listener listener);
 
     void setShowDuration(long showAnimDuration);
 
@@ -11,5 +11,16 @@ public interface DialogAnimator {
     void animateToShow();
 
     void animateToDismiss();
+
+//    interface Listener {
+//
+//        void onShowAnimationStart();
+//
+//        void onShowAnimationEnd();
+//
+//        void onDismissAnimationStart();
+//
+//        void onDismissAnimationEnd();
+//    }
 
 }

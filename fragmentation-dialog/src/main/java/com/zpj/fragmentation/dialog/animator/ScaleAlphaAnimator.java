@@ -25,30 +25,38 @@ public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, 
         super(target, null);
         this.pivotX = pivotX;
         this.pivotY = pivotY;
+        initAnimator();
     }
 
     public ScaleAlphaAnimator(View target, DialogAnimation dialogAnimation) {
         super(target, dialogAnimation);
+        initAnimator();
     }
 
-    @Override
     public void initAnimator() {
         targetView.setScaleX(0f);
         targetView.setScaleY(0f);
         targetView.setAlpha(0);
 
-        // 设置动画参考点
-        targetView.post(new Runnable() {
-            @Override
-            public void run() {
-                if (dialogAnimation == null) {
-                    targetView.setPivotX(pivotX);
-                    targetView.setPivotY(pivotY);
-                } else {
-                    applyPivot();
-                }
-            }
-        });
+        if (dialogAnimation == null) {
+            targetView.setPivotX(pivotX);
+            targetView.setPivotY(pivotY);
+        } else {
+            applyPivot();
+        }
+
+//        // 设置动画参考点
+//        targetView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (dialogAnimation == null) {
+//                    targetView.setPivotX(pivotX);
+//                    targetView.setPivotY(pivotY);
+//                } else {
+//                    applyPivot();
+//                }
+//            }
+//        });
     }
 
     /**
@@ -86,8 +94,7 @@ public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, 
                 .scaleX(1f)
                 .scaleY(1f)
                 .alpha(1f)
-                .setInterpolator(new OvershootInterpolator(tension))
-                .setListener(mAnimatorListener);
+                .setInterpolator(new OvershootInterpolator(tension));
     }
 
     @Override
@@ -98,4 +105,5 @@ public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, 
                 .alpha(0f)
                 .setInterpolator(new FastOutSlowInInterpolator());
     }
+
 }

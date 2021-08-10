@@ -1,9 +1,11 @@
 package com.zpj.fragmentation.dialog.animator;
 
 import android.animation.Animator;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 
+import com.zpj.fragmentation.dialog.AbstractDialogFragment;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
@@ -15,7 +17,7 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
 
     public DialogAnimation dialogAnimation;
 
-    protected Animator.AnimatorListener mAnimatorListener;
+//    protected Listener mListener;
 
     public AbsDialogAnimator(View target){
         this(target, null);
@@ -26,9 +28,10 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
         this.dialogAnimation = dialogAnimation;
     }
 
-    public void setAnimatorListener(Animator.AnimatorListener mAnimatorListener) {
-        this.mAnimatorListener = mAnimatorListener;
-    }
+//    @Override
+//    public void setListener(Listener listener) {
+//        this.mListener = listener;
+//    }
 
     @Override
     public void setShowDuration(long showAnimDuration) {
@@ -48,33 +51,67 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
         return mDismissDuration;
     }
 
+
     @Override
     public void animateToShow() {
         S animator = onCreateShowAnimator();
-        startAnimator(animator);
+        startAnimator(animator, mShowDuration, true);
     }
 
     @Override
     public void animateToDismiss() {
         T animator = onCreateDismissAnimator();
-        startAnimator(animator);
+        startAnimator(animator, mDismissDuration, false);
     }
 
-    protected void startAnimator(Object animator) {
+    protected void startAnimator(Object animator, long duration, boolean isShow) {
+        Log.d("startAnimator", "duration=" + duration + " animator=" + animator);
         if (animator instanceof Animator) {
-            if (mAnimatorListener != null) {
-                ((Animator) animator).addListener(mAnimatorListener);
-            }
-            ((Animator) animator).setDuration(mShowDuration);
+//            if (mListener != null) {
+//                ((Animator) animator).addListener(createAnimatorListener(isShow));
+//            }
+            ((Animator) animator).setDuration(duration);
             ((Animator) animator).start();
         } else if (animator instanceof ViewPropertyAnimator) {
-            ((ViewPropertyAnimator) animator).setListener(mAnimatorListener);
-            ((ViewPropertyAnimator) animator).setDuration(mDismissDuration);
+//            if (mListener != null) {
+//                ((ViewPropertyAnimator) animator).setListener(createAnimatorListener(isShow));
+//            }
+            ((ViewPropertyAnimator) animator).setDuration(duration);
             ((ViewPropertyAnimator) animator).start();
         }
     }
 
-    public abstract void initAnimator();
+//    private Animator.AnimatorListener createAnimatorListener(boolean isShow) {
+//        return new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//                if (isShow) {
+//                    mListener.onShowAnimationStart();
+//                } else {
+//                    mListener.onDismissAnimationStart();
+//                }
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                if (isShow) {
+//                    mListener.onShowAnimationEnd();
+//                } else {
+//                    mListener.onDismissAnimationEnd();
+//                }
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//
+//            }
+//        };
+//    }
 
     public abstract S onCreateShowAnimator();
     public abstract T onCreateDismissAnimator();

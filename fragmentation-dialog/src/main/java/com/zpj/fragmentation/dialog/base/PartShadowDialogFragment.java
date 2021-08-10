@@ -38,8 +38,8 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
     }
 
     @Override
-    protected void doAttach() {
-//        Log.d(TAG, "screenHeight=" + ScreenUtils.getScreenHeight(context) + " getRootView().getMeasuredHeight()=" + getRootView().getMeasuredHeight());
+    public void doShowAnimation() {
+        //        Log.d(TAG, "screenHeight=" + ScreenUtils.getScreenHeight(context) + " getRootView().getMeasuredHeight()=" + getRootView().getMeasuredHeight());
 
         if (attachView == null)
             throw new IllegalArgumentException("atView must not be null for PartShadowPopupView！");
@@ -133,17 +133,15 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 
         mDialogAnimator = onCreateDialogAnimator((ViewGroup) contentView);
         if (mDialogAnimator != null) {
-            mDialogAnimator.initAnimator();
             mDialogAnimator.animateToShow();
         }
         if (mShadowAnimator != null) {
-            mShadowAnimator.initAnimator();
             mShadowAnimator.animateToShow();
         }
         getImplView().setAlpha(1f);
     }
 
-//    //让触摸透过
+    //    //让触摸透过
 //    @Override
 //    public boolean onTouchEvent(MotionEvent event) {
 //        if(cancelableInTouchOutside){

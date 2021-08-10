@@ -14,16 +14,27 @@ public class ShadowMaskAnimator extends AbsDialogAnimator<Animator, Animator> {
 
     private static final int shadowBgColor = Color.parseColor("#60000000");
 
-    public ArgbEvaluator argbEvaluator = new ArgbEvaluator();
-    public int startColor = Color.TRANSPARENT;
+    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private int startColor = Color.TRANSPARENT;
 
     public ShadowMaskAnimator(View target) {
         super(target);
+        if (target != null) {
+            targetView.setBackgroundColor(startColor);
+        }
     }
 
-    @Override
-    public void initAnimator() {
-        targetView.setBackgroundColor(startColor);
+//    @Override
+//    public void initAnimator() {
+//        targetView.setBackgroundColor(startColor);
+//    }
+
+
+    public void setStartColor(int startColor) {
+        this.startColor = startColor;
+        if (targetView != null) {
+            targetView.setBackgroundColor(startColor);
+        }
     }
 
     public int calculateBgColor(float fraction) {

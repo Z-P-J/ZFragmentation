@@ -18,10 +18,6 @@ public class TranslateAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimat
 
     public TranslateAlphaAnimator(View target, DialogAnimation dialogAnimation) {
         super(target, dialogAnimation);
-    }
-
-    @Override
-    public void initAnimator() {
         defTranslationX = targetView.getTranslationX();
         defTranslationY = targetView.getTranslationY();
 
@@ -31,6 +27,18 @@ public class TranslateAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimat
         startTranslationX = targetView.getTranslationX();
         startTranslationY = targetView.getTranslationY();
     }
+
+//    @Override
+//    public void initAnimator() {
+//        defTranslationX = targetView.getTranslationX();
+//        defTranslationY = targetView.getTranslationY();
+//
+//        targetView.setAlpha(0);
+//        // 设置移动坐标
+//        applyTranslation();
+//        startTranslationX = targetView.getTranslationX();
+//        startTranslationY = targetView.getTranslationY();
+//    }
 
     private void applyTranslation() {
 //        int halfWidthOffset = ScreenUtils.getScreenWidth(targetView.getContext())/2 - targetView.getMeasuredWidth()/2;

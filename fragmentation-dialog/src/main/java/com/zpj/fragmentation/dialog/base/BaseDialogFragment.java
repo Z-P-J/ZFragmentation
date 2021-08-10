@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -222,13 +223,11 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     public void doShowAnimation() {
         mDialogAnimator = onCreateDialogAnimator(implView);
         if (mDialogAnimator != null) {
-            mDialogAnimator.initAnimator();
             mDialogAnimator.setShowDuration(getShowAnimDuration());
             mDialogAnimator.animateToShow();
         }
 
         if (mShadowAnimator != null) {
-            mShadowAnimator.initAnimator();
             mShadowAnimator.setShowDuration(getShowAnimDuration());
             mShadowAnimator.animateToShow();
         }
