@@ -19,16 +19,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-
-/**
- * Created by liuting on 17/6/1.
- */
-
-public class MyImageLoader<T> implements ImageLoader<T> {
+public class DefaultImageLoader<T> implements ImageLoader<T> {
     private static final Pattern webPattern = Pattern.compile("http[s]*://[[[^/:]&&[a-zA-Z_0-9]]\\.]+(:\\d+)?(/[a-zA-Z_0-9]+)*(/[a-zA-Z_0-9]*([a-zA-Z_0-9]+\\.[a-zA-Z_0-9]+)*)?(\\?(&?[a-zA-Z_0-9]+=[%[a-zA-Z_0-9]-]*)*)*(#[[a-zA-Z_0-9]|-]+)?(.jpg|.png|.gif|.jpeg)?");
     private static final String ASSET_PATH_SEGMENT = "android_asset";
     private static final HashMap<String, ImageLoader.LoadCallback> loadCallbackMap = new HashMap<>();
-    private static final HashMap<String, OkHttpImageLoad.ImageDownLoadListener> imageDownLoadListenerMap = new HashMap<>();
+    private static final HashMap<String, ImageFetcher.ImageDownLoadListener> imageDownLoadListenerMap = new HashMap<>();
 
     @Override
     public void loadImage(final T url, final ImageLoader.LoadCallback callback, final ImageViewContainer imageView, final String unique) {
@@ -55,7 +50,7 @@ public class MyImageLoader<T> implements ImageLoader<T> {
      * 从网络加载图片
      */
     protected void loadImageFromNet(final String url, final String unique, final ImageViewContainer imageView) {
-        OkHttpImageLoad.ImageDownLoadListener loadListener = new OkHttpImageLoad.ImageDownLoadListener() {
+        ImageFetcher.ImageDownLoadListener loadListener = new ImageFetcher.ImageDownLoadListener() {
             @Override
             public void inProgress(float progress, long total) {
                 onProgress(unique, progress);
@@ -68,7 +63,7 @@ public class MyImageLoader<T> implements ImageLoader<T> {
 
             @Override
             public void onSuccess() {
-                loadImageFromLocal(OkHttpImageLoad.getCachedPath(url), unique, imageView);
+                loadImageFromLocal(ImageFetcher.getCachedPath(url), unique, imageView);
             }
 
             @Override
@@ -78,7 +73,7 @@ public class MyImageLoader<T> implements ImageLoader<T> {
 
         };
         imageDownLoadListenerMap.put(unique, loadListener);
-        OkHttpImageLoad.getInstance().load(url, loadListener);
+        ImageFetcher.getInstance().load(url, loadListener);
     }
 
     /**
@@ -176,7 +171,7 @@ public class MyImageLoader<T> implements ImageLoader<T> {
             //是本地图片不用预览图
             return true;
         }
-        return OkHttpImageLoad.getInstance().checkImageExists(link);
+        return ImageFetcher.getInstance().checkImageExists(link);
 //        return false;
     }
 
@@ -184,7 +179,7 @@ public class MyImageLoader<T> implements ImageLoader<T> {
     public void cancel(T url, String unique) {
         removeLoadCallback(unique);
         String link = url.toString();
-        OkHttpImageLoad.getInstance().destroy(link, imageDownLoadListenerMap.remove(unique));
+        ImageFetcher.getInstance().destroy(link, imageDownLoadListenerMap.remove(unique));
     }
 
     private static boolean isNetUri(String url) {

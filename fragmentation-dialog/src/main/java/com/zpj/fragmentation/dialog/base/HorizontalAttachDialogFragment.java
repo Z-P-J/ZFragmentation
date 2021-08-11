@@ -19,18 +19,7 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
 
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
-        ScrollScaleAnimator animator;
-        if (isShowLeftToTarget()) {
-            animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRight);
-        } else {
-            animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromLeft);
-        }
-        animator.isOnlyScaleX = true;
-        return animator;
-    }
 
-    @Override
-    public void doShowAnimation() {
         float translationX = 0, translationY = 0;
         int w = getImplView().getMeasuredWidth();
         int h = getImplView().getMeasuredHeight();
@@ -59,6 +48,12 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
         }
         getImplView().setTranslationX(translationX);
         getImplView().setTranslationY(translationY);
+
+        ScrollScaleAnimator animator = new ScrollScaleAnimator(getImplView(),
+                isShowLeftToTarget() ? DialogAnimation.ScrollAlphaFromRight
+                        : DialogAnimation.ScrollAlphaFromLeft);
+        animator.isOnlyScaleX = true;
+        return animator;
     }
 
     private boolean isShowLeftToTarget() {

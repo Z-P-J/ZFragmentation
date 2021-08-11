@@ -387,7 +387,7 @@ public class MainFragment extends SimpleFragment {
                 for (int i = 0; i < 50; i++) {
                     list.add(String.valueOf(i));
                 }
-                new AttachListDialogFragment<String>()
+                ZDialog.attach()
                         .setOnSelectListener(new AttachListDialogFragment.OnSelectListener<String>() {
                             @Override
                             public void onSelect(AttachListDialogFragment<String> fragment, int position, String text) {
@@ -408,7 +408,7 @@ public class MainFragment extends SimpleFragment {
                 for (int i = 0; i < 5; i++) {
                     list.add(String.valueOf(i));
                 }
-                new AttachListDialogFragment<String>()
+                ZDialog.attach()
                         .setOnSelectListener(new AttachListDialogFragment.OnSelectListener<String>() {
                             @Override
                             public void onSelect(AttachListDialogFragment<String> fragment, int position, String text) {

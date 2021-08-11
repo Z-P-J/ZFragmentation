@@ -87,8 +87,6 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
 
         initLayoutParams(implView);
 
-        mShadowAnimator = onCreateShadowAnimator(flContainer);
-
     }
 
     protected void initLayoutParams(ViewGroup view) {
@@ -125,40 +123,20 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
                     @Override
                     public boolean onPreDraw() {
                         getRootView().getViewTreeObserver().removeOnPreDrawListener(this);
-//                        onDialogPreDraw();
+                        mShadowAnimator = onCreateShadowAnimator(rootView);
+                        if (mShadowAnimator != null) {
+                            mShadowAnimator.setShowDuration(getShowAnimDuration());
+                            mShadowAnimator.setDismissDuration(getDismissAnimDuration());
+                        }
+                        mDialogAnimator = onCreateDialogAnimator(implView);
+                        if (mDialogAnimator != null) {
+                            mDialogAnimator.setShowDuration(getShowAnimDuration());
+                            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
+                        }
                         doShowAnimation();
                         return false;
                     }
                 });
-    }
-
-//    public void onDialogPreDraw() {
-//        doShowAnimation();
-//    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     @Override
@@ -221,7 +199,6 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     }
 
     public void doShowAnimation() {
-        mDialogAnimator = onCreateDialogAnimator(implView);
         if (mDialogAnimator != null) {
             mDialogAnimator.setShowDuration(getShowAnimDuration());
             mDialogAnimator.animateToShow();
@@ -314,11 +291,25 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
 
     public T setShowAnimDuration(long duration) {
         this.showAnimDuration = duration;
+        duration = getShowAnimDuration();
+        if (mDialogAnimator != null) {
+            mDialogAnimator.setShowDuration(duration);
+        }
+        if (mShadowAnimator != null) {
+            mShadowAnimator.setShowDuration(duration);
+        }
         return self();
     }
 
     public T setDismissAnimDuration(long duration) {
         this.dismissAnimDuration = duration;
+        duration = getDismissAnimDuration();
+        if (mDialogAnimator != null) {
+            mDialogAnimator.setDismissDuration(duration);
+        }
+        if (mShadowAnimator != null) {
+            mShadowAnimator.setDismissDuration(duration);
+        }
         return self();
     }
 

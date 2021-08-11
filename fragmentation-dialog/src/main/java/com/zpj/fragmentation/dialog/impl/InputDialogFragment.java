@@ -48,6 +48,12 @@ public class InputDialogFragment extends AlertDialogFragment<InputDialogFragment
     }
 
     @Override
+    public void onDestroyView() {
+        hideSoftInput();
+        super.onDestroyView();
+    }
+
+    @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
         et_input = findViewById(R.id.et_input);
@@ -111,12 +117,6 @@ public class InputDialogFragment extends AlertDialogFragment<InputDialogFragment
         textView.setPadding(padding, padding / 3, padding, padding / 3);
         textView.setLineSpacing(6, 1);
         return textView;
-    }
-
-    @Override
-    public void dismiss() {
-        hideSoftInput();
-        super.dismiss();
     }
 
     @Override

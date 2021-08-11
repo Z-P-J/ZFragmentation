@@ -5,9 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
 import com.zpj.utils.ContextUtils;
-import com.zpj.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,13 +15,10 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,18 +26,18 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by liuting on 16/8/26.
  */
-public class OkHttpImageLoad {
+public class ImageFetcher {
 
     private static final String HASH_ALGORITHM = "MD5";
     private static final int RADIX = 10 + 26;
 
     private static String IMAGE_CACHE_PATH;
 
-    private volatile static OkHttpImageLoad mInstance;
+    private volatile static ImageFetcher mInstance;
     private final ConcurrentHashMap<String, Builder> map = new ConcurrentHashMap<>();
     private final Handler handler;
 
-    private OkHttpImageLoad() {
+    private ImageFetcher() {
         IMAGE_CACHE_PATH = ContextUtils.getApplicationContext().getExternalCacheDir().getAbsolutePath() + "/thumbnail_cache";
         File file = new File(IMAGE_CACHE_PATH);
         if (!file.exists()) {
@@ -51,11 +46,11 @@ public class OkHttpImageLoad {
         handler = new Handler(Looper.getMainLooper());
     }
 
-    public static OkHttpImageLoad getInstance() {
+    public static ImageFetcher getInstance() {
         if (mInstance == null) {
-            synchronized (OkHttpImageLoad.class) {
+            synchronized (ImageFetcher.class) {
                 if (mInstance == null) {
-                    mInstance = new OkHttpImageLoad();
+                    mInstance = new ImageFetcher();
                 }
             }
         }
@@ -257,23 +252,6 @@ public class OkHttpImageLoad {
                     e.printStackTrace();
                     downloadFail(e);
                 }
-
-//                try {
-//                    File file = Glide.with(ContextUtils.getApplicationContext())
-//                            .asFile()
-////                                .downloadOnly()
-//                            .load(url)
-//                            .submit()
-//                            .get();
-//                    String key = generate(url);
-//                    String destUrl = getImageCachePath() + "/" + key;
-//                    File newFile = new File(destUrl);
-//                    FileUtils.copyFileFast(file, newFile);
-//                    downloadSuccess();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    downloadFail(e);
-//                }
             });
             thread.start();
         }

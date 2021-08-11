@@ -38,15 +38,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
     }
 
     @Override
-    public void doShowAnimation() {
-        //        Log.d(TAG, "screenHeight=" + ScreenUtils.getScreenHeight(context) + " getRootView().getMeasuredHeight()=" + getRootView().getMeasuredHeight());
-
-        if (attachView == null)
-            throw new IllegalArgumentException("atView must not be null for PartShadowPopupView！");
-
-        // 指定阴影动画的目标View
-//        mShadowAnimator.setTargetView(getImplView());
-
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup implView) {
         //1. apply width and height
         int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) getImplView().getLayoutParams();
@@ -58,18 +50,13 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 
         Log.d(TAG, "rotation=" + rotation);
 
-        //水平居中
-//        if(isCenterHorizontal && getPopupImplView() != null){
-//            getPopupImplView().setTranslationX(XPopupUtils.getWindowWidth(getContext())/2f - getPopupContentView().getMeasuredWidth()/2f);
-//        }
-
         //1. 获取atView在屏幕上的位置
         int[] locations = new int[2];
         attachView.getLocationOnScreen(locations);
         Rect rect = new Rect(locations[0], locations[1], locations[0] + attachView.getMeasuredWidth(),
                 locations[1] + attachView.getMeasuredHeight());
         int centerY = rect.top + rect.height() / 2;
-        Log.d(TAG, "centerY=" + centerY + " getImplView().getMeasuredHeight()=" + getImplView().getMeasuredHeight() + " getContentView().getMeasuredHeight()" + getContentView().getMeasuredHeight());
+        Log.d(TAG, "centerY=" + centerY + " getImplView().getMeasuredHeight()=" + getImplView().getMeasuredHeight() + " getContentView().getMeasuredHeight()=" + getContentView().getMeasuredHeight());
 
 //        int offset = ScreenUtils.getScreenHeight(context) - getRootView().getMeasuredHeight();
         int[] rootLocations = new int[2];
@@ -131,14 +118,10 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
             }
         });
 
-        mDialogAnimator = onCreateDialogAnimator((ViewGroup) contentView);
-        if (mDialogAnimator != null) {
-            mDialogAnimator.animateToShow();
-        }
-        if (mShadowAnimator != null) {
-            mShadowAnimator.animateToShow();
-        }
-        getImplView().setAlpha(1f);
+
+
+        return new TranslateAnimator(contentView, isShowUp ?
+                DialogAnimation.TranslateFromBottom : DialogAnimation.TranslateFromTop);
     }
 
     //    //让触摸透过
@@ -149,11 +132,5 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 //        }
 //        return !cancelableInTouchOutside;
 //    }
-
-    @Override
-    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
-        return new TranslateAnimator(contentView, isShowUp ?
-                DialogAnimation.TranslateFromBottom : DialogAnimation.TranslateFromTop);
-    }
 
 }

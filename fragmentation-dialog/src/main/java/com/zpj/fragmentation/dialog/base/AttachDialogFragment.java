@@ -88,24 +88,8 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         view.setClickable(true);
     }
 
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        contentView
-//                .getViewTreeObserver()
-//                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//                    @Override
-//                    public boolean onPreDraw() {
-//                        contentView.getViewTreeObserver().removeOnPreDrawListener(this);
-//                        doAttach();
-//                        return false;
-//                    }
-//                });
-//    }
-
     public boolean isShowUp;
     boolean isShowLeft;
-    protected int bgDrawableMargin = 6;
 
 
     /**
@@ -116,15 +100,13 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     float maxY = 0;
     float maxX = 0; // 显示在右边时候的最大值
 
-//    @Override
-//    public void onDialogPreDraw() {
-//        super.onDialogPreDraw();
-//
-//    }
+    protected boolean isShowUpToTarget() {
+        return (isShowUp || dialogPosition == DialogPosition.Top)
+                && dialogPosition != DialogPosition.Bottom;
+    }
 
     @Override
-    public void doShowAnimation() {
-        //        int offset = ScreenUtils.getScreenHeight(context) - getRootView().getMeasuredHeight();
+    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         int[] rootLocations = new int[2];
         getRootView().getLocationOnScreen(rootLocations);
         int offset = rootLocations[1];
@@ -133,7 +115,7 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         maxY = windowHeight;
         int width = getImplView().getMeasuredWidth();
         int height = getImplView().getMeasuredHeight();
-        Log.d(TAG, "width=" + width + " height=" + height);
+        Log.d(TAG, "width=" + width + " height=" + height + " windowWidth=" + windowWidth + " windowHeight=" + windowHeight);
 
         ViewGroup.LayoutParams params = getImplView().getLayoutParams();
         if (getMaxHeight() > 0 && getMaxHeight() < height) {
@@ -210,13 +192,6 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
 
             getImplView().setTranslationX(translationX);
             getImplView().setTranslationY(translationY);
-
-            mDialogAnimator = onCreateDialogAnimator(getImplView());
-            if (mDialogAnimator != null) {
-                mDialogAnimator.animateToShow();
-            }
-            getImplView().setAlpha(1f);
-
         } else {
             // 依附于指定View
             //1. 获取atView在屏幕上的位置
@@ -282,56 +257,28 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
 
             translationY -= offset;
 
-//                    translationY -= ScreenUtils.getStatusBarHeight(context);
-
-//                    if (getActivity() != null && (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-//                            & getActivity().getWindow().getAttributes().flags)
-//                            == WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) {
-//
-//                    } else {
-//                        translationY -= ScreenUtils.getStatusBarHeight(context);
-//                    }
-
-            Log.d(TAG, "translationX=" + translationX + " translationY=" + translationY);
-
-
             getImplView().setTranslationX(translationX);
             getImplView().setTranslationY(translationY);
-
-
-            mDialogAnimator = onCreateDialogAnimator(getImplView());
-            if (mDialogAnimator != null) {
-                mDialogAnimator.animateToShow();
-            }
-            getImplView().setAlpha(1f);
-
         }
-    }
 
-    protected boolean isShowUpToTarget() {
-        return (isShowUp || dialogPosition == DialogPosition.Top)
-                && dialogPosition != DialogPosition.Bottom;
+
+
+        DialogAnimation animation;
+        if (isShowUpToTarget()) {
+            animation = isShowLeft ? DialogAnimation.ScrollAlphaFromLeftBottom
+                    : DialogAnimation.ScrollAlphaFromRightBottom;
+        } else {
+            // 在下方展示
+            animation = isShowLeft ? DialogAnimation.ScrollAlphaFromLeftTop
+                    : DialogAnimation.ScrollAlphaFromRightTop;
+        }
+        return new ScrollScaleAnimator(getImplView(), animation);
     }
 
     @Override
-    protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
-        DialogAnimator animator;
-        if (isShowUpToTarget()) {
-            // 在上方展示
-            if (isShowLeft) {
-                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromLeftBottom);
-            } else {
-                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRightBottom);
-            }
-        } else {
-            // 在下方展示
-            if (isShowLeft) {
-                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromLeftTop);
-            } else {
-                animator = new ScrollScaleAnimator(getImplView(), DialogAnimation.ScrollAlphaFromRightTop);
-            }
-        }
-        return animator;
+    public void doShowAnimation() {
+        super.doShowAnimation();
+        getImplView().setAlpha(1f);
     }
 
     public View getContentView() {
