@@ -31,7 +31,7 @@ import com.zpj.fragmentation.dialog.impl.SimpleSelectDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.IEasy;
-import com.zpj.widget.checkbox.SmoothCheckBox;
+import com.zpj.widget.checkbox.ZCheckBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -350,9 +350,9 @@ public class MainFragment extends SimpleFragment {
                 new CheckDialogFragment()
                         .setChecked(true)
                         .setCheckTitle("This is checkTitle")
-                        .setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+                        .setOnCheckedChangeListener(new ZCheckBox.OnCheckedChangeListener() {
                             @Override
-                            public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
+                            public void onCheckedChanged(ZCheckBox checkBox, boolean isChecked) {
                                 Toast.makeText(context, "isChecked=" + isChecked, Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -368,9 +368,9 @@ public class MainFragment extends SimpleFragment {
                 new CheckDialogFragment()
                         .setChecked(false)
                         .setCheckTitle("This is checkTitle")
-                        .setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+                        .setOnCheckedChangeListener(new ZCheckBox.OnCheckedChangeListener() {
                             @Override
-                            public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
+                            public void onCheckedChanged(ZCheckBox checkBox, boolean isChecked) {
                                 Toast.makeText(context, "isChecked=" + isChecked, Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -393,6 +393,12 @@ public class MainFragment extends SimpleFragment {
                             public void onSelect(AttachListDialogFragment<String> fragment, int position, String text) {
                                 Toast.makeText(context, "position=" + position + " text=" + text, Toast.LENGTH_SHORT).show();
                                 fragment.dismiss();
+                            }
+                        })
+                        .onBindTitle(new IDialog.ViewBinder<TextView, String>() {
+                            @Override
+                            public void onBindView(TextView view, String item, int position) {
+                                view.setText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " + item);
                             }
                         })
                         .setItems(list)

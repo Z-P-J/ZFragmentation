@@ -12,7 +12,7 @@ import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.impl.ListDialogFragment;
 import com.zpj.recyclerview.MultiData;
-import com.zpj.recyclerview.MultiRecyclerViewWrapper;
+import com.zpj.recyclerview.MultiRecycler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +59,8 @@ public class MyExpandableListDialogFragment extends ListDialogFragment<MultiData
 
     @Override
     protected void initRecyclerView(RecyclerView recyclerView, List<MultiData<?>> list) {
-        MultiRecyclerViewWrapper.with(recyclerView)
-                .setData(list)
+        MultiRecycler.with(recyclerView)
+                .setMultiData(list)
                 .build();
     }
 

@@ -1,7 +1,6 @@
 package com.zpj.fragmentation.dialog.widget;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
@@ -21,7 +20,7 @@ import java.util.List;
  * Created by felix on 16/11/19.
  */
 public class OptionMenuView extends LinearLayout
-        implements PopLayout.OnBulgeChangeCallback,
+        implements BubbleLayout.OnBulgeChangeCallback,
         View.OnClickListener {
 
     private static final String TAG = "OptionMenuView";

@@ -8,11 +8,11 @@ import android.widget.TextView;
 
 import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
-import com.zpj.widget.checkbox.SmoothCheckBox;
+import com.zpj.widget.checkbox.ZCheckBox;
 
 public class CheckDialogFragment extends AlertDialogFragment<CheckDialogFragment> {
 
-    private SmoothCheckBox checkBox;
+    private ZCheckBox checkBox;
     private TextView tvTitle;
 
     private String checkTitle;
@@ -21,7 +21,7 @@ public class CheckDialogFragment extends AlertDialogFragment<CheckDialogFragment
 
     protected CharSequence content;
 
-    private SmoothCheckBox.OnCheckedChangeListener onCheckedChangeListener;
+    private ZCheckBox.OnCheckedChangeListener onCheckedChangeListener;
 
     @Override
     protected int getContentLayoutId() {
@@ -58,7 +58,7 @@ public class CheckDialogFragment extends AlertDialogFragment<CheckDialogFragment
         return this;
     }
 
-    public CheckDialogFragment setOnCheckedChangeListener(SmoothCheckBox.OnCheckedChangeListener onCheckedChangeListener) {
+    public CheckDialogFragment setOnCheckedChangeListener(ZCheckBox.OnCheckedChangeListener onCheckedChangeListener) {
         this.onCheckedChangeListener = onCheckedChangeListener;
         return this;
     }

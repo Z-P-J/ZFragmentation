@@ -40,8 +40,6 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     private FrameLayout rootView;
     private ViewGroup implView;
 
-    protected boolean isDismissing;
-
     protected boolean interceptTouch = true;
     protected boolean cancelable = true;
     protected boolean cancelableInTouchOutside = true;
@@ -54,7 +52,7 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
 
     protected IDialog.OnDismissListener onDismissListener;
 
-    private WeakReference<ISupportFragment> preFragment;
+//    private WeakReference<ISupportFragment> preFragment;
 
     protected Drawable bgDrawable;
 
@@ -73,7 +71,7 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-        preFragment = new WeakReference<>(getPreFragment());
+//        preFragment = new WeakReference<>(getPreFragment());
         FrameLayout flContainer = findViewById(R.id._dialog_fl_container);
         this.rootView = flContainer;
 
@@ -106,51 +104,21 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
 
-//        getRootView().getViewTreeObserver()
-//                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                    @Override
-//                    public void onGlobalLayout() {
-//                        getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                        doShowAnimation();
-//                    }
-//                });
-
-
-        getRootView()
-                .getViewTreeObserver()
-                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        getRootView().getViewTreeObserver().removeOnPreDrawListener(this);
-                        mShadowAnimator = onCreateShadowAnimator(rootView);
-                        if (mShadowAnimator != null) {
-                            mShadowAnimator.setShowDuration(getShowAnimDuration());
-                            mShadowAnimator.setDismissDuration(getDismissAnimDuration());
-                        }
-                        mDialogAnimator = onCreateDialogAnimator(implView);
-                        if (mDialogAnimator != null) {
-                            mDialogAnimator.setShowDuration(getShowAnimDuration());
-                            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
-                        }
-                        doShowAnimation();
-                        return false;
-                    }
-                });
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        if (preFragment != null) {
-            ISupportFragment fragment = preFragment.get();
-            if (fragment != null && fragment == getTopFragment()) {
-                fragment.onSupportVisible();
-                preFragment.clear();
-            }
-        }
-        preFragment = null;
-        this.isDismissing = false;
         super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     @Override
@@ -198,18 +166,27 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
         return self();
     }
 
+    @Override
     public void doShowAnimation() {
-        if (mDialogAnimator != null) {
-            mDialogAnimator.setShowDuration(getShowAnimDuration());
-            mDialogAnimator.animateToShow();
+        if (mShadowAnimator == null) {
+            mShadowAnimator = onCreateShadowAnimator(rootView);
         }
-
         if (mShadowAnimator != null) {
             mShadowAnimator.setShowDuration(getShowAnimDuration());
+            mShadowAnimator.setDismissDuration(getDismissAnimDuration());
             mShadowAnimator.animateToShow();
+        }
+        if (mDialogAnimator == null) {
+            mDialogAnimator = onCreateDialogAnimator(implView);
+        }
+        if (mDialogAnimator != null) {
+            mDialogAnimator.setShowDuration(getShowAnimDuration());
+            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
+            mDialogAnimator.animateToShow();
         }
     }
 
+    @Override
     public void doDismissAnimation() {
         if (mDialogAnimator != null) {
             mDialogAnimator.setDismissDuration(getDismissAnimDuration());
@@ -221,24 +198,12 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
         }
     }
 
+    @Override
     public void dismiss() {
-        postOnEnterAnimationEnd(() -> {
-            if (!isDismissing) {
-                isDismissing = true;
-                doDismissAnimation();
-
-                onDismiss();
-                getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        BaseDialogFragment.super.popThis();
-                        isDismissing = false;
-                    }
-                }, getDismissAnimDuration());
-            }
-        });
+        super.dismiss();
     }
 
+    @Override
     protected void onDismiss() {
         if (onDismissListener != null) {
             onDismissListener.onDismiss();

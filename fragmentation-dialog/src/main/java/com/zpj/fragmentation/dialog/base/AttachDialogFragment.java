@@ -3,6 +3,7 @@ package com.zpj.fragmentation.dialog.base;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,7 +18,6 @@ import com.zpj.fragmentation.dialog.animator.ScrollScaleAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.PartShadowContainer;
-import com.zpj.utils.ScreenUtils;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -25,12 +25,11 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
 
     private static final String TAG = "AttachDialogFragment";
 
-    protected int defaultOffsetY = 0;
-    protected int defaultOffsetX = 0;
-    protected PartShadowContainer attachPopupContainer;
+    protected int mOffsetY = 0;
+    protected int mOffsetX = 0;
 
-    protected boolean isCenterHorizontal = false;
-    protected boolean fixedStatusBarHeight;
+    protected int mMinWidth = WRAP_CONTENT;
+    protected int mMinHeight = WRAP_CONTENT;
 
     protected View attachView;
     protected PointF touchPoint = null;
@@ -39,18 +38,12 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
 
     protected AtViewGravity atViewGravity = AtViewGravity.TOP;
 
-    protected View contentView;
-
     public enum AtViewGravity {
-        TOP, BOTTOM
+        AUTO,
+        START,
+        END,
+        TOP, BOTTOM, CENTER
     }
-
-    @Override
-    protected final int getImplLayoutId() {
-        return R.layout._dialog_layout_attach_view;
-    }
-
-    protected abstract int getContentLayoutId();
 
     @Override
     protected int getGravity() {
@@ -59,23 +52,18 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-        super.initView(view, savedInstanceState);
         if (attachView == null && touchPoint == null) {
-//            throw new IllegalArgumentException("atView() or touchPoint must not be null for AttachPopupView ！");
             dismiss();
             return;
         }
-
+        super.initView(view, savedInstanceState);
         getImplView().setAlpha(0f);
-
-        attachPopupContainer = findViewById(R.id.attachPopupContainer);
-
-        contentView = getLayoutInflater().inflate(getContentLayoutId(), attachPopupContainer, false);
-        attachPopupContainer.addView(contentView);
-        if (bgDrawable != null) {
-            contentView.setBackground(bgDrawable);
+        if (mMinWidth > 0) {
+            getImplView().setMinimumWidth(mMinWidth);
         }
-
+        if (mMinHeight > 0) {
+            getImplView().setMinimumHeight(mMinHeight);
+        }
     }
 
     @Override
@@ -91,20 +79,6 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     public boolean isShowUp;
     boolean isShowLeft;
 
-
-    /**
-     * 执行倚靠逻辑
-     */
-    float translationX = 0, translationY = 0;
-    // 弹窗显示的位置不能超越Window高度
-    float maxY = 0;
-    float maxX = 0; // 显示在右边时候的最大值
-
-    protected boolean isShowUpToTarget() {
-        return (isShowUp || dialogPosition == DialogPosition.Top)
-                && dialogPosition != DialogPosition.Bottom;
-    }
-
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         int[] rootLocations = new int[2];
@@ -112,165 +86,127 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         int offset = rootLocations[1];
         int windowWidth = getRootView().getMeasuredWidth();
         int windowHeight = getRootView().getMeasuredHeight();
-        maxY = windowHeight;
         int width = getImplView().getMeasuredWidth();
         int height = getImplView().getMeasuredHeight();
         Log.d(TAG, "width=" + width + " height=" + height + " windowWidth=" + windowWidth + " windowHeight=" + windowHeight);
 
-        ViewGroup.LayoutParams params = getImplView().getLayoutParams();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getImplView().getLayoutParams();
         if (getMaxHeight() > 0 && getMaxHeight() < height) {
             height = getMaxHeight();
-            params.height = height;
+            if (height > windowHeight) {
+                height = windowHeight;
+            }
         }
         if (getMaxWidth() > 0 && getMaxWidth() < width) {
             width = getMaxWidth();
-            params.width = width;
+            if (width > windowWidth) {
+                width = windowWidth;
+            }
         }
         getImplView().setLayoutParams(params);
         Log.d(TAG, "width=" + width + " height=" + height);
 
-
-        //0. 判断是依附于某个点还是某个View
-        if (touchPoint != null) {
-
-            if (touchPoint.x == 0 && touchPoint.y == 0) {
-                touchPoint.x = (windowWidth - width) / 2f;
-                touchPoint.y = (windowHeight - height) / 2f;
-                if (touchPoint.x < 0) {
-                    touchPoint.x = 0;
-                }
-                if (touchPoint.y < 0) {
-                    touchPoint.y = 0;
-                }
+        RectF touchRect = new RectF();
+        if (touchPoint == null) {
+            if (attachView == null) {
+                throw new RuntimeException("You must attach a view or set the touchPoint!");
             }
-            // 依附于指定点
-            maxX = Math.max(touchPoint.x - width, 0);
-            // 尽量优先放在下方，当不够的时候在显示在上方
-            //假设下方放不下，超出window高度
-            boolean isTallerThanWindowHeight = (touchPoint.y + height) > maxY;
-            if (isTallerThanWindowHeight) {
-                isShowUp = touchPoint.y > windowHeight / 2f;
-            } else {
-                isShowUp = false;
-            }
-            isShowLeft = touchPoint.x < windowWidth / 2f;
-
-            //修正高度，弹窗的高有可能超出window区域
-            if (isShowUpToTarget()) {
-                if (getImplView().getMeasuredHeight() > touchPoint.y) {
-                    height = (int) (touchPoint.y - ScreenUtils.getStatusBarHeight(context));
-                    params.height = height;
-                    getImplView().setLayoutParams(params);
-                }
-            } else {
-                if (getImplView().getMeasuredHeight() + touchPoint.y > windowHeight) {
-                    height = (int) (windowHeight - touchPoint.y);
-                    params.height = height;
-                    getImplView().setLayoutParams(params);
-                }
-            }
-
-            translationX = (isShowLeft ? touchPoint.x : maxX) + (isShowLeft ? defaultOffsetX : -defaultOffsetX);
-            if (isCenterHorizontal) {
-                //水平居中
-                if (isShowLeft)
-                    translationX -= width / 2f;
-                else
-                    translationX += width / 2f;
-            }
-            if (isShowUpToTarget()) {
-                // 应显示在point上方
-                // translationX: 在左边就和atView左边对齐，在右边就和其右边对齐
-                translationY = touchPoint.y - height - defaultOffsetY;
-            } else {
-                translationY = touchPoint.y + defaultOffsetY;
-            }
-
-            translationY -= offset;
-
-            Log.d(TAG, "translationX=" + translationX + " translationY=" + translationY);
-
-            getImplView().setTranslationX(translationX);
-            getImplView().setTranslationY(translationY);
-        } else {
-            // 依附于指定View
-            //1. 获取atView在屏幕上的位置
             int[] locations = new int[2];
             attachView.getLocationOnScreen(locations);
 //            attachView.getLocationInWindow(); // getLocationOnScreen
-            final Rect rect = new Rect(locations[0], locations[1], locations[0] + attachView.getMeasuredWidth(),
+            touchRect.set(locations[0], locations[1], locations[0] + attachView.getMeasuredWidth(),
                     locations[1] + attachView.getMeasuredHeight());
             Log.d(TAG, "locations[0]=" + locations[0] + " locations[1]=" + locations[1]);
+            touchPoint = new PointF(touchRect.centerX(), touchRect.centerY());
 
-            maxX = Math.max(rect.right - width, 0);
-            int centerX = (rect.left + rect.right) / 2;
+            isShowLeft = touchPoint.x < windowWidth / 2f;
+            isShowUp = touchPoint.y < windowHeight / 2f;
 
-            // 尽量优先放在下方，当不够的时候在显示在上方
-            //假设下方放不下，超出window高度
-            boolean isTallerThanWindowHeight = (rect.bottom + height) > maxY;
-            if (isTallerThanWindowHeight) {
-                int centerY = (rect.top + rect.bottom) / 2;
-                isShowUp = centerY > windowHeight / 2;
-            } else {
-                isShowUp = false;
-            }
-            isShowLeft = centerX < windowWidth / 2;
-
-            //修正高度，弹窗的高有可能超出window区域
-            if (isShowUpToTarget()) {
-                if (height > rect.top) {
-                    height = rect.top - ScreenUtils.getStatusBarHeight(context);
-                    params.height = height;
-                    getImplView().setLayoutParams(params);
+            if (isShowLeft) {
+                if (isShowUp) {
+                    touchPoint.set(touchRect.left, touchRect.top);
+                } else {
+                    touchPoint.set(touchRect.left, touchRect.bottom);
                 }
             } else {
-                if (getImplView().getMeasuredHeight() + rect.bottom > windowHeight) {
-                    height = windowHeight - rect.bottom;
-                    params.height = height;
-                    getImplView().setLayoutParams(params);
+                if (isShowUp) {
+                    touchPoint.set(touchRect.right, touchRect.top);
+                } else {
+                    touchPoint.set(touchRect.right, touchRect.bottom);
                 }
             }
 
-            translationX = (isShowLeft ? rect.left : maxX) + (isShowLeft ? defaultOffsetX : -defaultOffsetX);
-            if (isCenterHorizontal) {
-                //水平居中
-                if (isShowLeft)
-                    translationX += (rect.width() - width) / 2f;
-                else
-                    translationX -= (rect.width() - width) / 2f;
-            }
-            if (isShowUpToTarget()) {
-                //说明上面的空间比较大，应显示在atView上方
-                // translationX: 在左边就和atView左边对齐，在右边就和其右边对齐
-//                        translationY = rect.top + rect.height() - height - defaultOffsetY;
-                translationY = rect.top - height - defaultOffsetY;
-                if (atViewGravity == AtViewGravity.TOP) {
-                    translationY += rect.height();
-                }
-            } else {
-//                        translationY = rect.bottom - rect.height() + defaultOffsetY;
-                translationY = rect.bottom + defaultOffsetY;
-                if (atViewGravity == AtViewGravity.TOP) {
-                    translationY -= rect.height();
-                }
-            }
 
-            translationY -= offset;
-
-            getImplView().setTranslationX(translationX);
-            getImplView().setTranslationY(translationY);
+        } else {
+            attachView = null;
+            touchRect.set(touchPoint.x, touchPoint.y, touchPoint.x, touchPoint.y);
         }
 
+        touchPoint.y -= offset;
+        touchPoint.x += mOffsetX;
+        touchPoint.y += mOffsetY;
+
+        if (touchPoint.x < 0) {
+            touchPoint.x = 0;
+        }
+        if (touchPoint.y < 0) {
+            touchPoint.y = 0;
+        }
+
+        if (touchPoint.x > windowWidth) {
+            touchPoint.x = windowWidth;
+        }
+
+        if (touchPoint.y > windowHeight) {
+            touchPoint.y = windowHeight;
+        }
+
+        if (touchPoint.x == 0 && touchPoint.y == 0) {
+            touchPoint.x = (windowWidth - width) / 2f;
+            touchPoint.y = (windowHeight - height) / 2f;
+        }
+
+        isShowLeft = touchPoint.x < windowWidth / 2f;
+        isShowUp = touchPoint.y < windowHeight / 2f;
+
+        if (isShowLeft) {
+            params.width = (int) Math.min(width, windowWidth - touchPoint.x);
+            params.leftMargin = (int) touchPoint.x;
+            params.rightMargin = windowWidth - (params.leftMargin + params.width);
+        } else {
+            params.width = (int) Math.min(width, touchPoint.x);
+            params.leftMargin = (int) (touchPoint.x - params.width);
+            params.rightMargin = (int) (windowWidth - touchPoint.x);
+        }
+        params.width -= (getMarginStart() + getMarginEnd());
+        params.leftMargin += getMarginStart();
+        params.rightMargin += getMarginEnd();
+
+        if (isShowUp) {
+            params.height = (int) Math.min(height, windowHeight - touchPoint.y);
+            params.topMargin = (int) touchPoint.y;
+            params.bottomMargin = (int) (windowHeight - touchPoint.y - params.height);
+        } else {
+            params.height = (int) Math.min(height, touchPoint.y);
+            params.topMargin = (int) (touchPoint.y - params.height);
+            params.bottomMargin = (int) (windowHeight - touchPoint.y);
+        }
+
+        params.height -= (getMarginTop() + getMarginBottom());
+        params.topMargin += getMarginTop();
+        params.bottomMargin += getMarginBottom();
+
+        mDelegate.debug("left=" + params.leftMargin + " right=" + params.rightMargin);
+        getImplView().setLayoutParams(params);
 
 
         DialogAnimation animation;
-        if (isShowUpToTarget()) {
-            animation = isShowLeft ? DialogAnimation.ScrollAlphaFromLeftBottom
-                    : DialogAnimation.ScrollAlphaFromRightBottom;
-        } else {
-            // 在下方展示
+        if (isShowUp) {
             animation = isShowLeft ? DialogAnimation.ScrollAlphaFromLeftTop
                     : DialogAnimation.ScrollAlphaFromRightTop;
+        } else {
+            animation = isShowLeft ? DialogAnimation.ScrollAlphaFromLeftBottom
+                    : DialogAnimation.ScrollAlphaFromRightBottom;
         }
         return new ScrollScaleAnimator(getImplView(), animation);
     }
@@ -279,10 +215,6 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     public void doShowAnimation() {
         super.doShowAnimation();
         getImplView().setAlpha(1f);
-    }
-
-    public View getContentView() {
-        return contentView;
     }
 
     public final T show(View view) {
@@ -317,28 +249,33 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         return self();
     }
 
-    public T setCenterHorizontal(boolean centerHorizontal) {
-        isCenterHorizontal = centerHorizontal;
-        return self();
-    }
-
     public T setDialogPosition(DialogPosition dialogPosition) {
         this.dialogPosition = dialogPosition;
         return self();
     }
 
-    public T setDefaultOffsetX(int defaultOffsetX) {
-        this.defaultOffsetX = defaultOffsetX;
+    public T setOffsetX(int defaultOffsetX) {
+        this.mOffsetX = defaultOffsetX;
         return self();
     }
 
-    public T setDefaultOffsetY(int defaultOffsetY) {
-        this.defaultOffsetY = defaultOffsetY;
+    public T setOffsetY(int defaultOffsetY) {
+        this.mOffsetY = defaultOffsetY;
         return self();
     }
 
     public T setAtViewGravity(AtViewGravity atViewGravity) {
         this.atViewGravity = atViewGravity;
+        return self();
+    }
+
+    public T setMinHeight(int mMinHeight) {
+        this.mMinHeight = mMinHeight;
+        return self();
+    }
+
+    public T setMinWidth(int mMinWidth) {
+        this.mMinWidth = mMinWidth;
         return self();
     }
 

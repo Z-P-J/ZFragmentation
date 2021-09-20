@@ -1,7 +1,6 @@
 package com.zpj.fragmentation;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 

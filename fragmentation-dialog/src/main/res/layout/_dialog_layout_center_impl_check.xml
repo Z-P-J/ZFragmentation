@@ -62,12 +62,13 @@
         android:paddingTop="8dp"
         >
 
-        <com.zpj.widget.checkbox.SmoothCheckBox
+        <com.zpj.widget.checkbox.ZCheckBox
             android:id="@+id/check_box"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:z_checkbox_border_size="2dp"
             android:layout_gravity="center_vertical"
-            app:color_checked="#ff0000"
+            app:z_checkbox_checked_color="#ff0000"
             />
 
         <TextView

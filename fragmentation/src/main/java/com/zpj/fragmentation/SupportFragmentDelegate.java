@@ -128,8 +128,6 @@ public class SupportFragmentDelegate {
             @Override
             public void onAnimationStart(Animation animation) {
                 mSupport.getSupportDelegate().mFragmentClickable = false;  // 开启防抖动
-
-//                RxHandler.post(() -> mSupport.getSupportDelegate().mFragmentClickable = true, enter.getDuration());
                 getHandler().postDelayed(() -> mSupport.getSupportDelegate().mFragmentClickable = true, enter.getDuration());
             }
 
@@ -142,6 +140,7 @@ public class SupportFragmentDelegate {
 
             }
         });
+        debug("onCreate");
     }
 
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -151,8 +150,8 @@ public class SupportFragmentDelegate {
             }
             return mAnimHelper.getNoneAnim();
         }
-        Log.d(TAG, "fragment=" + mSupportF);
-        Log.d(TAG, "onCreateAnimation transit=" + transit + " enter=" + enter + " mRootStatus=" + mRootStatus);
+//        Log.d(TAG, "fragment=" + mSupportF);
+//        Log.d(TAG, "onCreateAnimation transit=" + transit + " enter=" + enter + " mRootStatus=" + mRootStatus);
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 Animation enterAnim;
@@ -234,14 +233,17 @@ public class SupportFragmentDelegate {
         if (mFirstCreateView) {
             mFirstCreateView = false;
         }
+        debug("onActivityCreated");
     }
 
     public void onResume() {
         getVisibleDelegate().onResume();
+        debug("onResume");
     }
 
     public void onPause() {
         getVisibleDelegate().onPause();
+        debug("onPause");
     }
 
     public void onDestroyView() {
@@ -249,10 +251,12 @@ public class SupportFragmentDelegate {
         getVisibleDelegate().onDestroyView();
         getHandler().removeCallbacks(mNotifyEnterAnimEndRunnable);
 //        mNotifyEnterAnimEndRunnable = null;
+        debug("onDestroyView");
     }
 
     public void onDestroy() {
         mTransactionDelegate.handleResultRecord(mFragment);
+        debug("onDestroy");
     }
 
     public void onHiddenChanged(boolean hidden) {
@@ -297,6 +301,7 @@ public class SupportFragmentDelegate {
      * 入栈动画 结束时,回调
      */
     public void onEnterAnimationEnd(Bundle savedInstanceState) {
+        debug("onEnterAnimationEnd");
     }
 
     /**
@@ -315,6 +320,7 @@ public class SupportFragmentDelegate {
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
     public void onSupportVisible() {
+        debug("onSupportVisible");
     }
 
     /**
@@ -323,6 +329,7 @@ public class SupportFragmentDelegate {
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
     public void onSupportInvisible() {
+        debug("onSupportInvisible");
     }
 
     /**
@@ -628,14 +635,10 @@ public class SupportFragmentDelegate {
                 mEnterAnimListener.onEnterAnimStart();
                 mEnterAnimListener = null;
             });
-//            RxHandler.post(() -> {
-//                mEnterAnimListener.onEnterAnimStart();
-//                mEnterAnimListener = null;
-//            });
         }
     }
 
-    private Runnable mNotifyEnterAnimEndRunnable = new Runnable() {
+    private final Runnable mNotifyEnterAnimEndRunnable = new Runnable() {
         @Override
         public void run() {
             if (mFragment == null) return;
@@ -745,6 +748,16 @@ public class SupportFragmentDelegate {
 
         }
         return NOT_FOUND_ANIM_TIME;
+    }
+
+    public void debug(String msg) {
+        debug(TAG, msg);
+    }
+
+    public void debug(String tag, String msg) {
+        if (Fragmentation.getDefault().isDebug()) {
+            Log.d(tag, mFragment.getClass().getSimpleName() + " " + msg);
+        }
     }
 
     @Nullable

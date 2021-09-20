@@ -17,7 +17,7 @@ import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.base.AttachDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
-import com.zpj.recyclerview.EasyRecyclerView;
+import com.zpj.recyclerview.EasyRecycler;
 import com.zpj.utils.ScreenUtils;
 
 import java.lang.reflect.Field;
@@ -38,18 +38,16 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
     private IDialog.ViewBinder<ImageView, T> iconCallback;
     private IDialog.ViewBinder<TextView, T> titleCallback;
 
-//    private int minWidth;
-
-
     private final List<T> items = new ArrayList<>();
     private final List<Integer> iconIds = new ArrayList<>();
 
     public AttachListDialogFragment() {
-        cornerRadius = ScreenUtils.dp2px(8);
+        cornerRadius = ScreenUtils.dp2px(16);
+        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 2.5f);
     }
 
     @Override
-    protected int getContentLayoutId() {
+    protected int getImplLayoutId() {
         return R.layout._dialog_layout_attach_impl_list;
     }
 
@@ -69,10 +67,6 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
-        if (maxWidth <= 0) {
-//            minWidth = ScreenUtils.getScreenWidth(context) / 2;
-            maxWidth = ScreenUtils.dp2pxInt(180);
-        }
         int color = DialogThemeUtils.getDialogBackgroundColor(context);
         ShadowLayout shadowLayout = findViewById(R.id.shadow_layout);
         shadowLayout.setmShadowColor(Color.DKGRAY);
@@ -93,8 +87,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
         }
 
         recyclerView = findViewById(R.id._dialog_recycler_View);
-        recyclerView.setMinimumWidth(maxWidth);
-        EasyRecyclerView<T> easyRecyclerView = new EasyRecyclerView<>(recyclerView);
+        EasyRecycler<T> easyRecyclerView = new EasyRecycler<>(recyclerView);
         easyRecyclerView.setData(items)
                 .setItemRes(bindItemLayoutId == 0 ? R.layout._dialog_item_text : bindItemLayoutId)
                 .onBindViewHolder((holder, list, position, payloads) -> {
@@ -125,7 +118,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
                         iconCallback.onBindView(ivImage, list.get(position), position);
                     }
                     if (titleCallback == null) {
-                        tvText.setText(list.get(position).toString());
+                        tvText.setText(String.valueOf(list.get(position)));
                     } else {
                         titleCallback.onBindView(tvText, list.get(position), position);
                     }
@@ -247,8 +240,8 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
     }
 
     public AttachListDialogFragment<T> setOffsetXAndY(int offsetX, int offsetY) {
-        this.defaultOffsetX += offsetX;
-        this.defaultOffsetY += offsetY;
+        this.mOffsetX += offsetX;
+        this.mOffsetY += offsetY;
         return this;
     }
 

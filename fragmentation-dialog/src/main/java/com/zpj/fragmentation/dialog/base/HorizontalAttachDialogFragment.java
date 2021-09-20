@@ -29,8 +29,8 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
             isShowLeft = touchPoint.x > ScreenUtils.getScreenWidth(context) / 2f;
 
             // translationX: 在左边就和点左边对齐，在右边就和其右边对齐
-            translationX = isShowLeftToTarget() ? (touchPoint.x - w - defaultOffsetX) : (touchPoint.x + defaultOffsetX);
-            translationY = touchPoint.y - h * .5f + defaultOffsetY;
+            translationX = isShowLeftToTarget() ? (touchPoint.x - w - mOffsetX) : (touchPoint.x + mOffsetX);
+            translationY = touchPoint.y - h * .5f + mOffsetY;
         } else {
             // 依附于指定View
             //1. 获取atView在屏幕上的位置
@@ -43,8 +43,8 @@ public abstract class HorizontalAttachDialogFragment<T extends HorizontalAttachD
 
             isShowLeft = centerX > ScreenUtils.getScreenWidth(context) / 2;
 
-            translationX = isShowLeftToTarget() ? (rect.left - w + defaultOffsetX) : (rect.right + defaultOffsetX);
-            translationY = rect.top + (rect.height() - h) / 2f + defaultOffsetY;
+            translationX = isShowLeftToTarget() ? (rect.left - w + mOffsetX) : (rect.right + mOffsetX);
+            translationY = rect.top + (rect.height() - h) / 2f + mOffsetY;
         }
         getImplView().setTranslationX(translationX);
         getImplView().setTranslationY(translationY);

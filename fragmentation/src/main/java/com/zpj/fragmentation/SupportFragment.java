@@ -60,6 +60,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
+        mDelegate.debug("onAttach");
     }
 
     @Override
@@ -76,8 +77,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mDelegate.debug("onStart");
+    }
+
+    @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        Log.d("SupportFragment", "onCreateAnimation transit=" + transit + " enter=" + enter + " fragment=" + this);
         return mDelegate.onCreateAnimation(transit, enter, nextAnim);
     }
 
@@ -117,6 +123,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mSupportVisibleActionQueue.onDestroy();
         mDelegate.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mDelegate.debug("onDetach");
     }
 
     @Override

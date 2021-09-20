@@ -64,8 +64,7 @@ public class VisibleDelegate {
         }
 
         if (!mInvisibleWhenLeave && !mFragment.isHidden() && mFragment.getUserVisibleHint()) {
-            if ((mFragment.getParentFragment() != null && isFragmentVisible(mFragment.getParentFragment()))
-                    || mFragment.getParentFragment() == null) {
+            if (mFragment.getParentFragment() == null || isFragmentVisible(mFragment.getParentFragment())) {
                 mNeedDispatch = false;
                 safeDispatchUserVisibleHint(true);
             }

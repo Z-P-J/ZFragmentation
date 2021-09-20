@@ -9,7 +9,7 @@ import android.widget.ScrollView;
  * Created by felix on 17/1/10.
  */
 public class PopVerticalScrollView extends ScrollView
-        implements PopLayout.OnBulgeChangeCallback {
+        implements BubbleLayout.OnBulgeChangeCallback {
 
     public PopVerticalScrollView(Context context) {
         super(context);
@@ -27,8 +27,8 @@ public class PopVerticalScrollView extends ScrollView
     public void onBulgeChanged(int site, int size) {
         if (getChildCount() > 0) {
             View view = getChildAt(0);
-            if (view instanceof PopLayout.OnBulgeChangeCallback) {
-                ((PopLayout.OnBulgeChangeCallback) view).onBulgeChanged(site, size);
+            if (view instanceof BubbleLayout.OnBulgeChangeCallback) {
+                ((BubbleLayout.OnBulgeChangeCallback) view).onBulgeChanged(site, size);
             }
         }
     }

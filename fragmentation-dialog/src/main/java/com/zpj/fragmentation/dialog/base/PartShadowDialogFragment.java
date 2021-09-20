@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.fragmentation.dialog.animator.TranslateAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.interfaces.OnClickOutsideListener;
+import com.zpj.fragmentation.dialog.widget.PartShadowContainer;
 import com.zpj.utils.ScreenUtils;
 import com.zpj.utils.StatusBarUtils;
 
@@ -27,9 +29,32 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 
     private static final String TAG = "PartShadowDialog";
 
+    protected PartShadowContainer attachPopupContainer;
+    protected View contentView;
+
+    @Override
+    protected final int getImplLayoutId() {
+        return R.layout._dialog_layout_attach_view;
+    }
+
+    protected abstract int getContentLayoutId();
+
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
+        if (attachView == null && touchPoint == null) {
+            dismiss();
+            return;
+        }
         super.initView(view, savedInstanceState);
+        getImplView().setAlpha(0f);
+
+        attachPopupContainer = findViewById(R.id.attachPopupContainer);
+
+        contentView = getLayoutInflater().inflate(getContentLayoutId(), attachPopupContainer, false);
+        attachPopupContainer.addView(contentView);
+        if (bgDrawable != null) {
+            contentView.setBackground(bgDrawable);
+        }
     }
 
     @Override
@@ -56,7 +81,6 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
         Rect rect = new Rect(locations[0], locations[1], locations[0] + attachView.getMeasuredWidth(),
                 locations[1] + attachView.getMeasuredHeight());
         int centerY = rect.top + rect.height() / 2;
-        Log.d(TAG, "centerY=" + centerY + " getImplView().getMeasuredHeight()=" + getImplView().getMeasuredHeight() + " getContentView().getMeasuredHeight()=" + getContentView().getMeasuredHeight());
 
 //        int offset = ScreenUtils.getScreenHeight(context) - getRootView().getMeasuredHeight();
         int[] rootLocations = new int[2];
@@ -68,7 +92,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
             params.height = rect.top - offset;
             params.width = MATCH_PARENT;
             isShowUp = true;
-            params.topMargin = -defaultOffsetY;
+            params.topMargin = -mOffsetY;
             // 同时自定义的impl View应该Gravity居于底部
 
             FrameLayout.LayoutParams implParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
@@ -90,7 +114,7 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
 //                params.height -= XPopupUtils.getNavBarHeight();
 //            }
             isShowUp = false;
-            params.topMargin = rect.bottom + defaultOffsetY - offset;
+            params.topMargin = rect.bottom + mOffsetY - offset;
 
             // 同时自定义的impl View应该Gravity居于顶部
 

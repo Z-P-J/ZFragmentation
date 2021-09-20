@@ -1,6 +1,7 @@
 package com.zpj.fragmentation.dialog.impl;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ArrayRes;
@@ -27,6 +28,10 @@ public class ArrowMenuDialogFragment extends ArrowDialogFragment<ArrowMenuDialog
     private int menuRes = 0;
 
     private final List<OptionMenu> optionMenus = new ArrayList<>();
+
+    private int mShadowRadius = 16;
+
+    private int mShadowColor = Color.parseColor("#60000000");
 
     private int mOrientation = LinearLayout.VERTICAL;
 
@@ -88,7 +93,9 @@ public class ArrowMenuDialogFragment extends ArrowDialogFragment<ArrowMenuDialog
 
         ViewGroup scrollView = getScrollView(mOptionMenuView.getOrientation());
         scrollView.addView(mOptionMenuView);
-        mPopLayout.addView(scrollView);
+        mBubbleLayout.addView(scrollView);
+        mBubbleLayout.setShadowColor(mShadowColor);
+        mBubbleLayout.setShadowRadius(mShadowRadius);
 
 
         if (menuRes > 0) {
@@ -96,9 +103,6 @@ public class ArrowMenuDialogFragment extends ArrowDialogFragment<ArrowMenuDialog
         } else {
             mOptionMenuView.setOptionMenus(optionMenus);
         }
-
-
-
     }
 
     private ViewGroup getScrollView(int orientation) {
@@ -184,6 +188,22 @@ public class ArrowMenuDialogFragment extends ArrowDialogFragment<ArrowMenuDialog
 
     public ArrowMenuDialogFragment setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+        return this;
+    }
+
+    public ArrowMenuDialogFragment setShadowColor(int mShadowColor) {
+        this.mShadowColor = mShadowColor;
+        if (mBubbleLayout != null) {
+            mBubbleLayout.setShadowColor(mShadowColor);
+        }
+        return this;
+    }
+
+    public ArrowMenuDialogFragment setShadowRadius(int mShadowRadius) {
+        this.mShadowRadius = mShadowRadius;
+        if (mBubbleLayout != null) {
+            mBubbleLayout.setShadowRadius(mShadowRadius);
+        }
         return this;
     }
 

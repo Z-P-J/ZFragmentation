@@ -16,7 +16,7 @@ import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.base.ContainerDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
-import com.zpj.recyclerview.EasyRecyclerView;
+import com.zpj.recyclerview.EasyRecycler;
 import com.zpj.recyclerview.IEasy;
 import com.zpj.utils.ContextUtils;
 
@@ -157,7 +157,7 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
     }
 
     protected void initRecyclerView(RecyclerView recyclerView, List<T> list) {
-        new EasyRecyclerView<T>(recyclerView)
+        new EasyRecycler<T>(recyclerView)
                 .setData(list)
                 .setItemRes(getItemRes())
                 .onBindViewHolder(onBindViewHolderListener)

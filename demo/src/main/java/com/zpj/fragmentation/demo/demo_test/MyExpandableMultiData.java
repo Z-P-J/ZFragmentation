@@ -12,7 +12,7 @@ public class MyExpandableMultiData extends ExpandableMultiData<Integer> {
 
     public MyExpandableMultiData(int pos) {
         super();
-        this.list.add(pos);
+        this.mData.add(pos);
         setExpand(false);
         this.hasMore = false;
     }
@@ -34,7 +34,7 @@ public class MyExpandableMultiData extends ExpandableMultiData<Integer> {
 
     @Override
     public void onBindHeader(EasyViewHolder holder, List<Object> payloads) {
-        holder.setText(R.id.tv_title, "Header-" + this.list.get(0));
+        holder.setText(R.id.tv_title, "Header-" + this.mData.get(0));
         updateIcon(holder, false);
         holder.setOnItemClickListener(v -> {
             if (isExpand()) {

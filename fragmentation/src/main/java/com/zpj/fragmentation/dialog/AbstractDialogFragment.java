@@ -6,26 +6,41 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
+import com.zpj.fragmentation.ISupportFragment;
 import com.zpj.fragmentation.SupportFragment;
 import com.zpj.fragmentation.anim.DefaultNoAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
 
+import java.lang.ref.WeakReference;
+
 /**
  * This class is exposed to ZFragmentation-Dialog library.
+ *
+ * @author Z-P-J
  */
 public abstract class AbstractDialogFragment extends SupportFragment {
 
     protected long showAnimDuration = 360;
     protected long dismissAnimDuration = 360;
 
+    private WeakReference<ISupportFragment> preFragment;
+
+    protected boolean isDismissing;
+
     @LayoutRes
     protected abstract int getLayoutId();
 
     protected abstract void initView(View view, @Nullable Bundle savedInstanceState);
+
+    protected abstract void doShowAnimation();
+
+    protected abstract void doDismissAnimation();
 
     protected abstract boolean onBackPressed();
 
@@ -33,6 +48,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        preFragment = new WeakReference<>(getPreFragment());
         if (getLayoutId() > 0) {
             view = inflater.inflate(getLayoutId(), container, false);
         } else {
@@ -40,6 +56,21 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         }
         initView(view, savedInstanceState);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.getViewTreeObserver()
+                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        view.getViewTreeObserver().removeOnPreDrawListener(this);
+                        doShowAnimation();
+                        mDelegate.debug("doShowAnimation");
+                        return false;
+                    }
+                });
     }
 
     @Deprecated
@@ -63,6 +94,19 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                flag:
+                if (preFragment != null) {
+                    ISupportFragment fragment = preFragment.get();
+                    mDelegate.debug("preFragment=" + fragment);
+                    if (fragment instanceof AbstractDialogFragment
+                            && ((AbstractDialogFragment) fragment).isDismissing) {
+                        break flag;
+                    }
+                    if (fragment instanceof SupportFragment && fragment == getPreFragment()
+                            && ((SupportFragment) fragment).isVisible()) {
+                        ((SupportFragment) fragment).onPause();
+                    }
+                }
                 onShowAnimationEnd(savedInstanceState);
             }
         }, getShowAnimDuration());
@@ -70,6 +114,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
 
     public void onShowAnimationEnd(Bundle savedInstanceState) {
         super.onEnterAnimationEnd(savedInstanceState);
+        mDelegate.debug("onShowAnimationEnd");
     }
 
     @Override
@@ -79,6 +124,32 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         }
         dismiss();
         return true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        this.isDismissing = false;
+        super.onDestroy();
     }
 
     public long getShowAnimDuration() {
@@ -95,6 +166,41 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         return dismissAnimDuration;
     }
 
-    public abstract void dismiss();
+    public void dismiss() {
+        postOnEnterAnimationEnd(() -> {
+            if (!isDismissing) {
+                isDismissing = true;
+                doDismissAnimation();
+                mDelegate.debug("doDismissAnimation");
+
+                onDismiss();
+                getHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        flag:
+                        if (preFragment != null) {
+                            ISupportFragment fragment = preFragment.get();
+                            preFragment.clear();
+                            if (fragment instanceof AbstractDialogFragment
+                                    && ((AbstractDialogFragment) fragment).isDismissing) {
+                                break flag;
+                            }
+                            if (fragment instanceof SupportFragment && fragment == getPreFragment()
+                                    && ((SupportFragment) fragment).isVisible()) {
+                                ((SupportFragment) fragment).onResume();
+                            }
+                        }
+                        preFragment = null;
+
+                        mDelegate.pop(AbstractDialogFragment.this);
+                        isDismissing = false;
+                        mDelegate.debug("dismissed");
+                    }
+                }, getDismissAnimDuration());
+            }
+        });
+    }
+
+    protected abstract void onDismiss();
 
 }

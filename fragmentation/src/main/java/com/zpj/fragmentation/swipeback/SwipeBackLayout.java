@@ -33,7 +33,6 @@ import android.widget.ScrollView;
 
 import com.zpj.fragmentation.ISupportFragment;
 import com.zpj.fragmentation.R;
-import com.zpj.fragmentation.SupportHelper;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

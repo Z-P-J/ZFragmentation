@@ -10,12 +10,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
-import com.zpj.fragmentation.dialog.widget.PopLayout;
+import com.zpj.fragmentation.dialog.widget.BubbleLayout;
 import com.zpj.utils.ScreenUtils;
 
 public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> extends BaseDialogFragment<T> {
@@ -34,9 +35,11 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
 
     protected DialogPosition dialogPosition = null;
 
-    protected PopLayout mPopLayout;
+    protected BubbleLayout mBubbleLayout;
 
     private ViewGroup contentView;
+
+    private boolean mShowShadowAnimator = false;
 
     public ArrowDialogFragment() {
         cornerRadius = ScreenUtils.dp2px(8);
@@ -56,6 +59,11 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     }
 
     @Override
+    protected DialogAnimator onCreateShadowAnimator(FrameLayout flContainer) {
+        return mShowShadowAnimator ? super.onCreateShadowAnimator(flContainer) : null;
+    }
+
+    @Override
     protected int getGravity() {
         return Gravity.NO_GRAVITY;
     }
@@ -70,41 +78,39 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
 
         getImplView().setAlpha(0f);
 
-        mPopLayout = findViewById(R.id.arrowPopupContainer);
-        mPopLayout.setRadiusSize((int) cornerRadius);
+        mBubbleLayout = findViewById(R.id.arrowPopupContainer);
+        mBubbleLayout.setRadiusSize((int) cornerRadius);
 
         if (getContentLayoutId() > 0) {
-            contentView = (ViewGroup) getLayoutInflater().inflate(getContentLayoutId(), mPopLayout, false);
-            mPopLayout.addView(contentView);
+            contentView = (ViewGroup) getLayoutInflater().inflate(getContentLayoutId(), mBubbleLayout, false);
+            mBubbleLayout.addView(contentView);
         }
 
         if (bgDrawable != null) {
-            mPopLayout.setBackground(bgDrawable);
+            mBubbleLayout.setBackground(bgDrawable);
         }
 
     }
 
     @Override
     public void doShowAnimation() {
+        generateAnimation(attachView, touchPoint);
         super.doShowAnimation();
-        show(attachView, null, touchPoint);
     }
 
-    private void show(View anchor, RectF frame, PointF origin) {
+    private void generateAnimation(View anchor, PointF origin) {
 
         if (origin == null) {
             origin = new PointF(-1, -1);
         }
-        if (frame == null) {
-            frame = new RectF();
-        }
+        RectF frame = new RectF();
 
 
         int[] location = reviseFrameAndOrigin(anchor, frame, origin);
 
         int x = location[0], y = location[1];
         int width = anchor.getWidth(), height = anchor.getHeight();
-        int contentWidth = mPopLayout.getMeasuredWidth(), contentHeight = mPopLayout.getMeasuredHeight();
+        int contentWidth = mBubbleLayout.getMeasuredWidth(), contentHeight = mBubbleLayout.getMeasuredHeight();
         Log.d("whwhwhwhwh", "width=" + width + "   height=" + height);
 
         PointF offset = getOffset(frame, new Rect(x, y + height, contentWidth + x,
@@ -145,35 +151,35 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     }
 
     public void showAtTop(View anchor, PointF origin, float xOff, float yOff) {
-        mPopLayout.setSiteMode(PopLayout.SITE_BOTTOM);
-        mPopLayout.setOffset(origin.x - xOff);
+        mBubbleLayout.setSiteMode(BubbleLayout.SITE_BOTTOM);
+        mBubbleLayout.setOffset(origin.x - xOff);
 //        show(anchor, xOff, yOff, PopLayout.SITE_BOTTOM);
-        show(anchor, xOff, yOff, origin.x - xOff, mPopLayout.getMeasuredHeight());
+        show(anchor, xOff, yOff, origin.x - xOff, mBubbleLayout.getMeasuredHeight());
     }
 
     public void showAtLeft(View anchor, PointF origin, float xOff, float yOff) {
-        mPopLayout.setSiteMode(PopLayout.SITE_RIGHT);
-        mPopLayout.setOffset(-origin.y - yOff);
+        mBubbleLayout.setSiteMode(BubbleLayout.SITE_RIGHT);
+        mBubbleLayout.setOffset(-origin.y - yOff);
 //        show(anchor, xOff, yOff, PopLayout.SITE_RIGHT);
-        show(anchor, xOff, yOff, mPopLayout.getMeasuredWidth(), -origin.y - yOff);
+        show(anchor, xOff, yOff, mBubbleLayout.getMeasuredWidth(), -origin.y - yOff);
     }
 
     public void showAtRight(View anchor, PointF origin, float xOff, float yOff) {
-        mPopLayout.setSiteMode(PopLayout.SITE_LEFT);
-        mPopLayout.setOffset(-origin.y - yOff);
+        mBubbleLayout.setSiteMode(BubbleLayout.SITE_LEFT);
+        mBubbleLayout.setOffset(-origin.y - yOff);
 //        show(anchor, xOff, yOff, PopLayout.SITE_LEFT);
         show(anchor, xOff, yOff, 0, -origin.y - yOff);
     }
 
     public void showAtBottom(View anchor, PointF origin, float xOff, float yOff) {
-        mPopLayout.setSiteMode(PopLayout.SITE_TOP);
-        mPopLayout.setOffset(origin.x - xOff);
+        mBubbleLayout.setSiteMode(BubbleLayout.SITE_TOP);
+        mBubbleLayout.setOffset(origin.x - xOff);
 //        show(anchor, xOff, yOff, PopLayout.SITE_TOP);
         show(anchor, xOff, yOff, origin.x - xOff, 0);
     }
 
     private void show(View anchor, float xOff, float yOff, float pivotX, float pivotY) {
-        Log.d(TAG, "getMeasuredHeight=" + mPopLayout.getMeasuredHeight() + " getMeasuredWidth=" + mPopLayout.getMeasuredWidth());
+        Log.d(TAG, "getMeasuredHeight=" + mBubbleLayout.getMeasuredHeight() + " getMeasuredWidth=" + mBubbleLayout.getMeasuredWidth());
         Log.d(TAG, "xOff=" + xOff + " yOff=" + yOff);
         final int[] screenLocation = new int[2];
         anchor.getLocationOnScreen(screenLocation);
@@ -181,58 +187,13 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
         float x = screenLocation[0] + xOff;
         float y = screenLocation[1] + anchor.getMeasuredHeight() + yOff;
         Log.d(TAG, "x=" + x + " y=" + y);
-//        getImplView().post(() -> {
-//
-//        });
         getImplView().setTranslationX(x);
         getImplView().setTranslationY(y);
         getImplView().setAlpha(1f);
         mDialogAnimator = new ScaleAlphaAnimator(getImplView(), pivotX, pivotY);
-        mDialogAnimator.animateToShow();
+        mDialogAnimator.setShowDuration(getShowAnimDuration());
+        mDialogAnimator.setDismissDuration(getDismissAnimDuration());
     }
-
-//    private void show(View anchor, float xOff, float yOff, int mode) {
-//        Log.d(TAG, "getMeasuredHeight=" + mPopLayout.getMeasuredHeight() + " getMeasuredWidth=" + mPopLayout.getMeasuredWidth());
-//        Log.d(TAG, "xOff=" + xOff + " yOff=" + yOff);
-//        final int[] screenLocation = new int[2];
-//        anchor.getLocationOnScreen(screenLocation);
-//        Log.d(TAG, "screenLocation[0]=" + screenLocation[0] + " screenLocation[1]=" + screenLocation[1]);
-//        float x = screenLocation[0] + xOff;
-//        float y = screenLocation[1] + anchor.getMeasuredHeight() + yOff;
-//        Log.d(TAG, "x=" + x + " y=" + y);
-//        getImplView().post(() -> {
-//            getImplView().setTranslationX(x);
-//            getImplView().setTranslationY(y);
-//            getImplView().setAlpha(1f);
-//            float pivotX;
-//            float pivotY;
-//            switch (mode) {
-//                case PopLayout.SITE_LEFT:
-//                    pivotX = screenLocation[0] + anchor.getMeasuredWidth();
-//                    pivotY = screenLocation[1] + anchor.getMeasuredHeight() / 2f;
-//                    break;
-//                case PopLayout.SITE_TOP:
-//                    pivotX = screenLocation[0] + anchor.getMeasuredWidth() / 2f;
-//                    pivotY = screenLocation[1] + anchor.getMeasuredHeight();
-//                    break;
-//                case PopLayout.SITE_RIGHT:
-//                    pivotX = screenLocation[0];
-//                    pivotY = screenLocation[1] + anchor.getMeasuredHeight() / 2f;
-//                    break;
-//                case PopLayout.SITE_BOTTOM:
-//                    pivotX = screenLocation[0] + anchor.getMeasuredWidth() / 2f;
-//                    pivotY = screenLocation[1];
-//                    break;
-//                default:
-//                    pivotX = screenLocation[0] + anchor.getMeasuredWidth() / 2f;
-//                    pivotY = screenLocation[1] + anchor.getMeasuredHeight() / 2f;
-//                    break;
-//            }
-//            popupContentAnimator = new ScaleAnimator(getImplView(), pivotX, pivotY);
-//            popupContentAnimator.initAnimator();
-//            popupContentAnimator.animateShow();
-//        });
-//    }
 
     public int[] reviseFrameAndOrigin(View anchor, RectF frame, PointF origin) {
         int[] location = new int[2];
@@ -303,8 +264,8 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
 
     public T setCornerRadius(float cornerRadius) {
         this.cornerRadius = cornerRadius;
-        if (mPopLayout != null) {
-            mPopLayout.setRadiusSize((int) cornerRadius);
+        if (mBubbleLayout != null) {
+            mBubbleLayout.setRadiusSize((int) cornerRadius);
         }
         return self();
     }
@@ -360,4 +321,9 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
         return self();
     }
 
+    public T setShowShadowAnimator(boolean mShowShadowAnimator) {
+        this.mShowShadowAnimator = mShowShadowAnimator;
+
+        return self();
+    }
 }
