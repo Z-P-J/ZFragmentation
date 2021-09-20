@@ -2,6 +2,7 @@ package com.zpj.fragmentation.dialog.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -21,16 +22,20 @@ import android.widget.FrameLayout;
 import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 
-
-/**
- * Created by felix on 16/11/20.
- */
-public class PopLayout extends FrameLayout implements View.OnLayoutChangeListener {
+public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeListener {
     private static final String TAG = "PopLayout";
 
     private float mOffset = 0;
 
     private int mRadiusSize = DEFAULT_RADIUS;
+
+    private int mShadowRadius = 8;
+
+    private int mShadowColor = Color.parseColor("#20000000");
+
+//    private int mStrokeSize = 4;
+//
+//    private int mStrokeColor;
 
     private int mBulgeSize = DEFAULT_BULGE_SIZE;
 
@@ -41,6 +46,8 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
     private Path mBulgePath;
 
     private Path mDestBulgePath;
+
+    private final Path mBgPath = new Path();
 
     private Matrix mCornuteMatrix;
 
@@ -61,35 +68,20 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
 //    private static final Xfermode MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
     private Xfermode xfermode;
 
-    public PopLayout(Context context) {
+    public BubbleLayout(Context context) {
         this(context, null, 0);
     }
 
-    public PopLayout(Context context, AttributeSet attrs) {
+    public BubbleLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PopLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BubbleLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(context, attrs, defStyleAttr);
     }
 
-//    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-//    public PopLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-//        super(context, attrs, defStyleAttr, defStyleRes);
-//        initialize(context, attrs, defStyleAttr);
-//    }
-
     private void initialize(Context context, AttributeSet attrs, int defStyleAttr) {
-
-//        setCardElevation(5);
-//        setUseCompatPadding(true);
-//////        setContentPadding(0, 20, 0, 0);
-//        setRadius(mRadiusSize);
-
-//        setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
-
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PopLayout);
         mSiteMode = a.getInt(R.styleable.PopLayout_siteMode, SITE_BOTTOM);
         mRadiusSize = a.getDimensionPixelSize(R.styleable.PopLayout_radiusSize,
@@ -101,10 +93,11 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
 
         if (getBackground() == null) {
             // 需要设置背景，可能是因为没有背景Layout就不会去执行绘制操作
-//            setBackgroundColor(Color.WHITE);//Color.WHITE // parseColor("#cccccc")
-//            setBackgroundColor(Color.WHITE);
             setBackgroundColor(DialogThemeUtils.getDialogBackgroundColor(context));
+//            setBackgroundColor(Color.TRANSPARENT);
         }
+
+//        setLayerType(LAYER_TYPE_NONE, null);
 
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
@@ -114,7 +107,15 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
         }
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+//        mPaint.setXfermode(xfermode);
+//        mPaint.setStrokeJoin(Paint.Join.ROUND);
+//        mPaint.setStrokeCap(Paint.Cap.ROUND);
+//        mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaint.setShadowLayer(mShadowRadius, 0, 0, mShadowColor);
+
+
+//        mStrokeColor = Color.DKGRAY;
+//        mStrokeSize = ScreenUtils.dp2pxInt(2f);
 
         mBulgePath = new Path();
         mPopMaskPath = new Path();
@@ -129,8 +130,13 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
 
     private void resetBulge() {
         mBulgePath.reset();
-        mBulgePath.lineTo(mBulgeSize << 1, 0);
-        mBulgePath.lineTo(mBulgeSize, mBulgeSize);
+//        mBulgePath.lineTo(mBulgeSize << 1, 0);
+//        mBulgePath.lineTo(mBulgeSize, mBulgeSize);
+//        mBulgePath.close();
+
+        float top = mBulgeSize - mShadowRadius / 2f;
+        mBulgePath.cubicTo(mBulgeSize / 2f, 0, mBulgeSize * 3 / 4f, top, mBulgeSize, top);
+        mBulgePath.cubicTo(mBulgeSize * 5 / 4f, top, mBulgeSize * 1.5f, 0, mBulgeSize * 2, 0);
         mBulgePath.close();
     }
 
@@ -151,39 +157,43 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
 
     private void resetMask() {
         mPopMaskPath.reset();
+        mBgPath.reset();
         int width = getMeasuredWidth(), height = getMeasuredHeight();
         if (width <= mRadiusSize || height <= mRadiusSize) {
             return;
         }
         float offset = reviseOffset(mOffset);
         mPopMaskPath.addRect(new RectF(0, 0, width, height), Path.Direction.CW);
-        mPopMaskPath.addRoundRect(new RectF(mBulgeSize, mBulgeSize, width - mBulgeSize, height - mBulgeSize), mRadiusSize, mRadiusSize, Path.Direction.CCW);
+//        mPopMaskPath.addRoundRect(new RectF(mBulgeSize, mBulgeSize, width - mBulgeSize, height - mBulgeSize), mRadiusSize, mRadiusSize, Path.Direction.CCW);
         mPopMaskPath.setFillType(Path.FillType.INVERSE_EVEN_ODD);
+
+        mBgPath.addRoundRect(new RectF(mBulgeSize, mBulgeSize, width - mBulgeSize, height - mBulgeSize), mRadiusSize, mRadiusSize, Path.Direction.CCW);
 
         switch (mSiteMode) {
             case SITE_TOP:
                 mCornuteMatrix.setRotate(180, mBulgeSize, 0);
                 mCornuteMatrix.postTranslate(0, mBulgeSize);
                 mBulgePath.transform(mCornuteMatrix, mDestBulgePath);
-                mPopMaskPath.addPath(mDestBulgePath, offset - mBulgeSize, 0);
+                mBgPath.addPath(mDestBulgePath, offset - mBulgeSize, 0);
                 break;
             case SITE_LEFT:
                 mCornuteMatrix.setRotate(90, mBulgeSize, 0);
                 mBulgePath.transform(mCornuteMatrix, mDestBulgePath);
-                mPopMaskPath.addPath(mDestBulgePath, 0, offset);
+                mBgPath.addPath(mDestBulgePath, 0, offset);
                 break;
             case SITE_RIGHT:
                 mCornuteMatrix.setRotate(-90, mBulgeSize, 0);
                 mCornuteMatrix.postTranslate(-mBulgeSize, 0);
                 mBulgePath.transform(mCornuteMatrix, mDestBulgePath);
-                mPopMaskPath.addPath(mDestBulgePath, width - mBulgeSize, offset);
+                mBgPath.addPath(mDestBulgePath, width - mBulgeSize, offset);
                 break;
             case SITE_BOTTOM:
                 mCornuteMatrix.setTranslate(-mBulgeSize, 0);
                 mBulgePath.transform(mCornuteMatrix, mDestBulgePath);
-                mPopMaskPath.addPath(mDestBulgePath, offset, height - mBulgeSize);
+                mBgPath.addPath(mDestBulgePath, offset, height - mBulgeSize);
                 break;
         }
+        mPopMaskPath.addPath(mBgPath);
     }
 
     private float reviseOffset(float offset) {
@@ -244,6 +254,19 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
         }
     }
 
+    public void setShadowColor(int mShadowColor) {
+        this.mShadowColor = mShadowColor;
+        mPaint.setShadowLayer(mShadowRadius, 0, 0, mShadowColor);
+        postInvalidate();
+    }
+
+    public void setShadowRadius(int mShadowRadius) {
+        this.mShadowRadius = mShadowRadius;
+        mPaint.setShadowLayer(mShadowRadius, 0, 0, mShadowColor);
+        resetBulge();
+        postInvalidate();
+    }
+
     public float getOffset() {
         return mOffset;
     }
@@ -262,25 +285,59 @@ public class PopLayout extends FrameLayout implements View.OnLayoutChangeListene
 
     @Override
     public void draw(Canvas canvas) {
-        int layer = canvas.saveLayer(0, 0, getWidth(),
-                getHeight(), null, Canvas.ALL_SAVE_FLAG);
+
+
+//        mPaint.setXfermode(xfermode);
+
+//        super.draw(canvas);
+
+//        canvas.save();
+
+
+//        mPaint.setMaskFilter(new BlurMaskFilter(mShadowRadius * 2, BlurMaskFilter.Blur.NORMAL));
+//        mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+//        mPaint.setStrokeWidth(mStrokeSize);
+//        mPaint.setColor(mShadowColor);
+//        mPaint.setXfermode(xfermode);
+        canvas.drawPath(mBgPath, mPaint);
+//        mPaint.clearShadowLayer();
+//        mPaint.setMaskFilter(null);
+
+//        canvas.restore();
+
+
+
+//        int layer = canvas.saveLayer(0, 0, getWidth(),
+//                getHeight(), null, Canvas.ALL_SAVE_FLAG);
+
+        canvas.save();
+
+        canvas.clipPath(mBgPath);
         super.draw(canvas);
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-            canvas.drawPath(mPopMaskPath, mPaint);
-        } else {
-            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
-//            if (layoutPath == null) {
-//                layoutPath = new Path();
-//            }
-            final Path path = new Path();
-            path.addRect(0, 0, getWidth(), getHeight(), Path.Direction.CW);
-            path.op(mPopMaskPath, Path.Op.DIFFERENCE);
-            canvas.drawPath(path, mPaint);
-        }
+        canvas.restore();
 
-        canvas.restoreToCount(layer);
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+//            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+//        } else {
+//            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+//        }
+//        mPaint.setXfermode(xfermode);
+
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+////            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+//            canvas.drawPath(mPopMaskPath, mPaint);
+//        } else {
+////            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+//            final Path path = new Path();
+//            path.addRect(0, 0, getWidth(), getHeight(), Path.Direction.CW);
+//            path.op(mPopMaskPath, Path.Op.DIFFERENCE);
+//            canvas.drawPath(path, mPaint);
+//        }
+
+//        canvas.restoreToCount(layer);
+
+
     }
 
     @Override

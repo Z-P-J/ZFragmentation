@@ -54,11 +54,11 @@
 
     </LinearLayout>
 
-    <com.zpj.widget.checkbox.SmoothCheckBox
+    <com.zpj.widget.checkbox.ZCheckBox
         android:id="@+id/check_box"
-        app:color_checked="#4285f4"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:z_checkbox_border_size="2dp"
         android:layout_marginStart="24dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
