@@ -142,10 +142,12 @@ public abstract class PartShadowDialogFragment<T extends PartShadowDialogFragmen
             }
         });
 
-
-
         return new TranslateAnimator(contentView, isShowUp ?
                 DialogAnimation.TranslateFromBottom : DialogAnimation.TranslateFromTop);
+    }
+
+    protected View getContentView() {
+        return contentView;
     }
 
     //    //让触摸透过

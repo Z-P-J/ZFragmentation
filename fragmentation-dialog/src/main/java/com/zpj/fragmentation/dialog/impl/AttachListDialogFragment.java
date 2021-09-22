@@ -42,7 +42,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
     private final List<Integer> iconIds = new ArrayList<>();
 
     public AttachListDialogFragment() {
-        cornerRadius = ScreenUtils.dp2px(16);
+        cornerRadius = ScreenUtils.dp2px(8);
         mMinWidth = (int) (ScreenUtils.getScreenWidth() / 2.5f);
     }
 
@@ -132,11 +132,6 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
                 .build();
     }
 
-//    public AttachListDialogFragment<T> setMinWidth(int minWidth) {
-//        this.minWidth = minWidth;
-//        return this;
-//    }
-
     /**
      * 传入自定义的布局，对布局中的id有要求
      *
@@ -158,16 +153,6 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
         this.bindItemLayoutId = itemLayoutId;
         return this;
     }
-
-//    public void show(View atView) {
-//        popupInfo.atView = atView;
-//        show();
-//    }
-//
-//    public void show(float x, float y) {
-//        popupInfo.touchPoint = new PointF(x, y);
-//        show();
-//    }
 
     public AttachListDialogFragment<T> setCornerRadius(float cornerRadius) {
         this.cornerRadius = cornerRadius;

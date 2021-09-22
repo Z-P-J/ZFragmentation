@@ -24,12 +24,6 @@ public class ShadowMaskAnimator extends AbsDialogAnimator<Animator, Animator> {
         }
     }
 
-//    @Override
-//    public void initAnimator() {
-//        targetView.setBackgroundColor(startColor);
-//    }
-
-
     public void setStartColor(int startColor) {
         this.startColor = startColor;
         if (targetView != null) {

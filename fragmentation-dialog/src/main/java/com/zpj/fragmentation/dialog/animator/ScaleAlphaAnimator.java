@@ -44,19 +44,6 @@ public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, 
         } else {
             applyPivot();
         }
-
-//        // 设置动画参考点
-//        targetView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (dialogAnimation == null) {
-//                    targetView.setPivotX(pivotX);
-//                    targetView.setPivotY(pivotY);
-//                } else {
-//                    applyPivot();
-//                }
-//            }
-//        });
     }
 
     /**

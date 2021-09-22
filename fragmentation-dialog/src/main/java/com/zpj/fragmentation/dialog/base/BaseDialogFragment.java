@@ -2,6 +2,7 @@ package com.zpj.fragmentation.dialog.base;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -280,6 +281,11 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
 
     public T setDialogBackground(Drawable bgDrawable) {
         this.bgDrawable = bgDrawable;
+        return self();
+    }
+
+    public T setDialogBackgroundColor(int color) {
+        this.bgDrawable = new ColorDrawable(color);
         return self();
     }
 

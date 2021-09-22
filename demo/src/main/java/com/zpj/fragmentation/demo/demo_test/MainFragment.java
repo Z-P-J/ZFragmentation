@@ -1,5 +1,6 @@
 package com.zpj.fragmentation.demo.demo_test;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -255,18 +256,26 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_bottom).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TestBottomDragDialogFragment().show(context);
+//                new TestBottomDragDialogFragment().show(context);
+                new TestOverDragBottomDialogFragment().show(context);
             }
         });
 
         findViewById(R.id.btn_test_bottom_margin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TestBottomDragDialogFragment()
-                        .setDialogBackground(DialogThemeUtils.getCenterDialogBackground(context))
+
+                new TestOverDragBottomDialogFragment()
+                        .setDialogBackgroundColor(Color.TRANSPARENT)
                         .setMarginHorizontal(getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin))
                         .setMarginBottom(getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin))
                         .show(context);
+
+//                new TestBottomDragDialogFragment()
+//                        .setDialogBackground(DialogThemeUtils.getCenterDialogBackground(context))
+//                        .setMarginHorizontal(getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin))
+//                        .setMarginBottom(getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin))
+//                        .show(context);
             }
         });
 
