@@ -24,9 +24,9 @@ import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.ArrowMenuDialogFragment;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.fragmentation.dialog.impl.BottomDragListDialogFragment;
-import com.zpj.fragmentation.dialog.impl.CheckDialogFragment;
+import com.zpj.fragmentation.dialog.impl.CheckDialogFragment2;
 import com.zpj.fragmentation.dialog.impl.ImageViewerDialogFragment;
-import com.zpj.fragmentation.dialog.impl.InputDialogFragment;
+import com.zpj.fragmentation.dialog.impl.InputDialogFragment2;
 import com.zpj.fragmentation.dialog.impl.LoadingDialogFragment;
 import com.zpj.fragmentation.dialog.impl.SimpleSelectDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
@@ -90,9 +90,9 @@ public class MainFragment extends SimpleFragment {
                         .setTitle("内存使用情况")
                         .setContent(R.string.sign_in_success)
 //                        .setAutoDismiss(false)
-                        .setPositiveButton(new IDialog.OnButtonClickListener<ZDialog.AlertDialogImpl>() {
+                        .setPositiveButton(new IDialog.OnButtonClickListener<ZDialog.AlertDialogFragmentImpl>() {
                             @Override
-                            public void onClick(ZDialog.AlertDialogImpl fragment, int which) {
+                            public void onClick(ZDialog.AlertDialogFragmentImpl fragment, int which) {
                                 fragment.start(new TestDialogFragment());
                             }
                         })
@@ -107,9 +107,9 @@ public class MainFragment extends SimpleFragment {
                         .setTitle("内存使用情况")
                         .setContent(R.string.sign_in_success)
 //                        .setAutoDismiss(false)
-                        .setPositiveButton(new IDialog.OnButtonClickListener<ZDialog.AlertDialogImpl>() {
+                        .setPositiveButton(new IDialog.OnButtonClickListener<ZDialog.AlertDialogFragmentImpl>() {
                             @Override
-                            public void onClick(ZDialog.AlertDialogImpl fragment, int which) {
+                            public void onClick(ZDialog.AlertDialogFragmentImpl fragment, int which) {
                                 fragment.start(new TestDialogFragment());
                             }
                         })
@@ -328,13 +328,13 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_input).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new InputDialogFragment()
+                new InputDialogFragment2()
                         .setHint("This is hint!")
                         .setEditText("This is content")
                         .setSingleLine(false)
                         .setSelection(2, 7)
                         .setTitle("This is Title")
-                        .setContent("This is info")
+                        .setTipText("This is info")
                         .show(MainFragment.this);
             }
         });
@@ -342,13 +342,13 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_input_long).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new InputDialogFragment()
+                new InputDialogFragment2()
                         .setHint("This is hint!")
                         .setEditText(R.string.large_text)
                         .setSingleLine(false)
                         .setSelection(2, 7)
                         .setTitle("This is Title")
-                        .setContent("This is info")
+                        .setTipText("This is info")
                         .show(MainFragment.this);
             }
         });
@@ -356,7 +356,7 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_check).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CheckDialogFragment()
+                new CheckDialogFragment2()
                         .setChecked(true)
                         .setCheckTitle("This is checkTitle")
                         .setOnCheckedChangeListener(new ZCheckBox.OnCheckedChangeListener() {
@@ -374,7 +374,7 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_check_long).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CheckDialogFragment()
+                new CheckDialogFragment2()
                         .setChecked(false)
                         .setCheckTitle("This is checkTitle")
                         .setOnCheckedChangeListener(new ZCheckBox.OnCheckedChangeListener() {

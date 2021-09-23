@@ -18,19 +18,19 @@ public class LoadingDialogFragment extends CardDialogFragment<LoadingDialogFragm
     private String title;
 
     @Override
-    protected int getContentLayoutId() {
-        return R.layout._dialog_layout_center_impl_loading;
-    }
-
-    @Override
     protected boolean onBackPressed() {
         return true;
     }
 
     @Override
+    protected int getImplLayoutId() {
+        return R.layout._dialog_layout_center_impl_loading;
+    }
+
+    @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
-        contentView.setBackground(DialogThemeUtils.getLoadingDialogBackground(context));
+        implView.setBackground(DialogThemeUtils.getLoadingDialogBackground(context));
         cancelable = false;
         cancelableInTouchOutside = false;
         tvTitle = findViewById(R.id.tv_title);

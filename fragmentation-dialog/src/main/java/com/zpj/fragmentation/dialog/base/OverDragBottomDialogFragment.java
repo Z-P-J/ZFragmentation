@@ -1,5 +1,6 @@
 package com.zpj.fragmentation.dialog.base;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -13,6 +14,7 @@ import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.fragmentation.dialog.widget.OverDragLayout;
+import com.zpj.utils.ScreenUtils;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -20,12 +22,14 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialogFragment<T>> extends BaseDialogFragment<T> {
 
     protected ViewGroup contentView;
+
+    private float cornerRadius;
     protected int mOverDragOffset;
 
     public OverDragBottomDialogFragment() {
         setMaxWidth(MATCH_PARENT);
-//        setOverDragOffset(200);
-        setOverDragOffset(0);
+        setOverDragOffset(200);
+        setCornerRadiusDp(8);
     }
 
     @Override
@@ -54,24 +58,31 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
         marginTop = 0;
-        OverDragLayout bottomPopupContainer = (OverDragLayout) getImplView();
-//        bottomPopupContainer.setMaxOverScrollOffset(mOverDragOffset);
-        bottomPopupContainer.setShowDuration(getShowAnimDuration());
-        bottomPopupContainer.setDismissDuration(getDismissAnimDuration());
+        OverDragLayout overDragLayout = (OverDragLayout) getImplView();
+        overDragLayout.setShowDuration(getShowAnimDuration());
+        overDragLayout.setDismissDuration(getDismissAnimDuration());
         contentView = (ViewGroup) getLayoutInflater().inflate(getContentLayoutId(), null, false);
 
         LinearLayout flContainer = new LinearLayout(context);
         flContainer.setOrientation(LinearLayout.VERTICAL);
         flContainer.addView(contentView);
         flContainer.addView(new Space(context), new ViewGroup.LayoutParams(MATCH_PARENT, mOverDragOffset));
-        bottomPopupContainer.addView(flContainer, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        overDragLayout.addView(flContainer, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
-        bottomPopupContainer.bindContentView(contentView);
+        overDragLayout.bindContentView(contentView);
 
         if (bgDrawable != null) {
             flContainer.setBackground(bgDrawable);
         } else {
             flContainer.setBackgroundColor(DialogThemeUtils.getDialogBackgroundColor(context));
+
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setColor(DialogThemeUtils.getDialogBackgroundColor(context));
+            drawable.setShape(GradientDrawable.RECTANGLE);
+//                int size = ScreenUtils.dp2pxInt(8);
+            drawable.setCornerRadii(new float[]{ cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0 });
+            contentView.setBackground(drawable);
+
         }
 
         LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
@@ -92,17 +103,17 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 //        params.bottomMargin = mOverDragOffset;
 //        params.height = getMaxHeight();
 //        params.width = getMaxWidth();
-        flContainer.setFocusableInTouchMode(true);
-        flContainer.setFocusable(true);
-        flContainer.setClickable(true);
+        contentView.setFocusableInTouchMode(true);
+        contentView.setFocusable(true);
+        contentView.setClickable(true);
 
 
-        bottomPopupContainer.enableDrag(true);
-        bottomPopupContainer.dismissOnTouchOutside(true);
-        bottomPopupContainer.handleTouchOutsideEvent(true);
-        bottomPopupContainer.hasShadowBg(true);
+        overDragLayout.enableDrag(true);
+        overDragLayout.dismissOnTouchOutside(true);
+        overDragLayout.handleTouchOutsideEvent(true);
+        overDragLayout.hasShadowBg(true);
 
-        bottomPopupContainer.setOnCloseListener(new OverDragLayout.OnCloseListener() {
+        overDragLayout.setOnCloseListener(new OverDragLayout.OnCloseListener() {
             @Override
             public void onClose() {
                 postOnEnterAnimationEnd(() -> {
@@ -121,7 +132,7 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
             }
         });
 
-        bottomPopupContainer.setOnClickListener(new View.OnClickListener() {
+        overDragLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
@@ -153,4 +164,14 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
         this.mOverDragOffset = mOverDragOffset;
         return self();
     }
+
+    public T setCornerRadius(float cornerRadius) {
+        this.cornerRadius = cornerRadius;
+        return self();
+    }
+
+    public T setCornerRadiusDp(float cornerRadiusDp) {
+        return setCornerRadius(ScreenUtils.dp2px(cornerRadiusDp));
+    }
+
 }

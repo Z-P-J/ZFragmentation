@@ -7,6 +7,7 @@ import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -18,16 +19,14 @@ import com.zpj.fragmentation.dialog.widget.CustomScrollView;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.ScreenUtils;
 
-public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardDialogFragment<T>
+public abstract class ActionDialogFragment<T extends ActionDialogFragment<T>> extends CardDialogFragment<T>
         implements View.OnClickListener {
 
     protected TextView tv_title, tv_cancel, tv_confirm, tv_neutral;
     protected String title, cancelText, neutralText, confirmText;
     protected int positionBtnColor, neutralBtnColor, negativeBtnColor;
 
-    protected CharSequence content;
-
-    protected View contentView;
+    protected View mContentView;
 
     protected IDialog.OnButtonClickListener<T> cancelListener;
     protected IDialog.OnButtonClickListener<T> confirmListener;
@@ -39,15 +38,30 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardD
     protected IDialog.OnViewCreateListener<T> onViewCreateListener;
 
     @Override
-    protected int getImplLayoutId() {
-        return R.layout._dialog_layout_center_impl_alert;
+    protected final int getImplLayoutId() {
+        return R.layout._dialog_layout_action;
     }
+
+    protected abstract int getContentLayoutId();
+
+    protected abstract void initContentView(View contentView);
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
 
-        FrameLayout flContent = findViewById(R.id.fl_content);
+
+        ViewStub mContentViewStub = findViewById(R.id._content_view_stub);
+        mContentViewStub.setLayoutResource(getContentLayoutId());
+        mContentView = mContentViewStub.inflate();
+
+        initContentView(mContentView);
+
+        if (onViewCreateListener != null) {
+            onViewCreateListener.onViewCreate(self(), mContentView);
+        }
+
+
         tv_title = findViewById(R.id.tv_title);
         tv_cancel = findViewById(R.id.tv_cancel);
         tv_neutral = findViewById(R.id.tv_neutral);
@@ -56,19 +70,6 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardD
         }
         tv_confirm = findViewById(R.id.tv_confirm);
         tv_title.setTextColor(DialogThemeUtils.getMajorTextColor(context));
-
-//        LinearLayout llButtons = findViewById(R.id.ll_buttons);
-
-        if (contentView == null && !TextUtils.isEmpty(content)) {
-            this.contentView = createContentView(content);
-        }
-
-        if (contentView != null) {
-            flContent.addView(contentView);
-            if (onViewCreateListener != null) {
-                onViewCreateListener.onViewCreate(self(), contentView);
-            }
-        }
 
         applyPrimaryColor();
 
@@ -94,48 +95,6 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardD
 
         if (isHideCancel) tv_cancel.setVisibility(View.GONE);
 
-        View shadowBottomView = findViewById(R.id.view_shadow_bottom);
-        View shadowUpView = findViewById(R.id.view_shadow_up);
-
-        if (shadowBottomView != null && shadowUpView != null) {
-            CustomScrollView scrollView = findViewById(R.id._scroll_view);
-            scrollView.setOnScrollChangeListener(new CustomScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollToStart() {
-
-                }
-
-                @Override
-                public void onScrollToEnd() {
-
-                }
-
-                @Override
-                public void onScrollChanged(int l, int t, int oldl, int oldt) {
-                    shadowBottomView.setVisibility(scrollView.isScrollToTop() ? View.GONE : View.VISIBLE);
-                    shadowUpView.setVisibility(scrollView.isScrollToBottom() ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            postOnEnterAnimationEnd(new Runnable() {
-                @Override
-                public void run() {
-                    shadowBottomView.setVisibility(scrollView.isScrollToTop() ? View.GONE : View.VISIBLE);
-                    shadowUpView.setVisibility(scrollView.isScrollToBottom() ? View.GONE : View.VISIBLE);
-                }
-            });
-        }
-
-
-
-    }
-
-    @Override
-    public void onDismiss() {
-        super.onDismiss();
-//        if (runnable != null) {
-//            runnable.run();
-//        }
     }
 
     @Override
@@ -164,18 +123,6 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardD
                 dismiss();
             }
         }
-    }
-
-    protected View createContentView(CharSequence content) {
-        TextView textView = new TextView(context);
-        textView.setText(content);
-        textView.setTextColor(DialogThemeUtils.getNormalTextColor(context));
-        textView.setTextSize(14);
-        int padding = ScreenUtils.dp2pxInt(context, 24);
-        textView.setPadding(padding, padding / 3, padding, padding / 3);
-        textView.setMinLines(3);
-        textView.setLineSpacing(6, 1);
-        return textView;
     }
 
     protected void applyPrimaryColor() {
@@ -254,26 +201,6 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardD
         return self();
     }
 
-    public T setContent(CharSequence content) {
-        this.content = content;
-        return self();
-    }
-
-    public T setContent(@StringRes int resId) {
-        return setContent(ContextUtils.getApplicationContext().getResources().getString(resId));
-    }
-
-    public T setContent(@LayoutRes int resId, IDialog.OnViewCreateListener<T> listener) {
-        this.contentView = LayoutInflater.from(ContextUtils.getApplicationContext()).inflate(resId, null, false);
-        this.onViewCreateListener = listener;
-        return self();
-    }
-
-    public T setContent(View view) {
-        this.contentView = view;
-        return self();
-    }
-
     public T setTitle(String title) {
         this.title = title;
         return self();
@@ -318,17 +245,5 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends CardD
         this.negativeBtnColor = negativeBtnColor;
         return self();
     }
-
-//    public interface OnPositiveButtonClickListener  {
-//        void onClick(AlertDialogFragment fragment);
-//    }
-//
-//    public interface OnNegativeButtonClickListener {
-//        void onClick(AlertDialogFragment fragment);
-//    }
-
-//    public interface OnButtonClickListener {
-//        void onClick(AlertDialogFragment fragment);
-//    }
 
 }

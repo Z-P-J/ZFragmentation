@@ -1,21 +1,21 @@
 package com.zpj.fragmentation.dialog;
 
-import com.zpj.fragmentation.dialog.impl.AlertDialogFragment;
+import com.zpj.fragmentation.dialog.impl.AlertDialogFragment2;
 import com.zpj.fragmentation.dialog.impl.ArrowMenuDialogFragment;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
-import com.zpj.fragmentation.dialog.impl.ListDialogFragment;
 import com.zpj.fragmentation.dialog.impl.BottomDragListDialogFragment;
 import com.zpj.fragmentation.dialog.impl.BottomDragSelectDialogFragment;
-import com.zpj.fragmentation.dialog.impl.CheckDialogFragment;
+import com.zpj.fragmentation.dialog.impl.CheckDialogFragment2;
 import com.zpj.fragmentation.dialog.impl.ImageViewerDialogFragment;
-import com.zpj.fragmentation.dialog.impl.InputDialogFragment;
+import com.zpj.fragmentation.dialog.impl.InputDialogFragment2;
+import com.zpj.fragmentation.dialog.impl.ListDialogFragment;
 import com.zpj.fragmentation.dialog.impl.LoadingDialogFragment;
 import com.zpj.fragmentation.dialog.impl.SelectDialogFragment;
 import com.zpj.fragmentation.dialog.impl.SimpleSelectDialogFragment;
 
 public class ZDialog {
 
-    public static class AlertDialogImpl extends AlertDialogFragment<AlertDialogImpl> {
+    public static class AlertDialogFragmentImpl extends AlertDialogFragment2<AlertDialogFragmentImpl> {
 
     }
 
@@ -27,16 +27,16 @@ public class ZDialog {
 
     }
 
-    public static AlertDialogFragment<AlertDialogImpl> alert() {
-        return new AlertDialogImpl();
+    public static AlertDialogFragment2<AlertDialogFragmentImpl> alert() {
+        return new AlertDialogFragmentImpl();
     }
 
-    public static CheckDialogFragment check() {
-        return new CheckDialogFragment();
+    public static CheckDialogFragment2 check() {
+        return new CheckDialogFragment2();
     }
 
-    public static InputDialogFragment input() {
-        return new InputDialogFragment();
+    public static InputDialogFragment2 input() {
+        return new InputDialogFragment2();
     }
 
     public static LoadingDialogFragment loading() {

@@ -1,6 +1,5 @@
 package com.zpj.fragmentation.dialog.widget;
 
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;

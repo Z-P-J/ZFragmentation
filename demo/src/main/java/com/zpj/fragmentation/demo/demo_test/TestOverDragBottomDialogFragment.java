@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.zpj.fragmentation.demo.R;
-import com.zpj.fragmentation.dialog.base.BottomDragDialogFragment;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 
 public class TestOverDragBottomDialogFragment extends OverDragBottomDialogFragment<TestOverDragBottomDialogFragment> {

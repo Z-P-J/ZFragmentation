@@ -128,18 +128,9 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
         });
         initRecyclerView(mRecyclerView, list);
 
-//        recyclerView.getViewTreeObserver()
-//                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//                    @Override
-//                    public boolean onPreDraw() {
-//                        recyclerView.getViewTreeObserver()
-//                                .removeOnPreDrawListener(this);
-//                        ListDialogFragment.super.doShowAnimation();
-//                        postOnEnterAnimationEnd(() -> initShadow(recyclerView));
-//                        return false;
-//                    }
-//                });
+        postOnEnterAnimationEnd(() -> initShadow(mRecyclerView));
     }
+
 
     private void initShadow(RecyclerView recyclerView) {
         if (!recyclerView.canScrollVertically(-1)) {
@@ -163,12 +154,6 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
                 .onBindViewHolder(onBindViewHolderListener)
                 .onItemClick(onItemClickListener)
                 .build();
-    }
-
-    @Override
-    public void doShowAnimation() {
-        super.doShowAnimation();
-        postOnEnterAnimationEnd(() -> initShadow(findViewById(R.id.recyclerView)));
     }
 
     protected void onNegativeButtonClick(View view) {

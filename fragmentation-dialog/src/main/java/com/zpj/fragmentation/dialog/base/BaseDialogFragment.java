@@ -38,8 +38,8 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     protected DialogAnimator mDialogAnimator;
     protected DialogAnimator mShadowAnimator;
 
-    private FrameLayout rootView;
-    private ViewGroup implView;
+    protected FrameLayout rootView;
+    protected ViewGroup implView;
 
     protected boolean interceptTouch = true;
     protected boolean cancelable = true;
@@ -369,7 +369,7 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
         return self();
     }
 
-    private void interceptTouch() {
+    protected void interceptTouch() {
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
