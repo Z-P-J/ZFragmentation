@@ -54,7 +54,7 @@ public class MyExpandableListDialogFragment extends ListDialogFragment<MultiData
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
-        tvTitle.setTextColor(getResources().getColor(R.color.colorPrimary));
+        mTvTitle.setTextColor(getResources().getColor(R.color.colorPrimary));
     }
 
     @Override

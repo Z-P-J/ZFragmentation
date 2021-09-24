@@ -9,11 +9,11 @@ import android.widget.TextView;
 
 import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.base.CardDialogFragment;
+import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.utils.ContextUtils;
 
-public abstract class ActionDialogFragment<T extends ActionDialogFragment<T>> extends CardDialogFragment<T>
+public abstract class BottomActionDialogFragment<T extends BottomActionDialogFragment<T>> extends OverDragBottomDialogFragment<T>
         implements View.OnClickListener {
 
     protected TextView mTvTitle, tv_cancel, tv_confirm, tv_neutral;

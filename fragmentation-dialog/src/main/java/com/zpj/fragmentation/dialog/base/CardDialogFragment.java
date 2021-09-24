@@ -16,7 +16,6 @@ import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.utils.ScreenUtils;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class CardDialogFragment<T extends CardDialogFragment<T>> extends BaseDialogFragment<T> {
 
@@ -37,6 +36,10 @@ public abstract class CardDialogFragment<T extends CardDialogFragment<T>> extend
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
+        initImplView(view, savedInstanceState);
+    }
+
+    protected void initImplView(View view, @Nullable Bundle savedInstanceState) {
         FrameLayout flContainer = findViewById(R.id._dialog_fl_container);
         this.rootView = flContainer;
 

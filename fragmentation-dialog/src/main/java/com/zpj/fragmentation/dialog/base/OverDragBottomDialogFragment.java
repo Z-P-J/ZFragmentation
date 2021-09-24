@@ -1,8 +1,10 @@
 package com.zpj.fragmentation.dialog.base;
 
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,20 +31,13 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
     public OverDragBottomDialogFragment() {
         setMaxWidth(MATCH_PARENT);
         setOverDragOffset(200);
-        setCornerRadiusDp(8);
+        setCornerRadiusDp(16);
     }
 
     @Override
-    protected final int getImplLayoutId() {
-        return R.layout.fragment_dialog_bottom_over_drag;
-    }
-
-    @Override
-    protected int getGravity() {
+    protected final int getGravity() {
         return Gravity.BOTTOM;
     }
-
-    protected abstract int getContentLayoutId();
 
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
@@ -56,32 +51,53 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-        super.initView(view, savedInstanceState);
-        marginTop = 0;
-        OverDragLayout overDragLayout = (OverDragLayout) getImplView();
+        initImplView(view, savedInstanceState);
+    }
+
+    protected void initImplView(View view, @Nullable Bundle savedInstanceState) {
+        FrameLayout flContainer = findViewById(R.id._dialog_fl_container);
+        this.rootView = flContainer;
+
+        if (interceptTouch) {
+            interceptTouch();
+        }
+
+        OverDragLayout overDragLayout = new OverDragLayout(context);
+        implView = overDragLayout;
+        flContainer.addView(overDragLayout);
+
         overDragLayout.setShowDuration(getShowAnimDuration());
         overDragLayout.setDismissDuration(getDismissAnimDuration());
-        contentView = (ViewGroup) getLayoutInflater().inflate(getContentLayoutId(), null, false);
+        overDragLayout.setMaxOverScrollOffset(mOverDragOffset);
+        contentView = (ViewGroup) getLayoutInflater().inflate(getImplLayoutId(), null, false);
 
-        LinearLayout flContainer = new LinearLayout(context);
-        flContainer.setOrientation(LinearLayout.VERTICAL);
-        flContainer.addView(contentView);
-        flContainer.addView(new Space(context), new ViewGroup.LayoutParams(MATCH_PARENT, mOverDragOffset));
-        overDragLayout.addView(flContainer, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        LinearLayout llContainer = new LinearLayout(context);
+        llContainer.setOrientation(LinearLayout.VERTICAL);
+        llContainer.addView(contentView);
+        llContainer.addView(new Space(context), new ViewGroup.LayoutParams(MATCH_PARENT, mOverDragOffset));
+        overDragLayout.addView(llContainer, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+//        overDragLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                ViewGroup.LayoutParams params = llContainer.getLayoutParams();
+//                params.height = contentView.getMeasuredHeight() + mOverDragOffset;
+//                llContainer.setLayoutParams(params);
+//            }
+//        });
 
         overDragLayout.bindContentView(contentView);
 
         if (bgDrawable != null) {
-            flContainer.setBackground(bgDrawable);
+            llContainer.setBackground(bgDrawable);
         } else {
-            flContainer.setBackgroundColor(DialogThemeUtils.getDialogBackgroundColor(context));
+//            llContainer.setBackgroundColor(DialogThemeUtils.getDialogBackgroundColor(context));
 
             GradientDrawable drawable = new GradientDrawable();
             drawable.setColor(DialogThemeUtils.getDialogBackgroundColor(context));
             drawable.setShape(GradientDrawable.RECTANGLE);
 //                int size = ScreenUtils.dp2pxInt(8);
             drawable.setCornerRadii(new float[]{ cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0 });
-            contentView.setBackground(drawable);
+            llContainer.setBackground(drawable);
 
         }
 

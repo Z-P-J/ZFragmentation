@@ -31,7 +31,7 @@ public class ArrowMenuDialogFragment extends ArrowDialogFragment<ArrowMenuDialog
 
     private int mShadowRadius = 16;
 
-    private int mShadowColor = Color.parseColor("#60000000");
+    private int mShadowColor = Color.parseColor("#40000000");
 
     private int mOrientation = LinearLayout.VERTICAL;
 

@@ -107,6 +107,9 @@ public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeList
         }
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStrokeWidth(0);
+        mPaint.setColor(Color.TRANSPARENT);
+        mPaint.setStyle(Paint.Style.FILL);
 //        mPaint.setXfermode(xfermode);
 //        mPaint.setStrokeJoin(Paint.Join.ROUND);
 //        mPaint.setStrokeCap(Paint.Cap.ROUND);

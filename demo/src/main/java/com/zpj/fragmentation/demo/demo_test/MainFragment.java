@@ -23,12 +23,10 @@ import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.ArrowMenuDialogFragment;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
-import com.zpj.fragmentation.dialog.impl.BottomDragListDialogFragment;
-import com.zpj.fragmentation.dialog.impl.CheckDialogFragment2;
+import com.zpj.fragmentation.dialog.impl.CheckDialogFragment;
 import com.zpj.fragmentation.dialog.impl.ImageViewerDialogFragment;
-import com.zpj.fragmentation.dialog.impl.InputDialogFragment2;
+import com.zpj.fragmentation.dialog.impl.InputDialogFragment;
 import com.zpj.fragmentation.dialog.impl.LoadingDialogFragment;
-import com.zpj.fragmentation.dialog.impl.SimpleSelectDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.IEasy;
@@ -192,9 +190,9 @@ public class MainFragment extends SimpleFragment {
                             subtitleView.setText(String.valueOf(position));
                         }
                     })
-                    .onSingleSelect(new IDialog.OnSingleSelectListener<String, ZDialog.SelectDialogImpl<String>>() {
+                    .onSingleSelect(new IDialog.OnSingleSelectListener<String, ZDialog.SelectDialogFragmentImpl<String>>() {
                         @Override
-                        public void onSelect(ZDialog.SelectDialogImpl<String> dialog, int position, String item) {
+                        public void onSelect(ZDialog.SelectDialogFragmentImpl<String> dialog, int position, String item) {
                             Toast.makeText(context, item, Toast.LENGTH_SHORT).show();
                         }
                     })
@@ -222,9 +220,9 @@ public class MainFragment extends SimpleFragment {
                             subtitleView.setText(String.valueOf(position));
                         }
                     })
-                    .onMultiSelect(new IDialog.OnMultiSelectListener<String, ZDialog.SelectDialogImpl<String>>() {
+                    .onMultiSelect(new IDialog.OnMultiSelectListener<String, ZDialog.SelectDialogFragmentImpl<String>>() {
                         @Override
-                        public void onSelect(ZDialog.SelectDialogImpl<String> dialog, List<Integer> selected, List<String> list) {
+                        public void onSelect(ZDialog.SelectDialogFragmentImpl<String> dialog, List<Integer> selected, List<String> list) {
                             Toast.makeText(context, Arrays.toString(list.toArray()), Toast.LENGTH_SHORT).show();
                         }
                     })
@@ -241,7 +239,7 @@ public class MainFragment extends SimpleFragment {
             for (int i = 0; i < 50; i++) {
                 list.add(String.valueOf(System.currentTimeMillis() * Math.random()));
             }
-            new SimpleSelectDialogFragment()
+            ZDialog.simpleSelect()
                     .setTitles(list)
                     .setOnItemClickListener(new IEasy.OnItemClickListener<String>() {
                         @Override
@@ -284,7 +282,7 @@ public class MainFragment extends SimpleFragment {
             for (int i = 0; i < 50; i++) {
                 list.add(String.valueOf(i));
             }
-            new BottomDragListDialogFragment<String>()
+            ZDialog.bottomList()
                     .setTitle("BottomListDialogFragment")
                     .setItemLayoutId(R.layout._dialog_item_select)
                     .onBindViewHolder(new IEasy.OnBindViewHolderListener<String>() {
@@ -328,7 +326,7 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_input).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new InputDialogFragment2()
+                new InputDialogFragment()
                         .setHint("This is hint!")
                         .setEditText("This is content")
                         .setSingleLine(false)
@@ -342,7 +340,7 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_input_long).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new InputDialogFragment2()
+                new InputDialogFragment()
                         .setHint("This is hint!")
                         .setEditText(R.string.large_text)
                         .setSingleLine(false)
@@ -356,7 +354,7 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_check).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CheckDialogFragment2()
+                new CheckDialogFragment()
                         .setChecked(true)
                         .setCheckTitle("This is checkTitle")
                         .setOnCheckedChangeListener(new ZCheckBox.OnCheckedChangeListener() {
@@ -374,7 +372,7 @@ public class MainFragment extends SimpleFragment {
         findViewById(R.id.btn_test_check_long).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CheckDialogFragment2()
+                new CheckDialogFragment()
                         .setChecked(false)
                         .setCheckTitle("This is checkTitle")
                         .setOnCheckedChangeListener(new ZCheckBox.OnCheckedChangeListener() {

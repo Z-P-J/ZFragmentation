@@ -77,9 +77,9 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
         }
     }
 
-//    public void setMaxOverScrollOffset(int mMaxOverScrollOffset) {
-//        this.mMaxOverScrollOffset = mMaxOverScrollOffset;
-//    }
+    public void setMaxOverScrollOffset(int mMaxOverScrollOffset) {
+        this.mMaxOverScrollOffset = mMaxOverScrollOffset;
+    }
 
     @Override
     public void onViewAdded(View c) {
@@ -94,11 +94,11 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
         }
         ViewGroup.MarginLayoutParams params = (MarginLayoutParams) contentView.getLayoutParams();
         mContentHeight = contentView.getMeasuredHeight() + params.topMargin + params.bottomMargin;
-        mMaxOverScrollOffset = child.getMeasuredHeight() - mContentHeight;
+        int childHeight = mContentHeight + mMaxOverScrollOffset;
         int l = getMeasuredWidth() / 2 - child.getMeasuredWidth() / 2;
         if (enableDrag) {
             // horizontal center
-            child.layout(l, getMeasuredHeight(), l + child.getMeasuredWidth(), getMeasuredHeight() + child.getMeasuredHeight());
+            child.layout(l, getMeasuredHeight(), l + child.getMeasuredWidth(), getMeasuredHeight() + childHeight);
             if (status == LayoutStatus.Open) {
                 //通过scroll上移
                 scrollTo(getScrollX(), mContentHeight);
@@ -341,6 +341,7 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
         //必须要取消，否则会导致滑动初次延迟
         scroller.abortAnimation();
         mIsNestedScrollAccepted = true;
+        Log.d(TAG, "onNestedScrollAccepted");
     }
 
     @Override
@@ -349,6 +350,7 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
             finishScroll(false);
         }
         mIsNestedScrollAccepted = false;
+        Log.d(TAG, "onStopNestedScroll");
     }
 
     @Override
@@ -358,7 +360,7 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
                 dyUnconsumed /= 5;
             }
             int newY = getScrollY() + dyUnconsumed;
-            scrollTo(getScrollX(), Math.min(newY, child.getMeasuredHeight()));
+            scrollTo(getScrollX(), Math.min(newY, mContentHeight + mMaxOverScrollOffset));
         }
     }
 

@@ -11,7 +11,7 @@ import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 public class TestOverDragBottomDialogFragment extends OverDragBottomDialogFragment<TestOverDragBottomDialogFragment> {
 
     @Override
-    protected int getContentLayoutId() {
+    protected int getImplLayoutId() {
         return R.layout.test_fragment_bottom_dialog;
     }
 

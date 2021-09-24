@@ -42,7 +42,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
     private final List<Integer> iconIds = new ArrayList<>();
 
     public AttachListDialogFragment() {
-        cornerRadius = ScreenUtils.dp2px(8);
+        cornerRadius = ScreenUtils.dp2px(16);
         mMinWidth = (int) (ScreenUtils.getScreenWidth() / 2.5f);
     }
 
