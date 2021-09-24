@@ -54,8 +54,8 @@ public class SelectDialogFragment<T, S extends SelectDialogFragment<T, S>> exten
         }
         super.initView(view, savedInstanceState);
 
-        FrameLayout flCheckBox = contentView.findViewById(R.id.fl_check_box);
-        selectAllCheckBox = contentView.findViewById(R.id.check_box);
+        FrameLayout flCheckBox = findViewById(R.id.fl_check_box);
+        selectAllCheckBox = findViewById(R.id.check_box);
 
         if (isMultiple) {
             flCheckBox.setVisibility(View.VISIBLE);

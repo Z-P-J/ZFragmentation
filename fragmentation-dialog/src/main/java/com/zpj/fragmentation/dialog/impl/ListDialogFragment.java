@@ -7,32 +7,25 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.base.ContainerDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.recyclerview.EasyRecycler;
 import com.zpj.recyclerview.IEasy;
-import com.zpj.utils.ContextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends ContainerDialogFragment<S> {
+public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends ActionDialogFragment<S> {
 
     protected final List<T> list = new ArrayList<>();
 
-    protected String title;
-    protected String negativeText, neutralText, positiveText;
-
     protected RecyclerView mRecyclerView;
-    protected TextView tvTitle;
     protected TextView tvOk;
     private View shadowBottomView;
     private View shadowUpView;
@@ -45,46 +38,35 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
     private IEasy.OnBindViewHolderListener<T> onBindViewHolderListener;
     protected IEasy.OnItemClickListener<T> onItemClickListener;
 
-    protected IDialog.OnButtonClickListener<S> negativeClickListener;
-    protected IDialog.OnButtonClickListener<S> positiveClickListener;
-
     protected int getItemRes() {
         return bindItemLayoutId;
     }
 
     @Override
-    protected final boolean isDragDialog() {
-        return isDrag();
-    }
-
-    boolean isDrag() {
-        return false;
-    }
-
-    @Override
-    protected int getContentLayoutId() {
+    protected int getImplLayoutId() {
         return R.layout._dialog_layout_center_impl_list;
     }
 
     @Override
+    protected int getContentLayoutId() {
+        return 0;
+    }
+
+    @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-//        if (getItemRes() <= 0) {
-//            dismiss();
-//            return;
-//        }
-        super.initView(view, savedInstanceState);
+        initImplView(view, savedInstanceState);
 
         shadowBottomView = findViewById(R.id.view_shadow_bottom);
         shadowUpView = findViewById(R.id.view_shadow_up);
 
-        tvTitle = findViewById(R.id.tv_title);
-        if (tvTitle != null) {
-            tvTitle.setTextColor(DialogThemeUtils.getMajorTextColor(context));
+        mTvTitle = findViewById(R.id.tv_title);
+        if (mTvTitle != null) {
+            mTvTitle.setTextColor(DialogThemeUtils.getMajorTextColor(context));
             if (TextUtils.isEmpty(title)) {
-                tvTitle.setVisibility(View.GONE);
+                mTvTitle.setVisibility(View.GONE);
                 shadowBottomView.setVisibility(View.GONE);
             } else {
-                tvTitle.setText(title);
+                mTvTitle.setText(title);
             }
         }
 
@@ -181,50 +163,6 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends C
 
     public S setShowButtons(boolean showButtons) {
         this.showButtons = showButtons;
-        return self();
-    }
-
-    public S setPositiveButton(IDialog.OnButtonClickListener<S> listener) {
-        this.positiveClickListener = listener;
-        return self();
-    }
-
-    public S setPositiveButton(String btnStr, IDialog.OnButtonClickListener<S> listener) {
-        this.positiveText = btnStr;
-        this.positiveClickListener = listener;
-        return self();
-    }
-
-    public S setPositiveButton(int btnStrId, IDialog.OnButtonClickListener<S> listener) {
-        this.positiveText = ContextUtils.getApplicationContext().getString(btnStrId);
-        this.positiveClickListener = listener;
-        return self();
-    }
-
-    public S setNegativeButton(IDialog.OnButtonClickListener<S> listener) {
-        this.negativeClickListener = listener;
-        return self();
-    }
-
-    public S setNegativeButton(String btnStr, IDialog.OnButtonClickListener<S> listener) {
-        this.negativeText = btnStr;
-        this.negativeClickListener = listener;
-        return self();
-    }
-
-    public S setNegativeButton(int btnStrId, IDialog.OnButtonClickListener<S> listener) {
-        this.negativeText = ContextUtils.getApplicationContext().getString(btnStrId);
-        this.negativeClickListener = listener;
-        return self();
-    }
-
-    public S setNegativeText(String negativeText) {
-        this.negativeText = negativeText;
-        return self();
-    }
-
-    public S setPositiveText(String positiveText) {
-        this.positiveText = positiveText;
         return self();
     }
 
