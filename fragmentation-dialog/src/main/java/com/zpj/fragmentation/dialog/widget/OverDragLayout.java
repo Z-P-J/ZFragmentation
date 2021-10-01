@@ -295,7 +295,7 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
                     animator.setInterpolator(new FastOutSlowInInterpolator());
                 } else {
                     float topY = 1f + mMaxOverScrollOffset * 0.25f / mContentHeight;
-                    animator.setInterpolator(new LimitedOvershootInterpolator(topY));
+                    animator.setInterpolator(new LimitedOvershootInterpolator(0.6f, topY));
                 }
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override

@@ -1,10 +1,8 @@
 package com.zpj.fragmentation.dialog.base;
 
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +21,9 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialogFragment<T>> extends BaseDialogFragment<T> {
 
+    protected LinearLayout mWrapper;
     protected ViewGroup contentView;
+    protected View mOverDragSpace;
 
     private float cornerRadius;
     protected int mOverDragOffset;
@@ -31,7 +31,7 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
     public OverDragBottomDialogFragment() {
         setMaxWidth(MATCH_PARENT);
         setOverDragOffset(200);
-        setCornerRadiusDp(16);
+        setCornerRadiusDp(24);
     }
 
     @Override
@@ -71,40 +71,29 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
         overDragLayout.setMaxOverScrollOffset(mOverDragOffset);
         contentView = (ViewGroup) getLayoutInflater().inflate(getImplLayoutId(), null, false);
 
-        LinearLayout llContainer = new LinearLayout(context);
-        llContainer.setOrientation(LinearLayout.VERTICAL);
-        llContainer.addView(contentView);
-        llContainer.addView(new Space(context), new ViewGroup.LayoutParams(MATCH_PARENT, mOverDragOffset));
-        overDragLayout.addView(llContainer, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-//        overDragLayout.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                ViewGroup.LayoutParams params = llContainer.getLayoutParams();
-//                params.height = contentView.getMeasuredHeight() + mOverDragOffset;
-//                llContainer.setLayoutParams(params);
-//            }
-//        });
+        mWrapper = new LinearLayout(context);
+        mWrapper.setOrientation(LinearLayout.VERTICAL);
+        mWrapper.addView(contentView);
+        mOverDragSpace = new View(context);
+        mWrapper.addView(mOverDragSpace, new ViewGroup.LayoutParams(MATCH_PARENT, mOverDragOffset));
+        overDragLayout.addView(mWrapper, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
 
         overDragLayout.bindContentView(contentView);
 
         if (bgDrawable != null) {
-            llContainer.setBackground(bgDrawable);
-        } else {
-//            llContainer.setBackgroundColor(DialogThemeUtils.getDialogBackgroundColor(context));
-
+            mWrapper.setBackground(bgDrawable);
+        } else if (cornerRadius > 0){
             GradientDrawable drawable = new GradientDrawable();
             drawable.setColor(DialogThemeUtils.getDialogBackgroundColor(context));
             drawable.setShape(GradientDrawable.RECTANGLE);
-//                int size = ScreenUtils.dp2pxInt(8);
             drawable.setCornerRadii(new float[]{ cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0 });
-            llContainer.setBackground(drawable);
-
+            mWrapper.setBackground(drawable);
         }
 
         LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
         contentParams.gravity = getGravity();
         contentParams.leftMargin = getMarginStart();
-        contentParams.topMargin = getMarginTop();
+        contentParams.topMargin = 0;
         contentParams.rightMargin = getMarginEnd();
         contentParams.bottomMargin = getMarginBottom();
         contentParams.height = getMaxHeight();
@@ -158,10 +147,20 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 
     @Override
     protected void initLayoutParams(ViewGroup view) {
+        // do nothing
     }
 
     @Override
     public void doShowAnimation() {
+        LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
+        contentParams.height = contentView.getHeight() - getMarginTop();
+        contentView.setLayoutParams(contentParams);
+
+
+        ViewGroup.LayoutParams params = mWrapper.getLayoutParams();
+        params.height = contentParams.height + mOverDragOffset;
+        mWrapper.setLayoutParams(params);
+
         super.doShowAnimation();
         if (getImplView() instanceof OverDragLayout) {
             ((OverDragLayout) getImplView()).open();

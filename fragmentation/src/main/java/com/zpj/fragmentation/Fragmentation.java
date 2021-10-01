@@ -85,7 +85,7 @@ public class Fragmentation {
     }
 
     public static class FragmentationBuilder {
-        private boolean debug;
+        private boolean debug = BuildConfig.DEBUG;
         private int mode;
         private ExceptionHandler handler;
 

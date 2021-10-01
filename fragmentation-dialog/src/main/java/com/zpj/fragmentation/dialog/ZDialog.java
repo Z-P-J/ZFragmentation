@@ -35,7 +35,7 @@ public class ZDialog {
 
     }
 
-    public static AlertDialogFragment<AlertDialogFragmentImpl> alert() {
+    public static AlertDialogFragmentImpl alert() {
         return new AlertDialogFragmentImpl();
     }
 

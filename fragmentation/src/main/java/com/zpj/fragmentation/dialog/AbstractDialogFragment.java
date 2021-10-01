@@ -49,6 +49,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         preFragment = new WeakReference<>(getPreFragment());
+        mDelegate.debug("onCreateView preFragment=" + preFragment.get());
         if (getLayoutId() > 0) {
             view = inflater.inflate(getLayoutId(), container, false);
         } else {
@@ -89,23 +90,30 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         return new DefaultNoAnimator();
     }
 
+    /**
+     * 尽量别重写该方法
+     * @param savedInstanceState
+     */
+    @Deprecated
     @Override
-    public final void onEnterAnimationEnd(Bundle savedInstanceState) {
+    public void onEnterAnimationEnd(Bundle savedInstanceState) {
         getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                flag:
+                ISupportFragment fragment = null;
                 if (preFragment != null) {
-                    ISupportFragment fragment = preFragment.get();
-                    mDelegate.debug("preFragment=" + fragment);
-                    if (fragment instanceof AbstractDialogFragment
-                            && ((AbstractDialogFragment) fragment).isDismissing) {
-                        break flag;
-                    }
-                    if (fragment instanceof SupportFragment && fragment == getPreFragment()
-                            && ((SupportFragment) fragment).isVisible()) {
-                        ((SupportFragment) fragment).onPause();
-                    }
+                    fragment = preFragment.get();
+                }
+                if (fragment == null) {
+                    fragment = getPreFragment();
+                }
+                mDelegate.debug("onEnterAnimationEnd preFragment=" + fragment);
+                if (fragment instanceof AbstractDialogFragment
+                        && ((AbstractDialogFragment) fragment).isDismissing) {
+
+                } else if (fragment instanceof SupportFragment && fragment == getPreFragment()
+                        && ((SupportFragment) fragment).isVisible()) {
+                    ((SupportFragment) fragment).onPause();
                 }
                 onShowAnimationEnd(savedInstanceState);
             }
@@ -166,6 +174,9 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         return dismissAnimDuration;
     }
 
+    /**
+     * 尽量别重写该方法
+     */
     public void dismiss() {
         postOnEnterAnimationEnd(() -> {
             if (!isDismissing) {
@@ -177,20 +188,27 @@ public abstract class AbstractDialogFragment extends SupportFragment {
                 getHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        flag:
+                        mDelegate.debug("preFragment=" + preFragment);
+                        ISupportFragment fragment = null;
                         if (preFragment != null) {
-                            ISupportFragment fragment = preFragment.get();
+                            fragment = preFragment.get();
+                            mDelegate.debug("dismiss preFragment.get=" + fragment);
                             preFragment.clear();
-                            if (fragment instanceof AbstractDialogFragment
-                                    && ((AbstractDialogFragment) fragment).isDismissing) {
-                                break flag;
-                            }
-                            if (fragment instanceof SupportFragment && fragment == getPreFragment()
-                                    && ((SupportFragment) fragment).isVisible()) {
-                                ((SupportFragment) fragment).onResume();
-                            }
+                            preFragment = null;
                         }
-                        preFragment = null;
+
+                        if (fragment == null) {
+                            fragment = getPreFragment();
+                        }
+                        mDelegate.debug("dismiss fragment=" + fragment);
+
+                        if (fragment instanceof AbstractDialogFragment
+                                && ((AbstractDialogFragment) fragment).isDismissing) {
+
+                        } else if (fragment instanceof SupportFragment && fragment == getPreFragment()
+                                && ((SupportFragment) fragment).isVisible()) {
+                            ((SupportFragment) fragment).onResume();
+                        }
 
                         mDelegate.pop(AbstractDialogFragment.this);
                         isDismissing = false;
