@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.Animation;
 
 import com.zpj.fragmentation.anim.FragmentAnimator;
+import com.zpj.fragmentation.dialog.AbstractDialogFragment;
 import com.zpj.fragmentation.helper.BlockActionQueue;
 import com.zpj.utils.StatusBarUtils;
 
@@ -407,6 +408,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mDelegate.start(toFragment, toFragment.getLaunchMode());
     }
 
+    public void startDialog(AbstractDialogFragment dialogFragment) {
+        mDelegate.startDialog(dialogFragment, dialogFragment.getLaunchMode());
+    }
+
     /**
      * @param launchMode Similar to Activity's LaunchMode.
      */
@@ -533,6 +538,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (_mActivity == null) {
             return;
         }
+        mDelegate.debug("darkStatusBar");
         StatusBarUtils.setDarkMode(_mActivity.getWindow());
     }
 
@@ -540,22 +546,23 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (_mActivity == null) {
             return;
         }
+        mDelegate.debug("lightStatusBar");
         StatusBarUtils.setLightMode(_mActivity.getWindow());
     }
 
-    protected synchronized void postOnEnterAnimationEnd(final Runnable runnable) {
+    public synchronized void postOnEnterAnimationEnd(final Runnable runnable) {
         mEnterAnimationEndActionQueue.post(runnable);
     }
 
-    protected synchronized void postOnEnterAnimationEndDelayed(final Runnable runnable, long delay) {
+    public synchronized void postOnEnterAnimationEndDelayed(final Runnable runnable, long delay) {
         mEnterAnimationEndActionQueue.postDelayed(runnable, delay);
     }
 
-    protected synchronized void postOnSupportVisible(final Runnable runnable) {
+    public synchronized void postOnSupportVisible(final Runnable runnable) {
         mSupportVisibleActionQueue.post(runnable);
     }
 
-    protected synchronized void postOnSupportVisibleDelayed(final Runnable runnable, long delay) {
+    public synchronized void postOnSupportVisibleDelayed(final Runnable runnable, long delay) {
         mSupportVisibleActionQueue.postDelayed(runnable, delay);
     }
 

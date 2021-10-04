@@ -237,13 +237,13 @@ public class SupportFragmentDelegate {
     }
 
     public void onResume() {
-        getVisibleDelegate().onResume();
         debug("onResume");
+        getVisibleDelegate().onResume();
     }
 
     public void onPause() {
-        getVisibleDelegate().onPause();
         debug("onPause");
+        getVisibleDelegate().onPause();
     }
 
     public void onDestroyView() {
@@ -547,6 +547,11 @@ public class SupportFragmentDelegate {
 
     public void startChild(final ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mTransactionDelegate.dispatchStartTransaction(getChildFragmentManager(), getTopFragment(), toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
+    }
+
+    public void startDialog(final AbstractDialogFragment dialogFragment, @ISupportFragment.LaunchMode int launchMode) {
+        mTransactionDelegate.dispatchStartChildTransaction(getChildFragmentManager(), mSupportF,
+                dialogFragment, 0, launchMode, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
     }
 
     public void startChildForResult(ISupportFragment toFragment, int requestCode) {

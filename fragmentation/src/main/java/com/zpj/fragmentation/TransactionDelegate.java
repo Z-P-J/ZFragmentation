@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.zpj.fragmentation.exception.AfterSaveStateTransactionWarning;
 import com.zpj.fragmentation.helper.ResultRecord;
@@ -80,34 +81,9 @@ class TransactionDelegate {
 
     void postDelayed(final Runnable runnable, long delay) {
         mHandler.postDelayed(runnable, delay);
-//        Action action = new Action() {
-//            @Override
-//            public void run() {
-//                runnable.run();
-//            }
-//        };
-//        action.delay = delay;
-//        mActionQueue.enqueue(action);
     }
 
     void loadRootTransaction(final FragmentManager fm, final int containerId, final ISupportFragment to, final boolean addToBackStack, final boolean allowAnimation) {
-//        enqueue(fm, new Action(Action.ACTION_LOAD) {
-//            @Override
-//            public void run() {
-//                bindContainerId(containerId, to);
-//
-//                String toFragmentTag = to.getClass().getName();
-//                TransactionRecord transactionRecord = to.getSupportDelegate().mTransactionRecord;
-//                if (transactionRecord != null) {
-//                    if (transactionRecord.tag != null) {
-//                        toFragmentTag = transactionRecord.tag;
-//                    }
-//                }
-//
-//                start(fm, null, to, toFragmentTag, !addToBackStack, null, allowAnimation, TYPE_REPLACE);
-//            }
-//        });
-
         bindContainerId(containerId, to);
 
         String toFragmentTag = to.getClass().getName();
@@ -122,13 +98,6 @@ class TransactionDelegate {
     }
 
     void loadMultipleRootTransaction(final FragmentManager fm, final int containerId, final int showPosition, final ISupportFragment... tos) {
-//        enqueue(fm, new Action(Action.ACTION_LOAD) {
-//            @Override
-//            public void run() {
-//
-//            }
-//        });
-
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < tos.length; i++) {
             Fragment to = (Fragment) tos[i];
@@ -151,26 +120,100 @@ class TransactionDelegate {
     /**
      * Dispatch the start transaction.
      */
-    void dispatchStartTransaction(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to, final int requestCode, final int launchMode, final int type) {
-//        enqueue(fm, new Action(launchMode == ISupportFragment.SINGLETASK ? Action.ACTION_POP_MOCK : Action.ACTION_NORMAL) {
-//            @Override
-//            public void run() {
-//                doDispatchStartTransaction(fm, from, to, requestCode, launchMode, type);
-//            }
-//        });
-        doDispatchStartTransaction(fm, from, to, requestCode, launchMode, type);
+    void dispatchStartTransaction(FragmentManager fm, ISupportFragment from, ISupportFragment to, int requestCode, int launchMode, int type) {
+        checkNotNull(to, "toFragment == null");
+
+        if ((type == TYPE_ADD_RESULT || type == TYPE_ADD_RESULT_WITHOUT_HIDE) && from != null) {
+            if (!((Fragment) from).isAdded()) {
+                Log.w(TAG, ((Fragment) from).getClass().getSimpleName() + " has not been attached yet! startForResult() converted to start()");
+            } else {
+                saveRequestCode(fm, (Fragment) from, (Fragment) to, requestCode);
+            }
+        }
+
+        from = getTopFragmentForStart(from, fm);
+
+        int containerId = getArguments((Fragment) to).getInt(FRAGMENTATION_ARG_CONTAINER, 0);
+        if (from == null && containerId == 0) {
+            Log.e(TAG, "There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment()!");
+            return;
+        }
+
+        if (from != null && containerId == 0) {
+            bindContainerId(from.getSupportDelegate().mContainerId, to);
+        }
+
+        // process ExtraTransaction
+        String toFragmentTag = to.getClass().getName();
+        boolean dontAddToBackStack = false;
+        ArrayList<TransactionRecord.SharedElement> sharedElementList = null;
+        TransactionRecord transactionRecord = to.getSupportDelegate().mTransactionRecord;
+        if (transactionRecord != null) {
+            if (transactionRecord.tag != null) {
+                toFragmentTag = transactionRecord.tag;
+            }
+            dontAddToBackStack = transactionRecord.dontAddToBackStack;
+            if (transactionRecord.sharedElementList != null) {
+                sharedElementList = transactionRecord.sharedElementList;
+            }
+        }
+
+        if (handleLaunchMode(fm, from, to, toFragmentTag, launchMode)) return;
+
+        start(fm, from, to, toFragmentTag, dontAddToBackStack, sharedElementList, false, type);
+    }
+
+    void dispatchStartChildTransaction(FragmentManager fm, ISupportFragment from, ISupportFragment to, int requestCode, int launchMode, int type) {
+        checkNotNull(to, "toFragment == null");
+
+        if ((type == TYPE_ADD_RESULT || type == TYPE_ADD_RESULT_WITHOUT_HIDE) && from != null) {
+            if (!((Fragment) from).isAdded()) {
+                Log.w(TAG, ((Fragment) from).getClass().getSimpleName() + " has not been attached yet! startForResult() converted to start()");
+            } else {
+                saveRequestCode(fm, (Fragment) from, (Fragment) to, requestCode);
+            }
+        }
+
+        int containerId = getArguments((Fragment) to).getInt(FRAGMENTATION_ARG_CONTAINER, 0);
+        if (from == null && containerId == 0) {
+            Log.e(TAG, "There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment()!");
+            return;
+        }
+
+        if (from != null && containerId == 0) {
+            Fragment fromF = (Fragment) from;
+            containerId = fromF.getView().getId();
+            if (containerId == View.NO_ID) {
+                fromF.getView().setId(View.generateViewId());
+                containerId = fromF.getView().getId();
+            }
+            bindContainerId(containerId, to);
+        }
+
+        // process ExtraTransaction
+        String toFragmentTag = to.getClass().getName();
+        boolean dontAddToBackStack = false;
+        ArrayList<TransactionRecord.SharedElement> sharedElementList = null;
+        TransactionRecord transactionRecord = to.getSupportDelegate().mTransactionRecord;
+        if (transactionRecord != null) {
+            if (transactionRecord.tag != null) {
+                toFragmentTag = transactionRecord.tag;
+            }
+            dontAddToBackStack = transactionRecord.dontAddToBackStack;
+            if (transactionRecord.sharedElementList != null) {
+                sharedElementList = transactionRecord.sharedElementList;
+            }
+        }
+
+        if (handleLaunchMode(fm, from, to, toFragmentTag, launchMode)) return;
+
+        startChild(fm, from, to, toFragmentTag, dontAddToBackStack, sharedElementList, false, type);
     }
 
     /**
      * Show showFragment then hide hideFragment
      */
     void showHideFragment(final FragmentManager fm, final ISupportFragment showFragment, final ISupportFragment hideFragment) {
-//        enqueue(fm, new Action() {
-//            @Override
-//            public void run() {
-//                doShowHideFragment(fm, showFragment, hideFragment);
-//            }
-//        });
         doShowHideFragment(fm, showFragment, hideFragment);
     }
 
@@ -178,13 +221,6 @@ class TransactionDelegate {
      * Start the target Fragment and pop itself
      */
     void startWithPop(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to) {
-//        mActionQueue.enqueue(new Action(Action.ACTION_POP_MOCK) {
-//            @Override
-//            public void run() {
-//
-//            }
-//        });
-
         post(new Runnable() {
             @Override
             public void run() {
@@ -212,14 +248,6 @@ class TransactionDelegate {
     }
 
     void startWithPopTo(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to, final String fragmentTag, final boolean includeTargetFragment) {
-//        mActionQueue.enqueue(new Action(Action.ACTION_POP_MOCK) {
-//            @Override
-//            public void run() {
-//
-//            }
-//
-//        });
-
         post(new Runnable() {
             @Override
             public void run() {
@@ -417,57 +445,6 @@ class TransactionDelegate {
         }
     }
 
-//    private void enqueue(FragmentManager fm, Action action) {
-//        if (fm == null) {
-//            Log.w(TAG, "FragmentManager is null, skip the action!");
-//            return;
-//        }
-//        mActionQueue.enqueue(action);
-//    }
-
-    private void doDispatchStartTransaction(FragmentManager fm, ISupportFragment from, ISupportFragment to, int requestCode, int launchMode, int type) {
-        checkNotNull(to, "toFragment == null");
-
-        if ((type == TYPE_ADD_RESULT || type == TYPE_ADD_RESULT_WITHOUT_HIDE) && from != null) {
-            if (!((Fragment) from).isAdded()) {
-                Log.w(TAG, ((Fragment) from).getClass().getSimpleName() + " has not been attached yet! startForResult() converted to start()");
-            } else {
-                saveRequestCode(fm, (Fragment) from, (Fragment) to, requestCode);
-            }
-        }
-
-        from = getTopFragmentForStart(from, fm);
-
-        int containerId = getArguments((Fragment) to).getInt(FRAGMENTATION_ARG_CONTAINER, 0);
-        if (from == null && containerId == 0) {
-            Log.e(TAG, "There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment()!");
-            return;
-        }
-
-        if (from != null && containerId == 0) {
-            bindContainerId(from.getSupportDelegate().mContainerId, to);
-        }
-
-        // process ExtraTransaction
-        String toFragmentTag = to.getClass().getName();
-        boolean dontAddToBackStack = false;
-        ArrayList<TransactionRecord.SharedElement> sharedElementList = null;
-        TransactionRecord transactionRecord = to.getSupportDelegate().mTransactionRecord;
-        if (transactionRecord != null) {
-            if (transactionRecord.tag != null) {
-                toFragmentTag = transactionRecord.tag;
-            }
-            dontAddToBackStack = transactionRecord.dontAddToBackStack;
-            if (transactionRecord.sharedElementList != null) {
-                sharedElementList = transactionRecord.sharedElementList;
-            }
-        }
-
-        if (handleLaunchMode(fm, from, to, toFragmentTag, launchMode)) return;
-
-        start(fm, from, to, toFragmentTag, dontAddToBackStack, sharedElementList, false, type);
-    }
-
     private ISupportFragment getTopFragmentForStart(ISupportFragment from, FragmentManager fm) {
         ISupportFragment top;
         if (from == null) {
@@ -533,6 +510,66 @@ class TransactionDelegate {
                 }
             } else {
                 ft.replace(from.getSupportDelegate().mContainerId, toF, toFragmentTag);
+            }
+        }
+
+        if (!dontAddToBackStack && type != TYPE_REPLACE_DONT_BACK) {
+            ft.addToBackStack(toFragmentTag);
+        }
+        ft.commit();
+//        supportCommit(fm, ft);
+    }
+
+    private void startChild(FragmentManager fm, final ISupportFragment from, ISupportFragment to, String toFragmentTag,
+                       boolean dontAddToBackStack, ArrayList<TransactionRecord.SharedElement> sharedElementList, boolean allowRootFragmentAnim, int type) {
+        FragmentTransaction ft = fm.beginTransaction();
+        boolean addMode = (type == TYPE_ADD || type == TYPE_ADD_RESULT || type == TYPE_ADD_WITHOUT_HIDE || type == TYPE_ADD_RESULT_WITHOUT_HIDE);
+        Fragment fromF = (Fragment) from;
+        Fragment toF = (Fragment) to;
+        Bundle args = getArguments(toF);
+        args.putBoolean(FRAGMENTATION_ARG_REPLACE, !addMode);
+//        toFragmentTag = to.toString();
+        Log.d(TAG, "start from=" + from + " to=" + to + " toFragmentTag=" + toFragmentTag
+                + " dontAddToBackStack=" + dontAddToBackStack + " sharedElementList=" + sharedElementList
+                + " allowRootFragmentAnim=" + allowRootFragmentAnim + " type=" + type + " addMode=" + addMode);
+
+        if (sharedElementList == null) {
+            if (addMode) { // Replace mode forbidden animation, the replace animations exist overlapping Bug on support-v4.
+                TransactionRecord record = to.getSupportDelegate().mTransactionRecord;
+                if (record != null && record.targetFragmentEnter != Integer.MIN_VALUE) {
+                    ft.setCustomAnimations(record.targetFragmentEnter, record.currentFragmentPopExit,
+                            record.currentFragmentPopEnter, record.targetFragmentExit);
+                    args.putInt(FRAGMENTATION_ARG_CUSTOM_ENTER_ANIM, record.targetFragmentEnter);
+                    args.putInt(FRAGMENTATION_ARG_CUSTOM_EXIT_ANIM, record.targetFragmentExit);
+                    args.putInt(FRAGMENTATION_ARG_CUSTOM_POP_EXIT_ANIM, record.currentFragmentPopExit);
+                } else {
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                }
+            } else {
+                args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
+            }
+        } else {
+            args.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
+            for (TransactionRecord.SharedElement item : sharedElementList) {
+                ft.addSharedElement(item.sharedElement, item.sharedName);
+            }
+        }
+        if (from == null) {
+            ft.replace(args.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
+            if (!addMode) {
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
+                        SupportFragmentDelegate.STATUS_ROOT_ANIM_ENABLE : SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
+            }
+        } else {
+            int containerId = fromF.getView().getId();
+            if (addMode) {
+                ft.add(containerId, toF, toFragmentTag);
+                if (type != TYPE_ADD_WITHOUT_HIDE && type != TYPE_ADD_RESULT_WITHOUT_HIDE) {
+                    ft.hide(fromF);
+                }
+            } else {
+                ft.replace(containerId, toF, toFragmentTag);
             }
         }
 

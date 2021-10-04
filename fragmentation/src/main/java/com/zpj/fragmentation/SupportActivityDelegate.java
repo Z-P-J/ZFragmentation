@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentationMagician;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.zpj.fragmentation.anim.DefaultVerticalAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
@@ -153,19 +154,15 @@ public class SupportActivityDelegate {
      * 不建议复写该方法,请使用 {@link #onBackPressedSupport} 代替
      */
     public void onBackPressed() {
-//        mTransactionDelegate.mActionQueue.enqueue(new Action(Action.ACTION_BACK) {
-//            @Override
-//            public void run() {
-//
-//            }
-//        });
         if (!mFragmentClickable) {
             mFragmentClickable = true;
         }
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
         ISupportFragment activeFragment = SupportHelper.getActiveFragment(getSupportFragmentManager());
-        if (mTransactionDelegate.dispatchBackPressedEvent(activeFragment)) return;
+        if (mTransactionDelegate.dispatchBackPressedEvent(activeFragment)) {
+            return;
+        }
 
         mSupport.onBackPressedSupport();
     }
@@ -250,6 +247,12 @@ public class SupportActivityDelegate {
             type = TransactionDelegate.TYPE_ADD;
         }
         mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), topFragment, toFragment, 0, launchMode, type);
+    }
+
+    public void startDialog(AbstractDialogFragment dialogFragment, @ISupportFragment.LaunchMode int launchMode) {
+        ISupportFragment topFragment = getTopFragment();
+        mTransactionDelegate.dispatchStartChildTransaction(((Fragment) topFragment).getChildFragmentManager(),
+                topFragment, dialogFragment, 0, launchMode, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
     }
 
     /**

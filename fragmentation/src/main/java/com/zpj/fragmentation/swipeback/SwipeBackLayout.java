@@ -33,6 +33,7 @@ import android.widget.ScrollView;
 
 import com.zpj.fragmentation.ISupportFragment;
 import com.zpj.fragmentation.R;
+import com.zpj.fragmentation.dialog.AbstractDialogFragment;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -605,7 +606,11 @@ public class SwipeBackLayout extends FrameLayout {
                     Log.d(TAG, "isDetached=" + ((Fragment) mFragment).isDetached());
                     if (!((Fragment) mFragment).isDetached()) {
                         onDragFinished();
-                        mFragment.getSupportDelegate().popQuiet();
+                        if (mFragment instanceof AbstractDialogFragment) {
+                            ((AbstractDialogFragment) mFragment).popThis();
+                        } else {
+                            mFragment.getSupportDelegate().popQuiet();
+                        }
                     }
                 } else {
                     if (!mActivity.isFinishing()) {

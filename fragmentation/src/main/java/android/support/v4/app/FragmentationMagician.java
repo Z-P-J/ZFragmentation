@@ -1,6 +1,8 @@
 package android.support.v4.app;
 
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,6 +132,7 @@ public class FragmentationMagician {
         });
     }
 
+    @NonNull
     public static List<Fragment> getActiveFragments(FragmentManager fragmentManager) {
         return fragmentManager.getFragments();
     }
