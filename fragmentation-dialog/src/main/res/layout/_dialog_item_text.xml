@@ -5,13 +5,13 @@
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="12dp">
+    android:padding="12dp">
 
     <ImageView
         android:id="@+id/iv_image"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="12dp"
         android:layout_gravity="start"
         />
 
@@ -22,8 +22,9 @@
         android:ellipsize="end"
         android:lines="1"
         android:textSize="14sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:textStyle="bold"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="24dp"
         android:text="text"
         />
 

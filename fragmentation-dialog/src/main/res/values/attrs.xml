@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="PopLayout">
+    <declare-styleable name="BubbleLayout">
         <attr name="radiusSize" format="dimension" />
         <attr name="bulgeSize" format="dimension" />
         <attr name="offsetSize" format="dimension" />

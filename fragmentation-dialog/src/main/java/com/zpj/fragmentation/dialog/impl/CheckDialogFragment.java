@@ -34,8 +34,8 @@ public class CheckDialogFragment extends AlertDialogFragment<CheckDialogFragment
         LinearLayout checkLayout = new LinearLayout(context);
         checkLayout.setGravity(Gravity.CENTER_VERTICAL);
         int dp24 = ScreenUtils.dp2pxInt(24);
-        int dp10 = ScreenUtils.dp2pxInt(10);
-        checkLayout.setPadding(dp24, dp10, dp24, dp10);
+        int dp4 = ScreenUtils.dp2pxInt(8);
+        checkLayout.setPadding(dp24, ScreenUtils.dp2pxInt(12), dp24, dp4);
         checkLayout.setOnClickListener(v -> checkBox.performClick());
 
         actionContainer.addView(checkLayout, actionContainer.indexOfChild(mContentView) + 1,
@@ -59,12 +59,22 @@ public class CheckDialogFragment extends AlertDialogFragment<CheckDialogFragment
         tvTitle.setTextSize(mTitleSize);
         ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.leftMargin = dp10;
+        params.leftMargin = dp4 * 2;
         checkLayout.addView(tvTitle, params);
-
-
     }
 
+    @Override
+    protected View createContentView(CharSequence content) {
+        TextView textView = new TextView(context);
+        textView.setText(content);
+        textView.setTextColor(DialogThemeUtils.getNormalTextColor(context));
+        textView.setTextSize(15);
+        int padding = ScreenUtils.dp2pxInt(context, 24);
+        textView.setPadding(padding, 0, padding, padding / 3);
+        textView.setMinLines(2);
+        textView.setLineSpacing(6, 1);
+        return textView;
+    }
 
     public boolean isChecked() {
         return checkBox.isChecked();

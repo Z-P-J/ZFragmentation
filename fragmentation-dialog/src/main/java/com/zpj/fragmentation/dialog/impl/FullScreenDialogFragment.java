@@ -19,7 +19,8 @@ import com.zpj.fragmentation.swipeback.SwipeBackLayout;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullScreenDialogFragment> implements ISwipeBack {
+public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullScreenDialogFragment>
+        implements ISwipeBack, SwipeBackLayout.OnSwipeListener {
 
     private SwipeBackLayout mSwipeBackLayout;
 
@@ -29,6 +30,7 @@ public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullSc
         mSwipeBackLayout = new SwipeBackLayout(getContext());
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mSwipeBackLayout.setLayoutParams(params);
+        mSwipeBackLayout.addSwipeListener(this);
     }
 
     @SuppressLint("ResourceType")
@@ -129,6 +131,28 @@ public abstract class FullScreenDialogFragment extends BaseDialogFragment<FullSc
         mSwipeBackLayout.internalCallOnDestroyView();
         super.onDestroyView();
     }
+
+
+
+
+    @Override
+    public void onDragStateChange(int state) {
+        if (state == SwipeBackLayout.STATE_FINISHED) {
+            isDismissing = true;
+            onDismiss();
+        }
+    }
+
+    @Override
+    public void onEdgeTouch(int oritentationEdgeFlag) {
+
+    }
+
+    @Override
+    public void onDragScrolled(float scrollPercent) {
+
+    }
+
 
     protected boolean enableSwipeBack() {
         return false;

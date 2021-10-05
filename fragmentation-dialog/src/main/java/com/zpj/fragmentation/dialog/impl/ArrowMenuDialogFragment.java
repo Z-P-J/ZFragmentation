@@ -58,7 +58,7 @@ public class ArrowMenuDialogFragment extends ArrowDialogFragment<ArrowMenuDialog
         OptionMenuView mOptionMenuView = new OptionMenuView(context);
         if (mOrientation == LinearLayout.VERTICAL) {
             if (minWidth <= 0) {
-                minWidth = ScreenUtils.dp2pxInt(160);
+                minWidth = (int) (ScreenUtils.getScreenWidth() / 2.2f);
             }
             mOptionMenuView.setMinimumWidth(minWidth);
         }

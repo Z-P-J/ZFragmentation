@@ -132,7 +132,7 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
         if (!cancelable) {
             return;
         }
-        dismiss();
+        super.pop();
     }
 
     protected T self() {
@@ -197,11 +197,6 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
             mShadowAnimator.setDismissDuration(getDismissAnimDuration());
             mShadowAnimator.animateToDismiss();
         }
-    }
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
     }
 
     @Override

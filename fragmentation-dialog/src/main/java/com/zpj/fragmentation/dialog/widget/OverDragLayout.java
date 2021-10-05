@@ -1,5 +1,7 @@
 package com.zpj.fragmentation.dialog.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
@@ -304,6 +306,14 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
                         scrollTo(getScrollX(), scrollY);
                     }
                 });
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (listener != null) {
+                            listener.onOpen();
+                        }
+                    }
+                });
                 animator.start();
 
             }
@@ -324,6 +334,14 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
                     public void onAnimationUpdate(ValueAnimator animation) {
                         int scrollY = (int) animation.getAnimatedValue();
                         scrollTo(getScrollX(), scrollY);
+                    }
+                });
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (listener != null) {
+                            listener.onClose();
+                        }
                     }
                 });
                 animator.start();

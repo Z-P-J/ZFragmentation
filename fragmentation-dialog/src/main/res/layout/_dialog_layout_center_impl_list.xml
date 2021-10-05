@@ -12,7 +12,9 @@
         <TextView
             android:id="@+id/tv_title"
             android:textColor="@color/_dialog_text_major_color"
-            android:padding="16dp"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp"
             android:maxLines="1"
             android:ellipsize="end"
             android:text="Title"
@@ -37,7 +39,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 app:z_checkbox_border_size="2dp"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="24dp"
                 android:layout_gravity="center"
                 />
 

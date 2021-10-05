@@ -121,14 +121,14 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
         overDragLayout.setOnCloseListener(new OverDragLayout.OnCloseListener() {
             @Override
             public void onClose() {
+                if (isDismissing) {
+                    return;
+                }
+                isDismissing = true;
                 postOnEnterAnimationEnd(() -> {
-                    if (isDismissing) {
-                        return;
-                    }
-                    isDismissing = true;
                     OverDragBottomDialogFragment.super.doDismissAnimation();
-                    popThis();
                     onDismiss();
+                    popThis();
                 });
             }
             @Override
@@ -152,13 +152,15 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 
     @Override
     public void doShowAnimation() {
+
+        int height = Math.min(contentView.getMeasuredHeight(), getRootView().getMeasuredHeight() - getMarginTop());
+
         LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
-        contentParams.height = contentView.getHeight() - getMarginTop();
+        contentParams.height = height;
         contentView.setLayoutParams(contentParams);
 
-
         ViewGroup.LayoutParams params = mWrapper.getLayoutParams();
-        params.height = contentParams.height + mOverDragOffset;
+        params.height = height + mOverDragOffset;
         mWrapper.setLayoutParams(params);
 
         super.doShowAnimation();

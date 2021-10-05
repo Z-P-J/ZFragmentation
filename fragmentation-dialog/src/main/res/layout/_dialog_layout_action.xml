@@ -9,13 +9,12 @@
 
     <TextView
         android:id="@+id/tv_title"
-        style="@style/XPopupTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
         android:textSize="18sp"
         android:textStyle="bold"
         android:text="Title"

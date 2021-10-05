@@ -23,7 +23,8 @@ import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 
 public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeListener {
-    private static final String TAG = "PopLayout";
+
+    private static final String TAG = "BubbleLayout";
 
     private float mOffset = 0;
 
@@ -61,12 +62,9 @@ public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeList
 
     public static final int SITE_BOTTOM = 3;
 
-    private static final int DEFAULT_RADIUS = 8;
+    private static final int DEFAULT_RADIUS = 16;
 
     private static final int DEFAULT_BULGE_SIZE = 16;
-
-//    private static final Xfermode MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
-    private Xfermode xfermode;
 
     public BubbleLayout(Context context) {
         this(context, null, 0);
@@ -82,13 +80,13 @@ public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeList
     }
 
     private void initialize(Context context, AttributeSet attrs, int defStyleAttr) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PopLayout);
-        mSiteMode = a.getInt(R.styleable.PopLayout_siteMode, SITE_BOTTOM);
-        mRadiusSize = a.getDimensionPixelSize(R.styleable.PopLayout_radiusSize,
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BubbleLayout);
+        mSiteMode = a.getInt(R.styleable.BubbleLayout_siteMode, SITE_BOTTOM);
+        mRadiusSize = a.getDimensionPixelSize(R.styleable.BubbleLayout_radiusSize,
                 getResources().getDimensionPixelSize(R.dimen.pop_radius));
-        mBulgeSize = a.getDimensionPixelSize(R.styleable.PopLayout_bulgeSize,
+        mBulgeSize = a.getDimensionPixelSize(R.styleable.BubbleLayout_bulgeSize,
                 getResources().getDimensionPixelSize(R.dimen.bulge_size));
-        mOffset = a.getDimensionPixelSize(R.styleable.PopLayout_offsetSize, 0);
+        mOffset = a.getDimensionPixelSize(R.styleable.BubbleLayout_offsetSize, 0);
         a.recycle();
 
         if (getBackground() == null) {
@@ -97,23 +95,13 @@ public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeList
 //            setBackgroundColor(Color.TRANSPARENT);
         }
 
-//        setLayerType(LAYER_TYPE_NONE, null);
-
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-            xfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
-        } else {
-            xfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
-        }
+        // 关闭硬件加速，setShadowLayer显示阴影效果不支持硬件加速
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStrokeWidth(0);
         mPaint.setColor(Color.TRANSPARENT);
         mPaint.setStyle(Paint.Style.FILL);
-//        mPaint.setXfermode(xfermode);
-//        mPaint.setStrokeJoin(Paint.Join.ROUND);
-//        mPaint.setStrokeCap(Paint.Cap.ROUND);
-//        mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mPaint.setShadowLayer(mShadowRadius, 0, 0, mShadowColor);
 
 
@@ -133,9 +121,6 @@ public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeList
 
     private void resetBulge() {
         mBulgePath.reset();
-//        mBulgePath.lineTo(mBulgeSize << 1, 0);
-//        mBulgePath.lineTo(mBulgeSize, mBulgeSize);
-//        mBulgePath.close();
 
         float top = mBulgeSize - mShadowRadius / 2f;
         mBulgePath.cubicTo(mBulgeSize / 2f, 0, mBulgeSize * 3 / 4f, top, mBulgeSize, top);
@@ -288,59 +273,12 @@ public class BubbleLayout extends FrameLayout implements View.OnLayoutChangeList
 
     @Override
     public void draw(Canvas canvas) {
-
-
-//        mPaint.setXfermode(xfermode);
-
-//        super.draw(canvas);
-
-//        canvas.save();
-
-
-//        mPaint.setMaskFilter(new BlurMaskFilter(mShadowRadius * 2, BlurMaskFilter.Blur.NORMAL));
-//        mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-//        mPaint.setStrokeWidth(mStrokeSize);
-//        mPaint.setColor(mShadowColor);
-//        mPaint.setXfermode(xfermode);
         canvas.drawPath(mBgPath, mPaint);
-//        mPaint.clearShadowLayer();
-//        mPaint.setMaskFilter(null);
-
-//        canvas.restore();
-
-
-
-//        int layer = canvas.saveLayer(0, 0, getWidth(),
-//                getHeight(), null, Canvas.ALL_SAVE_FLAG);
 
         canvas.save();
-
         canvas.clipPath(mBgPath);
         super.draw(canvas);
-
         canvas.restore();
-
-//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-//            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-//        } else {
-//            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
-//        }
-//        mPaint.setXfermode(xfermode);
-
-//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-////            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-//            canvas.drawPath(mPopMaskPath, mPaint);
-//        } else {
-////            mPaint.setXfermode(xfermode); // new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
-//            final Path path = new Path();
-//            path.addRect(0, 0, getWidth(), getHeight(), Path.Direction.CW);
-//            path.op(mPopMaskPath, Path.Op.DIFFERENCE);
-//            canvas.drawPath(path, mPaint);
-//        }
-
-//        canvas.restoreToCount(layer);
-
-
     }
 
     @Override

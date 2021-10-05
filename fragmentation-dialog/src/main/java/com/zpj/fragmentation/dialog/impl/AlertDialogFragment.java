@@ -77,7 +77,7 @@ public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends Actio
         TextView textView = new TextView(context);
         textView.setText(content);
         textView.setTextColor(DialogThemeUtils.getNormalTextColor(context));
-        textView.setTextSize(14);
+        textView.setTextSize(15);
         int padding = ScreenUtils.dp2pxInt(context, 24);
         textView.setPadding(padding, padding / 3, padding, padding / 3);
         textView.setMinLines(3);

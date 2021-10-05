@@ -42,7 +42,7 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
     private boolean mShowShadowAnimator = false;
 
     public ArrowDialogFragment() {
-        cornerRadius = ScreenUtils.dp2px(8);
+        cornerRadius = ScreenUtils.dp2px(16);
     }
 
 

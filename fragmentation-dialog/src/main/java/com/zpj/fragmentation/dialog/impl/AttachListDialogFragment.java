@@ -43,7 +43,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
 
     public AttachListDialogFragment() {
         cornerRadius = ScreenUtils.dp2px(16);
-        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 2f);
+        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 2.2f);
     }
 
     @Override
@@ -86,12 +86,21 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
             textColor = DialogThemeUtils.getMajorTextColor(context);
         }
 
+        int dp12 = ScreenUtils.dp2pxInt(12);
         recyclerView = findViewById(R.id._dialog_recycler_View);
         EasyRecycler<T> easyRecyclerView = new EasyRecycler<>(recyclerView);
         easyRecyclerView.setData(items)
                 .setItemRes(bindItemLayoutId == 0 ? R.layout._dialog_item_text : bindItemLayoutId)
                 .onBindViewHolder((holder, list, position, payloads) -> {
 //                    holder.getItemView().setMinimumWidth(maxWidth);
+                    if (position == 0) {
+                        holder.getItemView().setPadding(dp12, dp12 * 2, dp12, dp12);
+                    } else if (position == items.size() - 1) {
+                        holder.getItemView().setPadding(dp12, dp12, dp12, dp12 * 2);
+                    } else {
+                        holder.getItemView().setPadding(dp12, dp12, dp12, dp12);
+                    }
+
                     TextView tvText = holder.getView(R.id.tv_text);
                     tvText.setTextColor(textColor);
 
@@ -177,6 +186,10 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
         this.items.clear();
         this.items.addAll(items);
         return this;
+    }
+
+    public AttachListDialogFragment<T> setItems(T...items) {
+        return setItems(Arrays.asList(items));
     }
 
     public AttachListDialogFragment<T> addItems(List<T> items) {

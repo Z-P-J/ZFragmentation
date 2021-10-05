@@ -120,7 +120,7 @@ public class InputDialogFragment extends ActionDialogFragment<InputDialogFragmen
         textView.setTextColor(DialogThemeUtils.getNormalTextColor(context));
         textView.setTextSize(14);
         int padding = ScreenUtils.dp2pxInt(context, 24);
-        textView.setPadding(padding, padding / 3, padding, padding / 3);
+        textView.setPadding(padding, 0, padding, 0);
         textView.setLineSpacing(6, 1);
         return textView;
     }
