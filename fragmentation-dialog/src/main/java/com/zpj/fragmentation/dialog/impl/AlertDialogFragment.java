@@ -20,7 +20,7 @@ import com.zpj.utils.ScreenUtils;
 public class AlertDialogFragment<T extends AlertDialogFragment<T>> extends ActionDialogFragment<T>
         implements View.OnClickListener {
 
-    private View contentView;
+    protected View contentView;
     protected CharSequence content;
 
     @Override

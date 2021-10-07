@@ -3,6 +3,7 @@ package com.zpj.fragmentation.dialog.base;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialogFragment<T>> extends BaseDialogFragment<T> {
 
+    protected OverDragLayout overDragLayout;
     protected LinearLayout mWrapper;
     protected ViewGroup contentView;
     protected View mOverDragSpace;
@@ -62,7 +64,7 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
             interceptTouch();
         }
 
-        OverDragLayout overDragLayout = new OverDragLayout(context);
+        overDragLayout = new OverDragLayout(context);
         implView = overDragLayout;
         flContainer.addView(overDragLayout);
 
@@ -121,26 +123,20 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
         overDragLayout.setOnCloseListener(new OverDragLayout.OnCloseListener() {
             @Override
             public void onClose() {
-                if (isDismissing) {
-                    return;
-                }
-                isDismissing = true;
-                postOnEnterAnimationEnd(() -> {
+//                if (isDismissing) {
+//                    return;
+//                }
+                Log.d("OverDrag", "isRemoving=" + isRemoving());
+                if (!isRemoving()) {
+                    isDismissing = true;
                     OverDragBottomDialogFragment.super.doDismissAnimation();
                     onDismiss();
                     popThis();
-                });
+                }
             }
             @Override
             public void onOpen() {
 
-            }
-        });
-
-        overDragLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
             }
         });
     }
@@ -164,17 +160,13 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
         mWrapper.setLayoutParams(params);
 
         super.doShowAnimation();
-        if (getImplView() instanceof OverDragLayout) {
-            ((OverDragLayout) getImplView()).open();
-        }
+        overDragLayout.open();
     }
 
     @Override
     public void doDismissAnimation() {
         super.doDismissAnimation();
-        if (getImplView() instanceof OverDragLayout) {
-            ((OverDragLayout) getImplView()).close();
-        }
+        overDragLayout.close();
     }
 
     public T setOverDragOffset(int mOverDragOffset) {

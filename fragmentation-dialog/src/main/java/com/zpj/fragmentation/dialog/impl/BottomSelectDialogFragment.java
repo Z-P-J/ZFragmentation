@@ -22,19 +22,19 @@ import java.util.List;
 public class BottomSelectDialogFragment<T, S extends BottomSelectDialogFragment<T, S>> extends BottomListDialogFragment<T, S>
         implements IEasy.OnBindViewHolderListener<T> {
 
-    private final List<Integer> selectedList = new ArrayList<>();
+    protected final List<Integer> selectedList = new ArrayList<>();
 
-    private EasyRecycler<T> mRecycler;
+    protected EasyRecycler<T> mRecycler;
 
-    private boolean isSelectMode = false;
-    private boolean isMultiple = false;
+    protected boolean isSelectMode = false;
+    protected boolean isMultiple = false;
 
 
-    private IDialog.OnSingleSelectListener<T, S> onSingleSelectListener;
-    private IDialog.OnMultiSelectListener<T, S> onMultiSelectListener;
-    private IDialog.ViewBinder<ImageView, T> iconCallback;
-    private IDialog.ViewBinder<TextView, T> titleCallback;
-    private IDialog.ViewBinder<TextView, T> subtitleCallback;
+    protected IDialog.OnSingleSelectListener<T, S> onSingleSelectListener;
+    protected IDialog.OnMultiSelectListener<T, S> onMultiSelectListener;
+    protected IDialog.ViewBinder<ImageView, T> iconCallback;
+    protected IDialog.ViewBinder<TextView, T> titleCallback;
+    protected IDialog.ViewBinder<TextView, T> subtitleCallback;
 
     private ZCheckBox selectAllCheckBox;
 
