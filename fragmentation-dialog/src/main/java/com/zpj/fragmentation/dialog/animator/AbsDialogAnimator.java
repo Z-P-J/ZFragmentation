@@ -54,14 +54,25 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
 
     @Override
     public void animateToShow() {
-        S animator = onCreateShowAnimator();
-        startAnimator(animator, mShowDuration, true);
+        targetView.post(new Runnable() {
+            @Override
+            public void run() {
+                S animator = onCreateShowAnimator();
+                startAnimator(animator, mShowDuration, true);
+            }
+        });
+
     }
 
     @Override
     public void animateToDismiss() {
-        T animator = onCreateDismissAnimator();
-        startAnimator(animator, mDismissDuration, false);
+        targetView.post(new Runnable() {
+            @Override
+            public void run() {
+                T animator = onCreateDismissAnimator();
+                startAnimator(animator, mDismissDuration, false);
+            }
+        });
     }
 
     protected void startAnimator(Object animator, long duration, boolean isShow) {

@@ -57,7 +57,9 @@ public class BlockActionQueue {
         enqueue(new Action() {
             @Override
             public void run() {
-                runnable.run();
+                if (runnable != null) {
+                    runnable.run();
+                }
             }
         });
     }
@@ -66,7 +68,9 @@ public class BlockActionQueue {
         Action action = new Action() {
             @Override
             public void run() {
-                runnable.run();
+                if (runnable != null) {
+                    runnable.run();
+                }
             }
         };
         action.delay = delay;

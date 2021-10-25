@@ -22,6 +22,7 @@ import android.widget.OverScroller;
 import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.fragmentation.dialog.enums.LayoutStatus;
 import com.zpj.fragmentation.dialog.utils.LimitedOvershootInterpolator;
+import com.zpj.utils.ScreenUtils;
 import com.zpj.utils.ViewUtils;
 
 public class OverDragLayout extends FrameLayout implements NestedScrollingParent {
@@ -52,6 +53,8 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
     private boolean mIsNestedScrollUp;
     private boolean mIsDragging;
     private boolean mIsNestedScrollAccepted;
+
+    private ValueAnimator mAnimator;
 
     public void setShowDuration(long showDuration) {
         this.showDuration = showDuration;
@@ -94,6 +97,14 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
         if (contentView == null) {
             return;
         }
+        Log.d(TAG, "onLayout changed=" + changed + " left=" + left + " top=" + top + " right=" + right + " bottom=" + bottom + " status=" + status);
+        if (status == LayoutStatus.Opening || status == LayoutStatus.Closing) {
+            return;
+        }
+        if (mAnimator != null && mAnimator.isRunning()) {
+            return;
+        }
+
         ViewGroup.MarginLayoutParams params = (MarginLayoutParams) contentView.getLayoutParams();
         mContentHeight = contentView.getMeasuredHeight() + params.topMargin + params.bottomMargin;
         int childHeight = mContentHeight + mMaxOverScrollOffset;
@@ -291,60 +302,65 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
     }
 
     public void open() {
-        scroller.forceFinished(true);
-        status = LayoutStatus.Opening;
-        ValueAnimator animator = ValueAnimator.ofInt(0, mContentHeight);
-        animator.setDuration(showDuration);
-        if (mMaxOverScrollOffset == 0) {
-            animator.setInterpolator(new FastOutSlowInInterpolator());
-        } else {
-            float topY = 1f + mMaxOverScrollOffset * 0.25f / mContentHeight;
-            animator.setInterpolator(new LimitedOvershootInterpolator(0.6f, topY));
-        }
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        post(new Runnable() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int scrollY = (int) animation.getAnimatedValue();
-                scrollTo(getScrollX(), scrollY);
+            public void run() {
+                scroller.forceFinished(true);
+                status = LayoutStatus.Opening;
+
+                if (mAnimator != null) {
+                    mAnimator.cancel();
+                    mAnimator = null;
+                }
+                mAnimator = ValueAnimator.ofInt(0, mContentHeight);
+                mAnimator.setDuration(showDuration);
+                if (mMaxOverScrollOffset == 0) {
+                    mAnimator.setInterpolator(new FastOutSlowInInterpolator());
+                } else {
+                    float topY = Math.min(1f + ScreenUtils.dp2px(8) / mContentHeight, 1f + mMaxOverScrollOffset * 0.25f / mContentHeight);
+                    Log.d(TAG, "topY=" + topY);
+                    mAnimator.setInterpolator(new LimitedOvershootInterpolator(0.68f, topY));
+                }
+                mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int scrollY = (int) animation.getAnimatedValue();
+                        scrollTo(getScrollX(), scrollY);
+                    }
+                });
+                mAnimator.start();
             }
         });
-//        animator.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                if (listener != null) {
-//                    listener.onOpen();
-//                }
-//            }
-//        });
-        animator.start();
     }
 
     public void close() {
         if (isClosing()) {
             return;
         }
-        scroller.forceFinished(true);
-        isUserClose = true;
-        status = LayoutStatus.Closing;
-        ValueAnimator animator = ValueAnimator.ofInt(getScrollY(), 0);
-        animator.setDuration(dismissDuration);
-        animator.setInterpolator(new FastOutSlowInInterpolator());
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        post(new Runnable() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int scrollY = (int) animation.getAnimatedValue();
-                scrollTo(getScrollX(), scrollY);
+            public void run() {
+                scroller.forceFinished(true);
+                isUserClose = true;
+                status = LayoutStatus.Closing;
+
+                if (mAnimator != null) {
+                    mAnimator.cancel();
+                    mAnimator = null;
+                }
+                mAnimator = ValueAnimator.ofInt(getScrollY(), 0);
+                mAnimator.setDuration(dismissDuration);
+                mAnimator.setInterpolator(new FastOutSlowInInterpolator());
+                mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int scrollY = (int) animation.getAnimatedValue();
+                        scrollTo(getScrollX(), scrollY);
+                    }
+                });
+                mAnimator.start();
             }
         });
-//        animator.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                if (listener != null) {
-//                    listener.onClose();
-//                }
-//            }
-//        });
-        animator.start();
     }
 
     public boolean isClosing() {

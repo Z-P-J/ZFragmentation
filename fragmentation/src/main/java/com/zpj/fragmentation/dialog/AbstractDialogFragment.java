@@ -111,6 +111,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
                     fragment = preFragment.get();
                     preFragment.clear();
                 }
+                mDelegate.debug("onEnterAnimationEnd preFragment1=" + fragment);
 //                if (fragment == null) {
 //                    fragment = getPreFragment();
 //                    if (fragment == null && getParentFragment() instanceof ISupportFragment) {
@@ -121,16 +122,18 @@ public abstract class AbstractDialogFragment extends SupportFragment {
                 if (fragment == null) {
                     fragment = getPreFragment();
                 }
+                mDelegate.debug("onEnterAnimationEnd preFragment2=" + fragment);
 
                 if (fragment instanceof Fragment) {
                     if (!((Fragment) fragment).isAdded() || ((Fragment) fragment).isRemoving() || ((Fragment) fragment).isHidden()) {
-                        fragment = null;
+                        fragment = ((SupportFragment) fragment).getPreFragment();
                     } else if (fragment instanceof AbstractDialogFragment) {
                         if (((AbstractDialogFragment) fragment).isDismissing()) {
-                            fragment = null;
+                            fragment = ((AbstractDialogFragment) fragment).getPreFragment();
                         }
                     }
                 }
+                mDelegate.debug("onEnterAnimationEnd preFragment3=" + fragment);
 
                 if (fragment == null && getParentFragment() instanceof ISupportFragment) {
                     fragment = (ISupportFragment) getParentFragment();
@@ -142,7 +145,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
                     preFragment = new WeakReference<>(fragment);
                 }
 
-                mDelegate.debug("onEnterAnimationEnd preFragment=" + fragment);
+                mDelegate.debug("onEnterAnimationEnd preFragment4=" + fragment);
                 if (fragment instanceof AbstractDialogFragment
                         && ((AbstractDialogFragment) fragment).isDismissing) {
 
@@ -260,13 +263,15 @@ public abstract class AbstractDialogFragment extends SupportFragment {
             preFragment.clear();
             preFragment = null;
         }
+        mDelegate.debug("popThis fragment1=" + fragment);
 
         if (fragment == null) {
             fragment = getPreFragment();
         }
 
+        mDelegate.debug("popThis fragment2=" + fragment);
+
         if (fragment instanceof Fragment) {
-            mDelegate.debug("popThis fragment=" + fragment);
             mDelegate.debug("popThis isDetached=" + ((Fragment) fragment).isDetached());
             mDelegate.debug("popThis isVisible=" + ((Fragment) fragment).isVisible());
             mDelegate.debug("popThis isAdded=" + ((Fragment) fragment).isAdded());
@@ -275,23 +280,27 @@ public abstract class AbstractDialogFragment extends SupportFragment {
             mDelegate.debug("popThis isResumed=" + ((Fragment) fragment).isResumed());
             mDelegate.debug("popThis isInLayout=" + ((Fragment) fragment).isInLayout());
             if (!((Fragment) fragment).isAdded() || ((Fragment) fragment).isRemoving() || ((Fragment) fragment).isHidden()) {
-                fragment = null;
+                fragment = ((SupportFragment) fragment).getPreFragment();
             } else if (fragment instanceof AbstractDialogFragment) {
                 if (((AbstractDialogFragment) fragment).isDismissing()) {
-                    fragment = null;
+                    fragment = ((SupportFragment) fragment).getPreFragment();
                 }
             }
         }
+
+        mDelegate.debug("popThis fragment3=" + fragment);
 
         if (fragment == null && getParentFragment() instanceof ISupportFragment) {
             fragment = (ISupportFragment) getParentFragment();
         }
 
+        mDelegate.debug("popThis fragment4=" + fragment);
+
         if (getTopFragment() != AbstractDialogFragment.this) {
             fragment = null;
         }
 
-        mDelegate.debug("dismiss fragment=" + fragment);
+        mDelegate.debug("popThis fragment5=" + fragment);
 
         if (fragment instanceof AbstractDialogFragment
                 && ((AbstractDialogFragment) fragment).isDismissing) {

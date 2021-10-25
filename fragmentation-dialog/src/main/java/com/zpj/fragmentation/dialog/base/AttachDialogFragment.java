@@ -15,6 +15,8 @@ import com.zpj.fragmentation.dialog.animator.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScrollScaleAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
+import com.zpj.utils.ScreenUtils;
+import com.zpj.utils.StatusBarUtils;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -85,7 +87,7 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
         int windowHeight = getRootView().getMeasuredHeight();
         int width = getImplView().getMeasuredWidth();
         int height = getImplView().getMeasuredHeight();
-        Log.d(TAG, "width=" + width + " height=" + height + " windowWidth=" + windowWidth + " windowHeight=" + windowHeight);
+        Log.d(TAG, "width=" + width + " height=" + height + " windowWidth=" + windowWidth + " windowHeight=" + windowHeight + " offset=" + offset);
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getImplView().getLayoutParams();
         if (getMaxHeight() > 0 && getMaxHeight() < height) {
@@ -185,6 +187,11 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
             params.bottomMargin = (int) (windowHeight - touchPoint.y - params.height);
         } else {
             params.height = (int) Math.min(height, touchPoint.y);
+            if (offset == 0) {
+                params.height = (int) Math.min(height, touchPoint.y - ScreenUtils.getStatusBarHeight(context));
+            } else {
+                params.height = (int) Math.min(height, touchPoint.y);
+            }
             params.topMargin = (int) (touchPoint.y - params.height);
             params.bottomMargin = (int) (windowHeight - touchPoint.y);
         }

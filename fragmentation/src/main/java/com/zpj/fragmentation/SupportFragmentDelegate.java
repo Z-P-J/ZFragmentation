@@ -233,7 +233,7 @@ public class SupportFragmentDelegate {
         if (mFirstCreateView) {
             mFirstCreateView = false;
         }
-        debug("onActivityCreated");
+        debug("onActivityCreated tag=" + mFragment.getTag());
     }
 
     public void onResume() {
