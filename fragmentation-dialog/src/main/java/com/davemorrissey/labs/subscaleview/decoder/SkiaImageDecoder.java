@@ -50,7 +50,6 @@ public class SkiaImageDecoder implements ImageDecoder {
     }
 
     @Override
-    @NonNull
     public Bitmap decode(Context context, @NonNull Uri uri) throws Exception {
         String uriString = uri.toString();
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -97,9 +96,9 @@ public class SkiaImageDecoder implements ImageDecoder {
                 }
             }
         }
-        if (bitmap == null) {
-            throw new RuntimeException("Skia image region decoder returned null bitmap - image format may not be supported");
-        }
+//        if (bitmap == null) {
+//            throw new RuntimeException("Skia image region decoder returned null bitmap - image format may not be supported");
+//        }
         return bitmap;
     }
 }

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.lihang.ShadowLayout;
 import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.base.AttachDialogFragment;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.recyclerview.EasyRecycler;
@@ -88,17 +88,19 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
 
         int dp12 = ScreenUtils.dp2pxInt(12);
         recyclerView = findViewById(R.id._dialog_recycler_View);
-        EasyRecycler<T> easyRecyclerView = new EasyRecycler<>(recyclerView);
-        easyRecyclerView.setData(items)
-                .setItemRes(bindItemLayoutId == 0 ? R.layout._dialog_item_text : bindItemLayoutId)
+        EasyRecycler<T> recycler = new EasyRecycler<>(recyclerView, items);
+        recycler.setItemRes(bindItemLayoutId == 0 ? R.layout._dialog_item_text : bindItemLayoutId)
                 .onBindViewHolder((holder, list, position, payloads) -> {
 //                    holder.getItemView().setMinimumWidth(maxWidth);
-                    if (position == 0) {
-                        holder.getItemView().setPadding(dp12, dp12 * 2, dp12, dp12);
+
+                    if (recycler.getItemCount() == 1) {
+                        holder.setPadding(dp12, (int) (dp12 * 1.5f), dp12, (int) (dp12 * 1.5f));
+                    } else if (position == 0) {
+                        holder.setPadding(dp12, (int) (dp12 * 1.5f), dp12, dp12);
                     } else if (position == items.size() - 1) {
-                        holder.getItemView().setPadding(dp12, dp12, dp12, dp12 * 2);
+                        holder.setPadding(dp12, dp12, dp12, (int) (dp12 * 1.5f));
                     } else {
-                        holder.getItemView().setPadding(dp12, dp12, dp12, dp12);
+                        holder.setPadding(dp12, dp12, dp12, dp12);
                     }
 
                     TextView tvText = holder.getView(R.id.tv_text);
@@ -188,7 +190,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
         return this;
     }
 
-    public AttachListDialogFragment<T> setItems(T...items) {
+    public AttachListDialogFragment<T> setItems(T... items) {
         return setItems(Arrays.asList(items));
     }
 
@@ -197,12 +199,12 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
         return this;
     }
 
-    public AttachListDialogFragment<T> addItems(T...items) {
+    public AttachListDialogFragment<T> addItems(T... items) {
         this.items.addAll(Arrays.asList(items));
         return this;
     }
 
-    public AttachListDialogFragment<T> addItemsIf(boolean flag, T...items) {
+    public AttachListDialogFragment<T> addItemsIf(boolean flag, T... items) {
         if (flag) {
             this.items.addAll(Arrays.asList(items));
         }
@@ -232,7 +234,7 @@ public class AttachListDialogFragment<T> extends AttachDialogFragment<AttachList
         return this;
     }
 
-    public AttachListDialogFragment<T> addIconIds(Integer...ids) {
+    public AttachListDialogFragment<T> addIconIds(Integer... ids) {
         this.iconIds.addAll(Arrays.asList(ids));
         return this;
     }

@@ -98,9 +98,8 @@ public class BottomSelectDialogFragment<T, S extends BottomSelectDialogFragment<
 
     @Override
     protected void initRecyclerView(RecyclerView recyclerView, List<T> list) {
-        this.mRecycler = new EasyRecycler<T>(recyclerView);
-        this.mRecycler.setData(list)
-                .setItemRes(getItemRes())
+        this.mRecycler = new EasyRecycler<T>(recyclerView, list);
+        this.mRecycler.setItemRes(getItemRes())
                 .onBindViewHolder(this)
                 .build();
     }

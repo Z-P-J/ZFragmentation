@@ -1,5 +1,6 @@
 package com.zpj.fragmentation.dialog.base;
 
+import android.animation.Animator;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,16 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Space;
 
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.utils.DialogThemeUtils;
 import com.zpj.fragmentation.dialog.widget.OverDragLayout;
 import com.zpj.utils.ScreenUtils;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialogFragment<T>> extends BaseDialogFragment<T> {
 
@@ -43,7 +43,7 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
-        return null;
+        return new OverDragDialogAnimator(contentView);
     }
 
     @Override
@@ -66,7 +66,7 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 
         overDragLayout = new OverDragLayout(context);
         implView = overDragLayout;
-        flContainer.addView(overDragLayout);
+        flContainer.addView(overDragLayout, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
 
         overDragLayout.setShowDuration(getShowAnimDuration());
         overDragLayout.setDismissDuration(getDismissAnimDuration());
@@ -146,28 +146,28 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
         // do nothing
     }
 
-    @Override
-    public void doShowAnimation() {
-
-        int height = Math.min(contentView.getMeasuredHeight(), getRootView().getMeasuredHeight() - getMarginTop());
-
-        LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
-        contentParams.height = height;
-        contentView.setLayoutParams(contentParams);
-
-        ViewGroup.LayoutParams params = mWrapper.getLayoutParams();
-        params.height = height + mOverDragOffset;
-        mWrapper.setLayoutParams(params);
-
-        super.doShowAnimation();
-        overDragLayout.open();
-    }
-
-    @Override
-    public void doDismissAnimation() {
-        super.doDismissAnimation();
-        overDragLayout.close();
-    }
+//    @Override
+//    public void doShowAnimation() {
+//
+//        int height = Math.min(contentView.getMeasuredHeight(), getRootView().getMeasuredHeight() - getMarginTop());
+//
+//        LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
+//        contentParams.height = height;
+//        contentView.setLayoutParams(contentParams);
+//
+//        ViewGroup.LayoutParams params = mWrapper.getLayoutParams();
+//        params.height = height + mOverDragOffset;
+//        mWrapper.setLayoutParams(params);
+//
+//        super.doShowAnimation();
+//        overDragLayout.open();
+//    }
+//
+//    @Override
+//    public void doDismissAnimation() {
+//        super.doDismissAnimation();
+//        overDragLayout.close();
+//    }
 
     public T setOverDragOffset(int mOverDragOffset) {
         this.mOverDragOffset = mOverDragOffset;
@@ -181,6 +181,37 @@ public abstract class OverDragBottomDialogFragment<T extends OverDragBottomDialo
 
     public T setCornerRadiusDp(float cornerRadiusDp) {
         return setCornerRadius(ScreenUtils.dp2px(cornerRadiusDp));
+    }
+
+    protected class OverDragDialogAnimator extends AbsDialogAnimator<Animator, Animator> {
+
+        public OverDragDialogAnimator(View target) {
+            super(target);
+        }
+
+        @Override
+        public Animator onCreateShowAnimator() {
+            int height = Math.min(contentView.getMeasuredHeight(),
+                    getRootView().getMeasuredHeight() - getMarginTop());
+            Log.d("OverDragDialogAnimator", "contentHeight=" + contentView.getMeasuredHeight()
+                    + " rootHeight=" + getRootView().getMeasuredHeight()
+                    + " marginTop=" + getMarginTop() + " height=" + height);
+
+            LinearLayout.LayoutParams contentParams = (LinearLayout.LayoutParams) contentView.getLayoutParams();
+            contentParams.height = height;
+            contentView.setLayoutParams(contentParams);
+
+            ViewGroup.LayoutParams params = mWrapper.getLayoutParams();
+            params.height = height + mOverDragOffset;
+            mWrapper.setLayoutParams(params);
+
+            return overDragLayout.createOpenAnimator();
+        }
+
+        @Override
+        public Animator onCreateDismissAnimator() {
+            return overDragLayout.createCloseAnimator();
+        }
     }
 
 }

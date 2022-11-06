@@ -11,12 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScrollScaleAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.utils.ScreenUtils;
-import com.zpj.utils.StatusBarUtils;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -216,8 +215,8 @@ public abstract class AttachDialogFragment<T extends AttachDialogFragment<T>> ex
     }
 
     @Override
-    public void doShowAnimation() {
-        super.doShowAnimation();
+    public void onShowAnimationStart(Bundle savedInstanceState) {
+        super.onShowAnimationStart(savedInstanceState);
         getImplView().setAlpha(1f);
     }
 

@@ -7,10 +7,9 @@ import android.view.ViewPropertyAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 /**
- * Description: 平移动画，不带渐变
- * Create by dance, at 2018/12/9
+ * 平移动画，不带渐变
  */
-public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, ViewPropertyAnimator> {
+public class TranslateAnimator extends ViewPropertyDialogAnimator {
     //动画起始坐标
     private float startTranslationX, startTranslationY;
     private int oldWidth, oldHeight;
@@ -33,22 +32,6 @@ public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, V
         oldHeight = targetView.getMeasuredHeight();
     }
 
-//    @Override
-//    public void initAnimator() {
-//        if (!hasInitDefTranslation) {
-//            initTranslationX = targetView.getTranslationX();
-//            initTranslationY = targetView.getTranslationY();
-//            hasInitDefTranslation = true;
-//        }
-//        // 设置起始坐标
-//        applyTranslation();
-//        startTranslationX = targetView.getTranslationX();
-//        startTranslationY = targetView.getTranslationY();
-//
-//        oldWidth = targetView.getMeasuredWidth();
-//        oldHeight = targetView.getMeasuredHeight();
-//    }
-
     private void applyTranslation() {
         switch (dialogAnimation) {
             case TranslateFromLeft:
@@ -67,15 +50,14 @@ public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, V
     }
 
     @Override
-    public ViewPropertyAnimator onCreateShowAnimator() {
-        return targetView.animate()
-                .translationX(initTranslationX)
+    public void initShowAnimator(ViewPropertyAnimator animator) {
+        animator.translationX(initTranslationX)
                 .translationY(initTranslationY)
                 .setInterpolator(new FastOutSlowInInterpolator());
     }
 
     @Override
-    public ViewPropertyAnimator onCreateDismissAnimator() {
+    public void initDismissAnimator(ViewPropertyAnimator animator) {
         //执行消失动画的时候，宽高可能改变了，所以需要修正动画的起始值
         switch (dialogAnimation) {
             case TranslateFromLeft:
@@ -92,8 +74,7 @@ public class TranslateAnimator extends AbsDialogAnimator<ViewPropertyAnimator, V
                 break;
         }
 
-        return targetView.animate()
-                .translationX(startTranslationX)
+        animator.translationX(startTranslationX)
                 .translationY(startTranslationY)
                 .setInterpolator(new FastOutSlowInInterpolator());
     }

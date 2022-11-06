@@ -35,25 +35,6 @@ public class ScrollScaleAnimator extends AbsDialogAnimator<Animator, Animator> {
 //        applyPivot();
     }
 
-//    @Override
-//    public void initAnimator() {
-////        targetView.setAlpha(startAlpha);
-//        targetView.setScaleX(startScale);
-//        if(!isOnlyScaleX){
-//            targetView.setScaleY(startScale);
-//        }
-//
-//        targetView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                // 设置参考点
-//                applyPivot();
-////                targetView.scrollTo(startScrollX, startScrollY);
-////                if(targetView.getBackground()!=null)targetView.getBackground().setAlpha(0);
-//            }
-//        });
-//    }
-
     private void applyPivot() {
         switch (dialogAnimation) {
             case ScrollAlphaFromLeft:

@@ -114,7 +114,6 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
     }
 
     @Override
-    @NonNull
     public Bitmap decodeRegion(@NonNull Rect sRect, int sampleSize) {
         getDecodeLock().lock();
         try {
@@ -123,9 +122,9 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
                 options.inSampleSize = sampleSize;
                 options.inPreferredConfig = bitmapConfig;
                 Bitmap bitmap = decoder.decodeRegion(sRect, options);
-                if (bitmap == null) {
-                    throw new RuntimeException("Skia image decoder returned null bitmap - image format may not be supported");
-                }
+//                if (bitmap == null) {
+//                    throw new RuntimeException("Skia image decoder returned null bitmap - image format may not be supported");
+//                }
                 return bitmap;
             } else {
                 throw new IllegalStateException("Cannot decode region after decoder has been recycled");

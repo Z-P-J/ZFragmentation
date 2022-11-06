@@ -90,7 +90,7 @@ public class SupportFragmentDelegate {
             this._mActivity = (FragmentActivity) activity;
             mTransactionDelegate = mSupport.getSupportDelegate().getTransactionDelegate();
         } else {
-            throw new RuntimeException(activity.getClass().getSimpleName() + " must impl ISupportActivity!");
+            throw new RuntimeException(activity.getClass().getSimpleName() + " must impl ISupportActivity! activity is " + activity.getLocalClassName());
         }
     }
 
@@ -128,11 +128,14 @@ public class SupportFragmentDelegate {
             @Override
             public void onAnimationStart(Animation animation) {
                 mSupport.getSupportDelegate().mFragmentClickable = false;  // 开启防抖动
-                getHandler().postDelayed(() -> mSupport.getSupportDelegate().mFragmentClickable = true, enter.getDuration());
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                if (mSupport == null) {
+                    return;
+                }
+                mSupport.getSupportDelegate().mFragmentClickable = true;
             }
 
             @Override
@@ -256,6 +259,8 @@ public class SupportFragmentDelegate {
 
     public void onDestroy() {
         mTransactionDelegate.handleResultRecord(mFragment);
+        mSupport = null;
+        _mActivity = null;
         debug("onDestroy");
     }
 

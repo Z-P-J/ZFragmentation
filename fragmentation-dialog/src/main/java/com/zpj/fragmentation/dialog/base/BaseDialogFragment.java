@@ -10,32 +10,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
-import com.zpj.fragmentation.ISupportFragment;
 import com.zpj.fragmentation.SupportActivity;
 import com.zpj.fragmentation.SupportFragment;
 import com.zpj.fragmentation.dialog.AbstractDialogFragment;
 import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.ScreenUtils;
-
-import java.lang.ref.WeakReference;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extends AbstractDialogFragment {
 
-    protected DialogAnimator mDialogAnimator;
     protected DialogAnimator mShadowAnimator;
 
     protected FrameLayout rootView;
@@ -51,7 +45,8 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     protected int maxHeight = WRAP_CONTENT;
     protected int marginStart, marginTop, marginEnd, marginBottom;
 
-    protected IDialog.OnDismissListener onDismissListener;
+    protected IDialog.OnDismissListener<T> onDismissListener;
+    protected IDialog.OnCancelListener<T> onCancelListener;
 
 //    private WeakReference<ISupportFragment> preFragment;
 
@@ -63,6 +58,11 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     }
 
     protected abstract int getImplLayoutId();
+
+    @Override
+    protected DialogAnimator onCreateDialogAnimator() {
+        return onCreateDialogAnimator(implView);
+    }
 
     protected abstract DialogAnimator onCreateDialogAnimator(ViewGroup contentView);
 
@@ -168,7 +168,7 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
     }
 
     @Override
-    public void doShowAnimation() {
+    public final void doShowAnimation() {
         if (mShadowAnimator == null) {
             mShadowAnimator = onCreateShadowAnimator(rootView);
         }
@@ -177,32 +177,34 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
             mShadowAnimator.setDismissDuration(getDismissAnimDuration());
             mShadowAnimator.animateToShow();
         }
-        if (mDialogAnimator == null) {
-            mDialogAnimator = onCreateDialogAnimator(implView);
-        }
-        if (mDialogAnimator != null) {
-            mDialogAnimator.setShowDuration(getShowAnimDuration());
-            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
-            mDialogAnimator.animateToShow();
-        }
+        super.doShowAnimation();
     }
 
     @Override
-    public void doDismissAnimation() {
-        if (mDialogAnimator != null) {
-            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
-            mDialogAnimator.animateToDismiss();
-        }
+    public final void doDismissAnimation() {
         if (mShadowAnimator != null) {
             mShadowAnimator.setDismissDuration(getDismissAnimDuration());
             mShadowAnimator.animateToDismiss();
         }
+        super.doDismissAnimation();
+    }
+
+    @Override
+    public void onDismissAnimationEnd() {
+        super.onDismissAnimationEnd();
     }
 
     @Override
     protected void onDismiss() {
         if (onDismissListener != null) {
-            onDismissListener.onDismiss();
+            onDismissListener.onDismiss(self());
+        }
+    }
+
+    @Override
+    protected void onCancel() {
+        if (onCancelListener != null) {
+            onCancelListener.onCancel(self());
         }
     }
 
@@ -371,6 +373,7 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
                 if (!cancelable || !cancelableInTouchOutside) {
                     return;
                 }
+                onCancel();
                 dismiss();
             }
         });
@@ -393,9 +396,13 @@ public abstract class BaseDialogFragment<T extends BaseDialogFragment<T>> extend
         return self();
     }
 
-    public T setOnDismissListener(IDialog.OnDismissListener onDismissListener) {
+    public T setOnDismissListener(IDialog.OnDismissListener<T> onDismissListener) {
         this.onDismissListener = onDismissListener;
         return self();
     }
 
+    public T setOnCancelListener(IDialog.OnCancelListener<T> onCancelListener) {
+        this.onCancelListener = onCancelListener;
+        return self();
+    }
 }

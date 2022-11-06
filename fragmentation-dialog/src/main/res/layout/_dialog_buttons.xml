@@ -15,7 +15,7 @@
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
         android:paddingVertical="20dp"
-        android:text="取消"
+        android:text="@string/btn_cancel"
         android:textSize="16sp"
         android:textStyle="bold"
         />
@@ -36,7 +36,7 @@
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
         android:paddingVertical="20dp"
-        android:text="确定"
+        android:text="@string/btn_ok"
         android:textSize="16sp"
         android:textStyle="bold"
         />

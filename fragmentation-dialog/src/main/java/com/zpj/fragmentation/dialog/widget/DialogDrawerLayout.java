@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ShadowMaskAnimator;
 import com.zpj.fragmentation.dialog.enums.LayoutStatus;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
@@ -28,7 +29,7 @@ import com.zpj.utils.ViewUtils;
  * 动画是根据手势滑动而发生的
  * Create by dance, at 2018/12/20
  */
-public class DialogDrawerLayout extends FrameLayout {
+public class DialogDrawerLayout extends FrameLayout implements DialogAnimator {
 
     private final ShadowMaskAnimator bgAnimator = new ShadowMaskAnimator(null);
 
@@ -67,6 +68,7 @@ public class DialogDrawerLayout extends FrameLayout {
     }
 
     float ty;
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -74,9 +76,10 @@ public class DialogDrawerLayout extends FrameLayout {
     }
 
     boolean hasLayout = false;
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        placeHolder.layout(0,0, placeHolder.getMeasuredWidth(), placeHolder.getMeasuredHeight());
+        placeHolder.layout(0, 0, placeHolder.getMeasuredWidth(), placeHolder.getMeasuredHeight());
         if (!hasLayout) {
             if (position == DialogPosition.Left) {
                 mChild.layout(-mChild.getMeasuredWidth(), 0, 0, getMeasuredHeight());
@@ -92,6 +95,7 @@ public class DialogDrawerLayout extends FrameLayout {
     boolean isIntercept = false;
     float x, y;
     boolean isToLeft, canChildScrollLeft;
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         isToLeft = ev.getX() < x;
@@ -109,7 +113,7 @@ public class DialogDrawerLayout extends FrameLayout {
         }
 
         boolean canChildScrollHorizontal = canScroll(this, ev.getX(), ev.getY());
-        if(!canChildScrollHorizontal)return isIntercept;
+        if (!canChildScrollHorizontal) return isIntercept;
 
         return super.onInterceptTouchEvent(ev);
     }
@@ -125,13 +129,13 @@ public class DialogDrawerLayout extends FrameLayout {
             if (inRect && child instanceof ViewGroup) {
                 if (child instanceof ViewPager) {
                     ViewPager pager = (ViewPager) child;
-                    if(direction==0){
+                    if (direction == 0) {
                         return pager.canScrollHorizontally(-1) || pager.canScrollHorizontally(1);
                     }
                     return pager.canScrollHorizontally(direction);
                 } else if (child instanceof HorizontalScrollView) {
                     HorizontalScrollView hsv = (HorizontalScrollView) child;
-                    if(direction==0){
+                    if (direction == 0) {
                         return hsv.canScrollHorizontally(-1) || hsv.canScrollHorizontally(1);
                     }
                     return hsv.canScrollHorizontally(direction);
@@ -142,6 +146,7 @@ public class DialogDrawerLayout extends FrameLayout {
         }
         return false;
     }
+
     private boolean canScroll(ViewGroup group, float x, float y) {
         return canScroll(group, x, y, 0);
     }
@@ -158,44 +163,51 @@ public class DialogDrawerLayout extends FrameLayout {
         public boolean tryCaptureView(@NonNull View view, int i) {
             return !dragHelper.continueSettling(true);
         }
+
         @Override
         public int getViewHorizontalDragRange(@NonNull View child) {
             return 1;
         }
+
         @Override
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
-            if(child==placeHolder)return left;
+            if (child == placeHolder) return left;
             return fixLeft(left);
         }
+
         @Override
         public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
-            if(changedView==placeHolder){
-                placeHolder.layout(0,0, placeHolder.getMeasuredWidth(), placeHolder.getMeasuredHeight());
+            if (changedView == placeHolder) {
+                placeHolder.layout(0, 0, placeHolder.getMeasuredWidth(), placeHolder.getMeasuredHeight());
                 int newLeft = fixLeft(mChild.getLeft() + dx);
                 mChild.layout(newLeft, mChild.getTop(), newLeft + mChild.getMeasuredWidth(), mChild.getBottom());
                 calcFraction(newLeft);
-            }else {
+            } else {
                 calcFraction(left);
             }
         }
 
-        private void calcFraction(int left){
+        private void calcFraction(int left) {
             // fraction = (now - start) * 1f / (end - start)
             if (position == DialogPosition.Left) {
                 fraction = (left + mChild.getMeasuredWidth()) * 1f / mChild.getMeasuredWidth();
-                if (left == -mChild.getMeasuredWidth() && listener != null && status != LayoutStatus.Close) {
+                if (left == -mChild.getMeasuredWidth() && status != LayoutStatus.Close) {
                     status = LayoutStatus.Close;
-                    listener.onClose();
+                    if (listener != null) {
+                        listener.onClose();
+                    }
                 }
             } else if (position == DialogPosition.Right) {
                 fraction = (getMeasuredWidth() - left) * 1f / mChild.getMeasuredWidth();
-                if (left == getMeasuredWidth() && listener != null && status != LayoutStatus.Close) {
+                if (left == getMeasuredWidth() && status != LayoutStatus.Close) {
                     status = LayoutStatus.Close;
-                    listener.onClose();
+                    if (listener != null) {
+                        listener.onClose();
+                    }
                 }
             }
-            if(enableShadow) setBackgroundColor(bgAnimator.calculateBgColor(fraction));
+            if (enableShadow) setBackgroundColor(bgAnimator.calculateBgColor(fraction));
             if (listener != null) {
                 listener.onDismissing(fraction);
                 if (fraction == 1f && status != LayoutStatus.Open) {
@@ -203,16 +215,23 @@ public class DialogDrawerLayout extends FrameLayout {
                     listener.onOpen();
                 }
             }
+            if (mListener != null) {
+                mListener.onAnimationUpdate(fraction);
+                if (fraction == 1f && status != LayoutStatus.Open) {
+                    status = LayoutStatus.Open;
+                    mListener.onAnimationEnd();
+                }
+            }
         }
 
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
-            if(releasedChild==placeHolder && xvel==0){
+            if (releasedChild == placeHolder && xvel == 0) {
                 close();
                 return;
             }
-            if(releasedChild==mChild && isToLeft && !canChildScrollLeft && xvel<-500){
+            if (releasedChild == mChild && isToLeft && !canChildScrollLeft && xvel < -500) {
                 close();
                 return;
             }
@@ -287,35 +306,68 @@ public class DialogDrawerLayout extends FrameLayout {
      * 打开Drawer
      */
     public void open() {
+        animateToShow();
+    }
+
+    public boolean isCanClose = true;
+
+    /**
+     * 关闭Drawer
+     */
+    public void close() {
+        animateToDismiss();
+    }
+
+    private OnCloseListener listener;
+    private Listener mListener;
+
+    public void setOnCloseListener(OnCloseListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void setShowDuration(long showAnimDuration) {
+
+    }
+
+    @Override
+    public void setDismissDuration(long dismissAnimDuration) {
+
+    }
+
+    @Override
+    public void animateToShow() {
         post(new Runnable() {
             @Override
             public void run() {
+                if (mListener != null) {
+                    mListener.onAnimationStart();
+                }
                 dragHelper.smoothSlideViewTo(mChild, position == DialogPosition.Left ? 0 : (mChild.getLeft() - mChild.getMeasuredWidth()), 0);
                 ViewCompat.postInvalidateOnAnimation(DialogDrawerLayout.this);
             }
         });
     }
 
-    public boolean isCanClose = true;
-    /**
-     * 关闭Drawer
-     */
-    public void close() {
+    @Override
+    public void animateToDismiss() {
         if (dragHelper.continueSettling(true)) return;
-        if(!isCanClose)return;
+        if (!isCanClose) return;
         post(new Runnable() {
             @Override
             public void run() {
+                if (mListener != null) {
+                    mListener.onAnimationStart();
+                }
                 dragHelper.smoothSlideViewTo(mChild, position == DialogPosition.Left ? -mChild.getMeasuredWidth() : getMeasuredWidth(), 0);
                 ViewCompat.postInvalidateOnAnimation(DialogDrawerLayout.this);
             }
         });
     }
 
-    private OnCloseListener listener;
-
-    public void setOnCloseListener(OnCloseListener listener) {
-        this.listener = listener;
+    @Override
+    public void setAnimationListener(Listener listener) {
+        this.mListener = listener;
     }
 
     public interface OnCloseListener {

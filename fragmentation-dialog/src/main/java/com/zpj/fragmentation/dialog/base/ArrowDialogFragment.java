@@ -1,5 +1,6 @@
 package com.zpj.fragmentation.dialog.base;
 
+import android.animation.Animator;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -13,7 +14,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
+import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.BubbleLayout;
@@ -55,7 +57,8 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
 
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
-        return null;
+        generateAnimation(attachView, touchPoint);
+        return mDialogAnimator;
     }
 
     @Override
@@ -90,12 +93,6 @@ public abstract class ArrowDialogFragment<T extends ArrowDialogFragment<T>> exte
             mBubbleLayout.setBackground(bgDrawable);
         }
 
-    }
-
-    @Override
-    public void doShowAnimation() {
-        generateAnimation(attachView, touchPoint);
-        super.doShowAnimation();
     }
 
     private void generateAnimation(View anchor, PointF origin) {

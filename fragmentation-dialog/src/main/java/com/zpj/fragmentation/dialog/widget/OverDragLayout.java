@@ -1,7 +1,6 @@
 package com.zpj.fragmentation.dialog.widget;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
@@ -302,65 +301,58 @@ public class OverDragLayout extends FrameLayout implements NestedScrollingParent
     }
 
     public void open() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                scroller.forceFinished(true);
-                status = LayoutStatus.Opening;
+        createOpenAnimator().start();
+    }
 
-                if (mAnimator != null) {
-                    mAnimator.cancel();
-                    mAnimator = null;
-                }
-                mAnimator = ValueAnimator.ofInt(0, mContentHeight);
-                mAnimator.setDuration(showDuration);
-                if (mMaxOverScrollOffset == 0) {
-                    mAnimator.setInterpolator(new FastOutSlowInInterpolator());
-                } else {
-                    float topY = Math.min(1f + ScreenUtils.dp2px(8) / mContentHeight, 1f + mMaxOverScrollOffset * 0.25f / mContentHeight);
-                    Log.d(TAG, "topY=" + topY);
-                    mAnimator.setInterpolator(new LimitedOvershootInterpolator(0.68f, topY));
-                }
-                mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        int scrollY = (int) animation.getAnimatedValue();
-                        scrollTo(getScrollX(), scrollY);
-                    }
-                });
-                mAnimator.start();
-            }
+    public Animator createOpenAnimator() {
+        scroller.forceFinished(true);
+        status = LayoutStatus.Opening;
+
+        if (mAnimator != null) {
+            mAnimator.cancel();
+            mAnimator = null;
+        }
+        ViewGroup.MarginLayoutParams params = (MarginLayoutParams) contentView.getLayoutParams();
+        mContentHeight = params.height + params.topMargin + params.bottomMargin;
+        mAnimator = ValueAnimator.ofInt(0, mContentHeight);
+        if (mMaxOverScrollOffset == 0) {
+            mAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        } else {
+            float topY = Math.min(1f + ScreenUtils.dp2px(8) / mContentHeight, 1f + mMaxOverScrollOffset * 0.25f / mContentHeight);
+            mAnimator.setInterpolator(new LimitedOvershootInterpolator(0.68f, topY));
+        }
+        mAnimator.setDuration(showDuration);
+        mAnimator.addUpdateListener(animation -> {
+            int scrollY = (int) animation.getAnimatedValue();
+            scrollTo(getScrollX(), scrollY);
         });
+        return mAnimator;
     }
 
     public void close() {
         if (isClosing()) {
             return;
         }
-        post(new Runnable() {
-            @Override
-            public void run() {
-                scroller.forceFinished(true);
-                isUserClose = true;
-                status = LayoutStatus.Closing;
+        createCloseAnimator().start();
+    }
 
-                if (mAnimator != null) {
-                    mAnimator.cancel();
-                    mAnimator = null;
-                }
-                mAnimator = ValueAnimator.ofInt(getScrollY(), 0);
-                mAnimator.setDuration(dismissDuration);
-                mAnimator.setInterpolator(new FastOutSlowInInterpolator());
-                mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        int scrollY = (int) animation.getAnimatedValue();
-                        scrollTo(getScrollX(), scrollY);
-                    }
-                });
-                mAnimator.start();
-            }
+    public Animator createCloseAnimator() {
+        scroller.forceFinished(true);
+        isUserClose = true;
+        status = LayoutStatus.Closing;
+
+        if (mAnimator != null) {
+            mAnimator.cancel();
+            mAnimator = null;
+        }
+        mAnimator = ValueAnimator.ofInt(getScrollY(), 0);
+        mAnimator.setDuration(dismissDuration);
+        mAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        mAnimator.addUpdateListener(animation -> {
+            int scrollY = (int) animation.getAnimatedValue();
+            scrollTo(getScrollX(), scrollY);
         });
+        return mAnimator;
     }
 
     public boolean isClosing() {

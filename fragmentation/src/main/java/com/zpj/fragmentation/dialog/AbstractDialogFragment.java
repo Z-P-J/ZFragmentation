@@ -28,6 +28,8 @@ import java.lang.ref.WeakReference;
  */
 public abstract class AbstractDialogFragment extends SupportFragment {
 
+    protected DialogAnimator mDialogAnimator;
+
     protected long showAnimDuration = 360;
     protected long dismissAnimDuration = 360;
 
@@ -40,9 +42,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
 
     protected abstract void initView(View view, @Nullable Bundle savedInstanceState);
 
-    protected abstract void doShowAnimation();
-
-    protected abstract void doDismissAnimation();
+    protected abstract DialogAnimator onCreateDialogAnimator();
 
     protected abstract boolean onBackPressed();
 
@@ -50,6 +50,9 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (isDismissing()) {
+            return null;
+        }
         ISupportFragment fragment = getPreFragment();
         if (fragment == null && getParentFragment() instanceof ISupportFragment) {
             fragment = (ISupportFragment) getParentFragment();
@@ -74,7 +77,6 @@ public abstract class AbstractDialogFragment extends SupportFragment {
                     public boolean onPreDraw() {
                         view.getViewTreeObserver().removeOnPreDrawListener(this);
                         doShowAnimation();
-                        mDelegate.debug("doShowAnimation");
                         return false;
                     }
                 });
@@ -96,72 +98,20 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         return new DefaultNoAnimator();
     }
 
+    private Bundle mSavedInstanceState;
+
     /**
      * 尽量别重写该方法
      * @param savedInstanceState
      */
     @Deprecated
     @Override
-    public void onEnterAnimationEnd(Bundle savedInstanceState) {
-        getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ISupportFragment fragment = null;
-                if (preFragment != null) {
-                    fragment = preFragment.get();
-                    preFragment.clear();
-                }
-                mDelegate.debug("onEnterAnimationEnd preFragment1=" + fragment);
-//                if (fragment == null) {
-//                    fragment = getPreFragment();
-//                    if (fragment == null && getParentFragment() instanceof ISupportFragment) {
-//                        fragment = (ISupportFragment) getParentFragment();
-//                    }
-//                }
+    public final void onEnterAnimationEnd(Bundle savedInstanceState) {
+        this.mSavedInstanceState = savedInstanceState;
+    }
 
-                if (fragment == null) {
-                    fragment = getPreFragment();
-                }
-                mDelegate.debug("onEnterAnimationEnd preFragment2=" + fragment);
-
-                if (fragment instanceof Fragment) {
-                    if (!((Fragment) fragment).isAdded() || ((Fragment) fragment).isRemoving() || ((Fragment) fragment).isHidden()) {
-                        fragment = ((SupportFragment) fragment).getPreFragment();
-                    } else if (fragment instanceof AbstractDialogFragment) {
-                        if (((AbstractDialogFragment) fragment).isDismissing()) {
-                            fragment = ((AbstractDialogFragment) fragment).getPreFragment();
-                        }
-                    }
-                }
-                mDelegate.debug("onEnterAnimationEnd preFragment3=" + fragment);
-
-                if (fragment == null && getParentFragment() instanceof ISupportFragment) {
-                    fragment = (ISupportFragment) getParentFragment();
-                }
-
-                if (fragment == null) {
-                    preFragment = null;
-                } else {
-                    preFragment = new WeakReference<>(fragment);
-                }
-
-                mDelegate.debug("onEnterAnimationEnd preFragment4=" + fragment);
-                if (fragment instanceof AbstractDialogFragment
-                        && ((AbstractDialogFragment) fragment).isDismissing) {
-
-                } else if (fragment instanceof SupportFragment
-                        && (fragment == getPreFragment() || (getPreFragment() == null && fragment == getParentFragment()))
-                        && ((SupportFragment) fragment).isVisible()
-                        && fragment.isSupportVisible()
-                        && !((SupportFragment) fragment).isHidden()
-                        && ((SupportFragment) fragment).getUserVisibleHint()) {
-                    mCanPause = false;
-                    ((SupportFragment) fragment).onPause();
-                    mCanPause = true;
-                }
-                onShowAnimationEnd(savedInstanceState);
-            }
-        }, getShowAnimDuration());
+    protected Bundle getSavedInstanceState() {
+        return mSavedInstanceState;
     }
 
     private boolean mCanPause = true;
@@ -170,9 +120,80 @@ public abstract class AbstractDialogFragment extends SupportFragment {
         return mCanPause;
     }
 
+    public void onShowAnimationStart(Bundle savedInstanceState) {
+        ISupportFragment fragment = null;
+        if (preFragment != null) {
+            fragment = preFragment.get();
+            preFragment.clear();
+        }
+        mDelegate.debug("onShowAnimationStart preFragment1=" + fragment);
+
+        if (fragment == null) {
+            fragment = getPreFragment();
+        }
+        mDelegate.debug("onShowAnimationStart preFragment2=" + fragment);
+
+        if (fragment instanceof Fragment) {
+            if (!((Fragment) fragment).isAdded() || ((Fragment) fragment).isRemoving() || ((Fragment) fragment).isHidden()) {
+                fragment = ((SupportFragment) fragment).getPreFragment();
+            } else if (fragment instanceof AbstractDialogFragment) {
+                if (((AbstractDialogFragment) fragment).isDismissing()) {
+                    fragment = ((AbstractDialogFragment) fragment).getPreFragment();
+                }
+            }
+        }
+        mDelegate.debug("onShowAnimationStart preFragment3=" + fragment);
+
+        if (fragment == null && getParentFragment() instanceof ISupportFragment) {
+            fragment = (ISupportFragment) getParentFragment();
+        }
+
+        if (fragment == null) {
+            preFragment = null;
+        } else {
+            preFragment = new WeakReference<>(fragment);
+        }
+
+        mDelegate.debug("onShowAnimationStart preFragment4=" + fragment);
+        if (fragment instanceof AbstractDialogFragment
+                && ((AbstractDialogFragment) fragment).isDismissing) {
+
+        } else if (fragment instanceof SupportFragment
+                && (fragment == getPreFragment() || (getPreFragment() == null && fragment == getParentFragment()))
+                && ((SupportFragment) fragment).isVisible()
+                && fragment.isSupportVisible()
+                && !((SupportFragment) fragment).isHidden()
+                && ((SupportFragment) fragment).getUserVisibleHint()) {
+            mCanPause = false;
+            ((SupportFragment) fragment).onPause();
+            mCanPause = true;
+        }
+    }
+
+    public void onShowAnimationUpdate(float percent) {
+        mDelegate.debug("onShowAnimationUpdate percent=" + percent);
+    }
+
     public void onShowAnimationEnd(Bundle savedInstanceState) {
-        super.onEnterAnimationEnd(savedInstanceState);
         mDelegate.debug("onShowAnimationEnd");
+        super.onEnterAnimationEnd(savedInstanceState);
+        this.mSavedInstanceState = null;
+    }
+
+    public void onDismissAnimationStart() {
+        mDelegate.debug("onDismissAnimationStart");
+    }
+
+    public void onDismissAnimationUpdate(float percent) {
+        mDelegate.debug("onDismissAnimationUpdate percent=" + percent);
+    }
+
+    public void onDismissAnimationEnd() {
+        mDelegate.debug("onDismissAnimationEnd");
+        if (getView() != null) {
+            getView().setVisibility(View.GONE);
+        }
+        popThis();
     }
 
     @Override
@@ -185,30 +206,77 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onDestroy() {
         this.isDismissing = false;
         mCanPause = true;
         super.onDestroy();
+    }
+
+    protected void doShowAnimation() {
+        mDelegate.debug("doShowAnimation");
+        if (mDialogAnimator == null) {
+            mDialogAnimator = onCreateDialogAnimator();
+        }
+        if (mDialogAnimator != null) {
+            mDialogAnimator.setShowDuration(getShowAnimDuration());
+            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
+            mDialogAnimator.setAnimationListener(new DialogAnimator.Listener() {
+                @Override
+                public void onAnimationStart() {
+                    onShowAnimationStart(getSavedInstanceState());
+                }
+
+                @Override
+                public void onAnimationEnd() {
+                    onShowAnimationEnd(getSavedInstanceState());
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationUpdate(float percent) {
+                    onShowAnimationUpdate(percent);
+                }
+            });
+            mDialogAnimator.animateToShow();
+        } else {
+            onShowAnimationStart(getSavedInstanceState());
+            onShowAnimationEnd(getSavedInstanceState());
+        }
+    }
+
+    protected void doDismissAnimation() {
+        if (mDialogAnimator != null) {
+            mDialogAnimator.setDismissDuration(getDismissAnimDuration());
+            mDialogAnimator.setAnimationListener(new DialogAnimator.Listener() {
+                @Override
+                public void onAnimationStart() {
+                    onDismissAnimationStart();
+                }
+
+                @Override
+                public void onAnimationEnd() {
+                    onDismissAnimationEnd();
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationUpdate(float percent) {
+                    onDismissAnimationUpdate(percent);
+                }
+            });
+            mDialogAnimator.animateToDismiss();
+        } else {
+            onDismissAnimationStart();
+            onDismissAnimationEnd();
+        }
     }
 
     public long getShowAnimDuration() {
@@ -229,22 +297,13 @@ public abstract class AbstractDialogFragment extends SupportFragment {
      * 尽量别重写该方法
      */
     public void dismiss() {
-        postOnEnterAnimationEnd(() -> {
-            if (!isDismissing) {
-                isDismissing = true;
-                doDismissAnimation();
-                mDelegate.debug("doDismissAnimation");
+        if (!isDismissing) {
+            isDismissing = true;
+            doDismissAnimation();
+            mDelegate.debug("doDismissAnimation");
 
-                onDismiss();
-                getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        popThis();
-                        mDelegate.debug("dismissed");
-                    }
-                }, getDismissAnimDuration());
-            }
-        });
+            onDismiss();
+        }
     }
 
     @Override
@@ -254,6 +313,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
 
     @Override
     public final void popThis() {
+        isDismissing = true;
         mDelegate.debug("popThis");
         mDelegate.debug("preFragment=" + preFragment);
         ISupportFragment fragment = null;
@@ -318,5 +378,7 @@ public abstract class AbstractDialogFragment extends SupportFragment {
     }
 
     protected abstract void onDismiss();
+
+    protected abstract void onCancel();
 
 }

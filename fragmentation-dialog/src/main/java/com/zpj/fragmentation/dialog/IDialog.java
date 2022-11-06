@@ -9,8 +9,12 @@ import java.util.List;
 
 public interface IDialog {
 
-    interface OnDismissListener {
-        void onDismiss();
+    interface OnDismissListener<T> {
+        void onDismiss(T dialog);
+    }
+
+    interface OnCancelListener<T> {
+        void onCancel(T dialog);
     }
 
     /** The identifier for the positive button. */

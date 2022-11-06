@@ -39,8 +39,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.github.Z-P-J:ZUtils:1.0.0'
 
-    api 'com.github.Z-P-J:ZRecyclerView:1.0.1'
-    api 'com.github.Z-P-J:ZCheckBox:1.0.0'
+    implementation 'com.github.Z-P-J:ZRecyclerView:1.0.3'
+    implementation 'com.github.Z-P-J:ZCheckBox:1.0.0'
 
     implementation project(':fragmentation')
 

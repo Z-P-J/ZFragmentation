@@ -130,8 +130,7 @@ public class BottomListDialogFragment<T, S extends BottomListDialogFragment<T, S
     }
 
     protected void initRecyclerView(RecyclerView recyclerView, List<T> list) {
-        new EasyRecycler<T>(recyclerView)
-                .setData(list)
+        new EasyRecycler<T>(recyclerView, list)
                 .setItemRes(getItemRes())
                 .onBindViewHolder(onBindViewHolderListener)
                 .onItemClick(onItemClickListener)

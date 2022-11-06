@@ -31,6 +31,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     protected final BlockActionQueue mSupportVisibleActionQueue = new BlockActionQueue(handler);
+    protected final BlockActionQueue mLazyInitActionQueue = new BlockActionQueue(handler);
     protected final BlockActionQueue mEnterAnimationEndActionQueue = new BlockActionQueue(handler);
 
     protected Context context;
@@ -120,10 +121,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void onDestroy() {
+        mLazyInitActionQueue.onDestroy();
         mEnterAnimationEndActionQueue.onDestroy();
         mSupportVisibleActionQueue.onDestroy();
         mDelegate.onDestroy();
         super.onDestroy();
+        _mActivity = null;
     }
 
     @Override
@@ -195,6 +198,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         mDelegate.onLazyInitView(savedInstanceState);
+        mLazyInitActionQueue.start();
     }
 
     /**
@@ -548,6 +552,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         }
         mDelegate.debug("lightStatusBar");
         StatusBarUtils.setLightMode(_mActivity.getWindow());
+    }
+
+    public synchronized void postOnLazyInit(final Runnable runnable) {
+        mLazyInitActionQueue.post(runnable);
+    }
+
+    public synchronized void postOnLazyInitDelayed(final Runnable runnable, long delay) {
+        mLazyInitActionQueue.postDelayed(runnable, delay);
     }
 
     public synchronized void postOnEnterAnimationEnd(final Runnable runnable) {

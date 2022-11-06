@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android">
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="false">
+
     <translate
-        android:duration="360"
+        android:duration="420"
         android:fromXDelta="100%p"
-        android:interpolator="@android:anim/decelerate_interpolator"
+        android:interpolator="@anim/fast_out_extra_slow_in"
         android:toXDelta="0"/>
+<!--    <alpha-->
+<!--        android:fromAlpha="0"-->
+<!--        android:toAlpha="1"-->
+<!--        />-->
 </set>

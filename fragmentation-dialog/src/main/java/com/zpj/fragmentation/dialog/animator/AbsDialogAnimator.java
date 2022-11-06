@@ -1,11 +1,18 @@
 package com.zpj.fragmentation.dialog.animator;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
+import android.support.annotation.FloatRange;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.Transformation;
 
-import com.zpj.fragmentation.dialog.AbstractDialogFragment;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
@@ -17,7 +24,9 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
 
     public DialogAnimation dialogAnimation;
 
-//    protected Listener mListener;
+    private Object mAnim;
+
+    private Listener mListener;
 
     public AbsDialogAnimator(View target){
         this(target, null);
@@ -27,11 +36,6 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
         this.targetView = target;
         this.dialogAnimation = dialogAnimation;
     }
-
-//    @Override
-//    public void setListener(Listener listener) {
-//        this.mListener = listener;
-//    }
 
     @Override
     public void setShowDuration(long showAnimDuration) {
@@ -54,75 +58,152 @@ public abstract class AbsDialogAnimator<S, T> implements DialogAnimator {
 
     @Override
     public void animateToShow() {
-        targetView.post(new Runnable() {
-            @Override
-            public void run() {
-                S animator = onCreateShowAnimator();
-                startAnimator(animator, mShowDuration, true);
-            }
+        targetView.post(() -> {
+            S animator = onCreateShowAnimator();
+            startAnimator(animator, mShowDuration, true);
         });
-
     }
 
     @Override
     public void animateToDismiss() {
-        targetView.post(new Runnable() {
-            @Override
-            public void run() {
-                T animator = onCreateDismissAnimator();
-                startAnimator(animator, mDismissDuration, false);
-            }
+        targetView.post(() -> {
+            T animator = onCreateDismissAnimator();
+            startAnimator(animator, mDismissDuration, false);
         });
+    }
+
+    @Override
+    public void setAnimationListener(Listener listener) {
+        this.mListener = listener;
+    }
+
+    private boolean isAnimationCancel;
+
+    @Override
+    public void cancel() {
+        isAnimationCancel = true;
+        if (mAnim instanceof Animator) {
+            ((Animator) mAnim).cancel();
+        } else if (mAnim instanceof ViewPropertyAnimator) {
+            ((ViewPropertyAnimator) mAnim).cancel();
+        } else if (mAnim instanceof Animation) {
+            ((Animation) mAnim).cancel();
+            onAnimationCancel();
+        }
+        this.mAnim = null;
     }
 
     protected void startAnimator(Object animator, long duration, boolean isShow) {
         Log.d("startAnimator", "duration=" + duration + " animator=" + animator);
+        if (this.mAnim != null) {
+            cancel();
+        }
+        this.mAnim = animator;
         if (animator instanceof Animator) {
-//            if (mListener != null) {
-//                ((Animator) animator).addListener(createAnimatorListener(isShow));
-//            }
+
+            ((Animator) animator).addListener(new DialogAnimatorListener(this));
             ((Animator) animator).setDuration(duration);
-            ((Animator) animator).start();
+
+
+            AnimatorSet set = new AnimatorSet();
+
+            ValueAnimator updateAnimator = ValueAnimator.ofFloat(0f, 1f);
+            updateAnimator.setDuration(duration);
+            updateAnimator.setInterpolator(new LinearInterpolator());
+            updateAnimator.addUpdateListener(animation -> {
+                Log.d("AbsDialogAnimator", "onAnimationUpdate percent=" + animation.getAnimatedFraction());
+                AbsDialogAnimator.this.onAnimationUpdate(animation.getAnimatedFraction());
+            });
+
+            set.setDuration(((Animator) animator).getDuration());
+            set.playTogether((Animator) animator, updateAnimator);
+            set.start();
         } else if (animator instanceof ViewPropertyAnimator) {
-//            if (mListener != null) {
-//                ((ViewPropertyAnimator) animator).setListener(createAnimatorListener(isShow));
-//            }
+            ((ViewPropertyAnimator) animator).setListener(new DialogAnimatorListener(this));
             ((ViewPropertyAnimator) animator).setDuration(duration);
+            ((ViewPropertyAnimator) animator).setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    AbsDialogAnimator.this.onAnimationUpdate(animation.getAnimatedFraction());
+                }
+            });
             ((ViewPropertyAnimator) animator).start();
+        } else if (animator instanceof Animation) {
+            Log.d("AbsDialogAnimator", "startAnimator interpolator=" + ((Animation) animator).getInterpolator() + " Animation=" + animator);
+
+            Animation animation;
+            if (animator instanceof AnimationSet) {
+                Animation updateAnimation = new Animation() {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        Log.d("AbsDialogAnimator", "applyTransformation interpolatedTime=" + interpolatedTime);
+                        onAnimationUpdate(interpolatedTime);
+                    }
+                };
+                updateAnimation.setDuration(duration);
+                ((AnimationSet) animator).addAnimation(updateAnimation);
+                animation = (Animation) animator;
+            } else {
+                AnimationSet animationSet = new AnimationSet(false) {
+
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        onAnimationUpdate(interpolatedTime);
+                    }
+                };
+                animationSet.addAnimation((Animation) animator);
+                animation = animationSet;
+            }
+            animation.setDuration(duration);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    AbsDialogAnimator.this.onAnimationStart();
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    AbsDialogAnimator.this.onAnimationEnd();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            targetView.startAnimation(animation);
         }
     }
 
-//    private Animator.AnimatorListener createAnimatorListener(boolean isShow) {
-//        return new Animator.AnimatorListener() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//                if (isShow) {
-//                    mListener.onShowAnimationStart();
-//                } else {
-//                    mListener.onDismissAnimationStart();
-//                }
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                if (isShow) {
-//                    mListener.onShowAnimationEnd();
-//                } else {
-//                    mListener.onDismissAnimationEnd();
-//                }
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//
-//            }
-//        };
-//    }
+    protected void onAnimationStart() {
+        isAnimationCancel = false;
+        if (mListener != null) {
+            mListener.onAnimationStart();
+        }
+    }
+
+    protected void onAnimationEnd() {
+        if (isAnimationCancel) {
+            return;
+        }
+        if (mListener != null) {
+            mListener.onAnimationEnd();
+        }
+    }
+
+    protected void onAnimationCancel() {
+        if (mListener != null) {
+            mListener.onAnimationCancel();
+        }
+    }
+
+    protected void onAnimationUpdate(@FloatRange(from = 0f, to = 1f) float percent) {
+        if (mListener != null) {
+            mListener.onAnimationUpdate(percent);
+        }
+    }
+
 
     public abstract S onCreateShowAnimator();
     public abstract T onCreateDismissAnimator();

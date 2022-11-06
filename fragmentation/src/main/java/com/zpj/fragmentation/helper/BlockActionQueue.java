@@ -1,14 +1,9 @@
 package com.zpj.fragmentation.helper;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
-import com.zpj.fragmentation.ISupportFragment;
-import com.zpj.fragmentation.SupportHelper;
-
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -18,10 +13,29 @@ public class BlockActionQueue {
 
     private static final String TAG = "BlockActionQueue";
 
-    private final Queue<Action> mQueue = new LinkedList<>();
+    private final Queue<Action> mQueue = new Queue<>();
     private final AtomicBoolean start = new AtomicBoolean(false);
 
     private final Handler mHandler;
+
+    private static class Queue<T> extends LinkedList<T> {
+
+        private volatile boolean destroyed;
+
+        public synchronized void onDestroyed() {
+            clear();
+            this.destroyed = true;
+        }
+
+        @Override
+        public boolean add(T t) {
+            if (destroyed) {
+                return false;
+            }
+            return super.add(t);
+        }
+
+    }
 
     public abstract static class Action {
 
@@ -50,7 +64,7 @@ public class BlockActionQueue {
 
     public void onDestroy() {
         start.set(false);
-        this.mQueue.clear();
+        this.mQueue.onDestroyed();
     }
 
     public void post(final Runnable runnable) {
@@ -92,9 +106,13 @@ public class BlockActionQueue {
 
         final Action action = mQueue.peek();
         mHandler.postDelayed(() -> {
-            action.run();
-            mQueue.poll();
-            handleAction();
+            if (start.get()) {
+                action.run();
+                mQueue.poll();
+                handleAction();
+            } else {
+                mQueue.add(action);
+            }
         }, action.delay);
     }
 

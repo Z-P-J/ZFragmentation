@@ -39,15 +39,6 @@ public final class DialogThemeUtils {
         return drawable;
     }
 
-    public static int getAttachListDialogBackgroundColor(Context context) {
-        return getColor(context, R.attr._dialog_background_color_attach_list, Color.WHITE);
-//        int[] ints = { R.attr._dialog_card_background };
-//        TypedArray typedArray = context.obtainStyledAttributes(ints);
-//        int color = typedArray.getColor(0, Color.WHITE);
-//        typedArray.recycle();
-//        return color;
-    }
-
     public static int getDialogBackgroundColor(Context context) {
         return getColor(context, R.attr._dialog_background_color, Color.WHITE);
     }
@@ -70,14 +61,6 @@ public final class DialogThemeUtils {
 
     public static int getLoadingTextColor(Context context) {
         return getColor(context, R.attr._dialog_text_color_loading, Color.parseColor("#DDDDDD"));
-    }
-
-    public static Drawable getCenterDialogBackground(Context context) {
-        return getDrawable(context, R.attr._dialog_background_center, R.drawable._dialog_round_bg);
-    }
-
-    public static Drawable getBottomDialogBackground(Context context) {
-        return getDrawable(context, R.attr._dialog_background_bottom, R.drawable._dialog_top_round_bg);
     }
 
     public static Drawable getLoadingDialogBackground(Context context) {

@@ -3,7 +3,7 @@ package com.zpj.fragmentation.dialog.base;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScrollScaleAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;

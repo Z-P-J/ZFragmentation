@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.DialogDrawerLayout;
 
@@ -30,7 +30,7 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
 
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
-        return null;
+        return drawerLayout;
     }
 
     @Override
@@ -82,16 +82,6 @@ public abstract class DrawerDialogFragment<T extends DrawerDialogFragment<T>> ex
     @Override
     protected void initLayoutParams(ViewGroup view) {
 
-    }
-
-    @Override
-    public void doShowAnimation() {
-        drawerLayout.open();
-    }
-
-    @Override
-    public void doDismissAnimation() {
-        drawerLayout.close();
     }
 
     public T setEnableShadow(boolean enableShadow) {

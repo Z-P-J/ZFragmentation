@@ -1,16 +1,21 @@
 package com.zpj.fragmentation.dialog.animator;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 
+import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 /**
  * 缩放透明动画
  */
-public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, ViewPropertyAnimator> {
+public class ScaleAlphaAnimator extends ViewPropertyDialogAnimator {
 
     private float pivotX = 0;
     private float pivotY = 0;
@@ -76,18 +81,16 @@ public class ScaleAlphaAnimator extends AbsDialogAnimator<ViewPropertyAnimator, 
     }
 
     @Override
-    public ViewPropertyAnimator onCreateShowAnimator() {
-        return targetView.animate()
-                .scaleX(1f)
+    public void initShowAnimator(ViewPropertyAnimator animator) {
+        animator.scaleX(1f)
                 .scaleY(1f)
                 .alpha(1f)
                 .setInterpolator(new OvershootInterpolator(tension));
     }
 
     @Override
-    public ViewPropertyAnimator onCreateDismissAnimator() {
-        return targetView.animate()
-                .scaleX(0f)
+    public void initDismissAnimator(ViewPropertyAnimator animator) {
+        animator.scaleX(0f)
                 .scaleY(0f)
                 .alpha(0f)
                 .setInterpolator(new FastOutSlowInInterpolator());

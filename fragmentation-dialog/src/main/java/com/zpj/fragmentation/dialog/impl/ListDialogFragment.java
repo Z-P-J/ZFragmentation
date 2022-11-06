@@ -130,8 +130,7 @@ public class ListDialogFragment<T, S extends ListDialogFragment<T, S>> extends A
     }
 
     protected void initRecyclerView(RecyclerView recyclerView, List<T> list) {
-        new EasyRecycler<T>(recyclerView)
-                .setData(list)
+        new EasyRecycler<T>(recyclerView, list)
                 .setItemRes(getItemRes())
                 .onBindViewHolder(onBindViewHolderListener)
                 .onItemClick(onItemClickListener)

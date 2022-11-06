@@ -1,5 +1,6 @@
 package com.zpj.fragmentation.dialog.impl;
 
+import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.support.transition.Transition;
 import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.transition.TransitionSet;
+import android.support.transition.TransitionValues;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -31,7 +33,7 @@ import android.widget.ProgressBar;
 
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.zpj.fragmentation.dialog.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.base.BaseDialogFragment;
 import com.zpj.fragmentation.dialog.interfaces.IProgressViewHolder;
 import com.zpj.fragmentation.dialog.interfaces.OnDragChangeListener;
@@ -162,8 +164,65 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
 //        if (isInfinite) pager.setOffscreenPageLimit(urls.size() / 2);
     }
 
-    @Override
-    public void doShowAnimation() {
+    private class ImageViewerDialogAnimator implements DialogAnimator {
+
+        @Override
+        public void setShowDuration(long showAnimDuration) {
+
+        }
+
+        @Override
+        public void setDismissDuration(long dismissAnimDuration) {
+
+        }
+
+        @Override
+        public void animateToShow() {
+            _doShowAnimation();
+        }
+
+        @Override
+        public void animateToDismiss() {
+            postOnEnterAnimationEnd(ImageViewerDialogFragment.this::_doDismissAnimation);
+        }
+
+        @Override
+        public void setAnimationListener(Listener listener) {
+
+        }
+    }
+
+    private static abstract class UpdateTransition extends Transition {
+
+        public UpdateTransition() {
+
+        }
+
+        @Override
+        public void captureStartValues(@NonNull TransitionValues transitionValues) {
+
+        }
+
+        @Override
+        public void captureEndValues(@NonNull TransitionValues transitionValues) {
+
+        }
+
+        @Nullable
+        @Override
+        public Animator createAnimator(@NonNull ViewGroup sceneRoot, @Nullable TransitionValues startValues, @Nullable TransitionValues endValues) {
+            ValueAnimator animator = ValueAnimator.ofFloat(0, 1f);
+            animator.addUpdateListener(valueAnimator -> {
+                onTransitionUpdate((float) (valueAnimator.getAnimatedValue()));
+            });
+            return animator;
+        }
+
+        public abstract void onTransitionUpdate(float percent);
+
+    }
+
+    public void _doShowAnimation() {
         if (srcViewUpdateListener != null) {
             srcViewUpdateListener.onSrcViewUpdate(ImageViewerDialogFragment.this, position);
         } else {
@@ -181,20 +240,31 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
 //            doAfterShow();
 //            if (customView != null)
 //                customView.setAlpha(1f);
-            animateShadowBg(bgColor, getShowAnimDuration(), new UpdateListener() {
+            animateShadowBg(bgColor, getShowAnimDuration(), new DialogAnimator.Listener() {
                 @Override
-                public void onUpdate(float value) {
+                public void onAnimationStart() {
+                    onShowAnimationStart(getSavedInstanceState());
+                }
+
+                @Override
+                public void onAnimationEnd() {
+                    photoViewContainer.isReleasing = false;
+                    onShowAnimationEnd(getSavedInstanceState());
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationUpdate(float value) {
+                    onShowAnimationUpdate(value);
                     pager.setScaleX(value);
                     pager.setScaleY(value);
                     if (customView != null) {
                         customView.setAlpha(value);
                     }
-                }
-
-                @Override
-                public void onEnd() {
-                    photoViewContainer.isReleasing = false;
-                    doAfterShow();
                 }
             });
             return;
@@ -202,57 +272,64 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
         photoViewContainer.isReleasing = true;
         snapshotView.setVisibility(View.VISIBLE);
         snapshotView.setScaleType(srcView.getScaleType());
-        snapshotView.post(new Runnable() {
-            @Override
-            public void run() {
-                ImageViewContainer itemView = pager.findViewWithTag(position);
-                if (itemView != null && srcView != null) {
+        snapshotView.post(() -> {
+            ImageViewContainer itemView = pager.findViewWithTag(position);
+            if (itemView != null && srcView != null) {
 //                                    itemView.getPhotoView().setDrawable(srcView.getDrawable());
-                    itemView.showPlaceholder(srcView.getDrawable());
-                }
-                TransitionManager.beginDelayedTransition((ViewGroup) snapshotView.getParent(), new TransitionSet()
-                        .setDuration(getShowAnimDuration())
-                        .addTransition(new ChangeBounds())
-                        .addTransition(new ChangeTransform())
-                        .addTransition(new ChangeImageTransform())
-                        .setInterpolator(new FastOutSlowInInterpolator())
-                        .addListener(new TransitionListenerAdapter() {
-                            @Override
-                            public void onTransitionEnd(@NonNull Transition transition) {
-                                isAnimationEnd = true;
+                itemView.showPlaceholder(srcView.getDrawable());
+            }
+            TransitionManager.beginDelayedTransition((ViewGroup) snapshotView.getParent(), new TransitionSet()
+                    .setDuration(getShowAnimDuration())
+                    .addTransition(new ChangeBounds())
+                    .addTransition(new ChangeTransform())
+                    .addTransition(new ChangeImageTransform())
+                    .setInterpolator(new FastOutSlowInInterpolator())
+                    .addListener(new TransitionListenerAdapter() {
 
-                                pager.setVisibility(View.VISIBLE);
+                        @Override
+                        public void onTransitionEnd(@NonNull Transition transition) {
+                            isAnimationEnd = true;
+
+                            pager.setVisibility(View.VISIBLE);
 //                                actionQueue.start();
-                                snapshotView.setVisibility(View.INVISIBLE);
-                                photoViewContainer.isReleasing = false;
-                                doAfterShow();
-                            }
-
-                        }));
-                snapshotView.setTranslationY(0);
-                snapshotView.setTranslationX(0);
-//                snapshotView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                snapshotView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                setWidthHeight(snapshotView, photoViewContainer.getWidth(), photoViewContainer.getHeight());
-
-                // do shadow anim.
-                animateShadowBg(bgColor, getShowAnimDuration(), new UpdateListener() {
-                    @Override
-                    public void onUpdate(float value) {
-                        if (customView != null) {
-                            customView.setAlpha(value);
+                            snapshotView.setVisibility(View.INVISIBLE);
+                            photoViewContainer.isReleasing = false;
                         }
-                    }
+                    }));
+            snapshotView.setTranslationY(0);
+            snapshotView.setTranslationX(0);
+//                snapshotView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            snapshotView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            setWidthHeight(snapshotView, photoViewContainer.getWidth(), photoViewContainer.getHeight());
 
-                    @Override
-                    public void onEnd() {
+            // do shadow anim.
+            animateShadowBg(bgColor, getShowAnimDuration(), new DialogAnimator.Listener() {
+                @Override
+                public void onAnimationStart() {
+                    onShowAnimationStart(getSavedInstanceState());
+                }
 
+                @Override
+                public void onAnimationEnd() {
+                    onShowAnimationEnd(getSavedInstanceState());
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationUpdate(float percent) {
+                    onShowAnimationUpdate(percent);
+                    if (customView != null) {
+                        customView.setAlpha(percent);
                     }
-                });
+                }
+            });
 //                XPopup.getAnimationDuration()
 //                if (customView != null)
 //                    customView.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start();
-            }
         });
 
     }
@@ -293,39 +370,56 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
         snapshotView.setImageDrawable(srcView.getDrawable());
     }
 
-    private interface UpdateListener {
-        void onUpdate(float value);
-        void onEnd();
-    }
-
-    private void animateShadowBg(final int endColor, long duration, UpdateListener listener) {
+    private void animateShadowBg(final int endColor, long duration, DialogAnimator.Listener listener) {
         int start = backgroundColor;
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1f);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+        animator.addUpdateListener(animation -> {
 //                photoViewContainer.setBackgroundColor((Integer) argbEvaluator.evaluate(animation.getAnimatedFraction(),
 //                        start, endColor));
-                float value = (float) animation.getAnimatedValue();
-                backgroundColor = (Integer) argbEvaluator.evaluate(value,
-                        start, endColor);
-                photoViewContainer.setBackgroundColor(backgroundColor);
-                if (listener != null) {
-                    listener.onUpdate(value);
-                    if (value == 1f) {
-                        listener.onEnd();
-                    }
-                }
+            float value = (float) animation.getAnimatedValue();
+            backgroundColor = (Integer) argbEvaluator.evaluate(value,
+                    start, endColor);
+            photoViewContainer.setBackgroundColor(backgroundColor);
+            if (listener != null) {
+                listener.onAnimationUpdate(value);
+//                if (value == 1f) {
+//                    listener.onAnimationEnd();
+//                }
             }
         });
-//        XPopup.getAnimationDuration()
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (listener != null) {
+                    listener.onAnimationStart();
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (listener != null) {
+                    listener.onAnimationEnd();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                if (listener != null) {
+                    listener.onAnimationCancel();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animator.setDuration(duration)
                 .setInterpolator(new LinearInterpolator());
         animator.start();
     }
 
-    @Override
-    public void doDismissAnimation() {
+    public void _doDismissAnimation() {
         if (srcViewUpdateListener != null) {
             srcViewUpdateListener.onSrcViewUpdate(ImageViewerDialogFragment.this, position);
         }
@@ -352,21 +446,32 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
             } else {
                 startAlpha = customView.getAlpha();
             }
-            animateShadowBg(Color.TRANSPARENT, getDismissAnimDuration(), new UpdateListener() {
+            animateShadowBg(Color.TRANSPARENT, getDismissAnimDuration(), new DialogAnimator.Listener() {
                 @Override
-                public void onUpdate(float value) {
+                public void onAnimationStart() {
+                    onDismissAnimationStart();
+                }
+
+                @Override
+                public void onAnimationEnd() {
+//                    actionQueue.onDestroy();
+                    pager.setVisibility(View.INVISIBLE);
+                    onDismissAnimationEnd();
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationUpdate(float value) {
                     pager.setScaleX((1 - value) * startScaleX);
                     pager.setScaleY((1 - value) * startScaleY);
                     if (customView != null) {
                         customView.setAlpha((1 - value) * startAlpha);
                     }
-                }
-
-                @Override
-                public void onEnd() {
-//                    actionQueue.onDestroy();
-                    doAfterDismiss();
-                    pager.setVisibility(View.INVISIBLE);
+                    onDismissAnimationUpdate(value);
                 }
             });
             return;
@@ -388,10 +493,10 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
                 .addTransition(new ChangeImageTransform())
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .addListener(new TransitionListenerAdapter() {
+
                     @Override
                     public void onTransitionEnd(@NonNull Transition transition) {
 //                        actionQueue.onDestroy();
-                        doAfterDismiss();
                         ImageViewContainer current = pager.findViewWithTag(position);
                         if (current.getPlaceholder().getDrawable() instanceof GifDrawable) {
                             srcView.setImageDrawable(current.getPlaceholder().getDrawable());
@@ -411,17 +516,28 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
         setWidthHeight(snapshotView, rect.width(), rect.height());
 
         // do shadow anim.
-        animateShadowBg(Color.TRANSPARENT, getDismissAnimDuration(), new UpdateListener() {
+        animateShadowBg(Color.TRANSPARENT, getDismissAnimDuration(), new DialogAnimator.Listener() {
             @Override
-            public void onUpdate(float value) {
-                if (customView != null) {
-                    customView.setAlpha(1 -  value);
-                }
+            public void onAnimationStart() {
+                onDismissAnimationStart();
             }
 
             @Override
-            public void onEnd() {
+            public void onAnimationEnd() {
+                onDismissAnimationEnd();
+            }
 
+            @Override
+            public void onAnimationCancel() {
+
+            }
+
+            @Override
+            public void onAnimationUpdate(float percent) {
+                if (customView != null) {
+                    customView.setAlpha(1 -  percent);
+                }
+                onDismissAnimationUpdate(percent);
             }
         });
     }
@@ -578,14 +694,6 @@ public class ImageViewerDialogFragment<T> extends BaseDialogFragment<ImageViewer
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             container.removeView((View) object);
         }
-    }
-
-    protected void doAfterShow() {
-
-    }
-
-    protected void doAfterDismiss() {
-
     }
 
     public static void setWidthHeight(View target, int width, int height) {

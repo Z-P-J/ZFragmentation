@@ -113,7 +113,6 @@ public class MainFragment extends SimpleFragment {
                         })
                         .setGravity(Gravity.BOTTOM)
                         .setMarginHorizontal(getResources().getDimensionPixelSize(R.dimen.bottombar_height))
-                        .setDialogBackground(DialogThemeUtils.getCenterDialogBackground(context))
                         .show(MainFragment.this);
             }
         });

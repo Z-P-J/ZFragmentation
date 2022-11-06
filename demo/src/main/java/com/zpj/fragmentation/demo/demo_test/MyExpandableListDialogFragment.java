@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.zpj.fragmentation.demo.R;
-import com.zpj.fragmentation.dialog.animator.DialogAnimator;
+import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 import com.zpj.fragmentation.dialog.impl.ListDialogFragment;
@@ -59,9 +59,7 @@ public class MyExpandableListDialogFragment extends ListDialogFragment<MultiData
 
     @Override
     protected void initRecyclerView(RecyclerView recyclerView, List<MultiData<?>> list) {
-        MultiRecycler.with(recyclerView)
-                .setMultiData(list)
-                .build();
+        MultiRecycler.with(recyclerView, list).build();
     }
 
     public MyExpandableListDialogFragment setAnchorView(View anchorView) {
