@@ -3,7 +3,7 @@ package com.zpj.fragmentation.dialog.animator;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.support.annotation.FloatRange;
+import androidx.annotation.FloatRange;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewPropertyAnimator;

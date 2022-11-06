@@ -1,6 +1,6 @@
 package com.zpj.fragmentation.demo.demo_wechat.listener;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 public interface OnItemClickListener {

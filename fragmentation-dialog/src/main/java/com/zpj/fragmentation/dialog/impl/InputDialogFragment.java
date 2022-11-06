@@ -2,9 +2,9 @@ package com.zpj.fragmentation.dialog.impl;
 
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.AppCompatEditText;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;

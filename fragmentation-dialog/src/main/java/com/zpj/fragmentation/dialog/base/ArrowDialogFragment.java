@@ -1,12 +1,11 @@
 package com.zpj.fragmentation.dialog.base;
 
-import android.animation.Animator;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.FrameLayout;
 
 import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.DialogAnimator;
-import com.zpj.fragmentation.dialog.animator.AbsDialogAnimator;
 import com.zpj.fragmentation.dialog.animator.ScaleAlphaAnimator;
 import com.zpj.fragmentation.dialog.enums.DialogPosition;
 import com.zpj.fragmentation.dialog.widget.BubbleLayout;

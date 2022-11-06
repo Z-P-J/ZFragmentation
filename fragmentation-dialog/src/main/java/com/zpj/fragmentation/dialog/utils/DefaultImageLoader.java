@@ -3,8 +3,8 @@ package com.zpj.fragmentation.dialog.utils;
 import android.content.ContentResolver;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;

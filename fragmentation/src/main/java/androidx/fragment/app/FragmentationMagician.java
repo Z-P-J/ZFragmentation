@@ -1,8 +1,9 @@
-package android.support.v4.app;
+package androidx.fragment.app;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,20 +138,51 @@ public class FragmentationMagician {
         return fragmentManager.getFragments();
     }
 
+    private static Field sStateSavedField;
+    private static Field sStoppedField;
+
     private static void hookStateSaved(FragmentManager fragmentManager, Runnable runnable) {
         if (!(fragmentManager instanceof FragmentManagerImpl)) return;
 
         FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
         if (isStateSaved(fragmentManager)) {
-            boolean tempStateSaved = fragmentManagerImpl.mStateSaved;
-            boolean tempStopped = fragmentManagerImpl.mStopped;
-            fragmentManagerImpl.mStateSaved = false;
-            fragmentManagerImpl.mStopped = false;
+//            boolean tempStateSaved = fragmentManagerImpl.mStateSaved;
+//            boolean tempStopped = fragmentManagerImpl.mStopped;
+//            fragmentManagerImpl.mStateSaved = false;
+//            fragmentManagerImpl.mStopped = false;
+//
+//            runnable.run();
+//
+//            fragmentManagerImpl.mStopped = tempStopped;
+//            fragmentManagerImpl.mStateSaved = tempStateSaved;
 
-            runnable.run();
 
-            fragmentManagerImpl.mStopped = tempStopped;
-            fragmentManagerImpl.mStateSaved = tempStateSaved;
+            try {
+                if(sStateSavedField == null) {
+                    sStateSavedField = FragmentManager.class.getDeclaredField("mStateSaved");
+                    sStateSavedField.setAccessible(true);
+                }
+
+
+                if (sStoppedField == null) {
+                    sStoppedField = FragmentManager.class.getDeclaredField("mStopped");
+                    sStoppedField.setAccessible(true);
+                }
+
+                boolean tempStateSaved = sStateSavedField.getBoolean(fragmentManagerImpl);
+                boolean tempStopped = sStoppedField.getBoolean(fragmentManagerImpl);
+                sStateSavedField.setBoolean(fragmentManagerImpl, false);
+                sStoppedField.setBoolean(fragmentManagerImpl, false);
+
+                runnable.run();
+
+                sStoppedField.setBoolean(fragmentManagerImpl, tempStopped);
+                sStateSavedField.setBoolean(fragmentManagerImpl, tempStateSaved);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } else {
             runnable.run();
         }

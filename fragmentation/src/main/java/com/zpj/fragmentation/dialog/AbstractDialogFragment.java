@@ -1,13 +1,12 @@
 package com.zpj.fragmentation.dialog;
 
 import android.annotation.SuppressLint;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.util.Log;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.view.ViewTreeObserver;
 
 import com.zpj.fragmentation.ISupportFragment;
 import com.zpj.fragmentation.SupportFragment;
-import com.zpj.fragmentation.SupportHelper;
 import com.zpj.fragmentation.anim.DefaultNoAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
 

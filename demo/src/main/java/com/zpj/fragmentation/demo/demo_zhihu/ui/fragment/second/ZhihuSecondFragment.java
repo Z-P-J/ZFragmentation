@@ -1,10 +1,9 @@
 package com.zpj.fragmentation.demo.demo_zhihu.ui.fragment.second;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
+import androidx.annotation.Nullable;
+
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.zpj.fragmentation.demo.R;
 import com.zpj.fragmentation.demo.demo_zhihu.base.BaseMainFragment;

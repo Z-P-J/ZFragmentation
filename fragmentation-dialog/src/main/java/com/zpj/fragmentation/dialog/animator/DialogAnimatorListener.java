@@ -1,7 +1,7 @@
 package com.zpj.fragmentation.dialog.animator;
 
 import android.animation.Animator;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 class DialogAnimatorListener implements Animator.AnimatorListener {
 

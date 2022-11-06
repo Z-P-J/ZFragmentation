@@ -1,6 +1,6 @@
 package com.zpj.fragmentation.swipeback;
 
-import android.support.annotation.FloatRange;
+import androidx.annotation.FloatRange;
 
 /**
  * @Author Z-P-J

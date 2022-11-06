@@ -1,6 +1,6 @@
 package com.zpj.fragmentation.dialog.animator;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.zpj.fragmentation.dialog.DialogAnimator;
 

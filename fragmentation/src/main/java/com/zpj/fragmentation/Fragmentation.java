@@ -1,6 +1,6 @@
 package com.zpj.fragmentation;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import com.zpj.fragmentation.helper.ExceptionHandler;
 

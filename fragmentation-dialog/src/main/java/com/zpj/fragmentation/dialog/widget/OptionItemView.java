@@ -1,7 +1,7 @@
 package com.zpj.fragmentation.dialog.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatCheckedTextView;
+import androidx.appcompat.widget.AppCompatCheckedTextView;
 import android.util.AttributeSet;
 
 /**

@@ -1,8 +1,8 @@
 package com.zpj.fragmentation;
 
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import com.zpj.fragmentation.anim.FragmentAnimator;
 

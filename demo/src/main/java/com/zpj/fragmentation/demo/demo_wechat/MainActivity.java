@@ -1,7 +1,7 @@
 package com.zpj.fragmentation.demo.demo_wechat;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.zpj.fragmentation.SupportActivity;
 import com.zpj.fragmentation.anim.DefaultHorizontalAnimator;

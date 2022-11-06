@@ -6,11 +6,11 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -532,6 +532,7 @@ public class SupportFragmentDelegate {
     }
 
     /**
+     * TODO 解决该方法无效的问题
      * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {

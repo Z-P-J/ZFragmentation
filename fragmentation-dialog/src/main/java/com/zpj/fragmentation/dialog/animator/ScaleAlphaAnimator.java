@@ -1,15 +1,11 @@
 package com.zpj.fragmentation.dialog.animator;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.util.Log;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+
 import android.view.View;
 import android.view.ViewPropertyAnimator;
-import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 
-import com.zpj.fragmentation.dialog.R;
 import com.zpj.fragmentation.dialog.enums.DialogAnimation;
 
 /**
