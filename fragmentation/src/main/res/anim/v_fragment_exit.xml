@@ -28,5 +28,5 @@
     <translate android:fromYDelta="0%" android:toYDelta="100%"
             android:fillEnabled="true" android:fillBefore="true" android:fillAfter="true"
             android:interpolator="@anim/fast_out_extra_slow_in"
-            android:duration="360"/>
+            android:duration="420"/>
 </set>

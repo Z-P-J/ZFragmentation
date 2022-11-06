@@ -52,6 +52,19 @@ public interface ISupportFragment extends ISupport<SupportFragmentDelegate> {
 
     boolean onBackPressedSupport();
 
-    @LaunchMode int getLaunchMode();
+    @LaunchMode
+    int getLaunchMode();
+
+    void postOnLazyInit(final Runnable runnable);
+
+    void postOnLazyInitDelayed(final Runnable runnable, long delay);
+
+    void postOnEnterAnimationEnd(final Runnable runnable);
+
+    void postOnEnterAnimationEndDelayed(final Runnable runnable, long delay);
+
+    void postOnSupportVisible(final Runnable runnable);
+
+    void postOnSupportVisibleDelayed(final Runnable runnable, long delay);
 
 }
