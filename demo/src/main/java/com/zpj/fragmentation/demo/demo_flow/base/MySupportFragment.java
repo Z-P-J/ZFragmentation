@@ -216,6 +216,36 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
         return ISupportFragment.STANDARD;
     }
 
+    @Override
+    public void postOnLazyInit(Runnable runnable) {
+
+    }
+
+    @Override
+    public void postOnLazyInitDelayed(Runnable runnable, long delay) {
+
+    }
+
+    @Override
+    public void postOnEnterAnimationEnd(Runnable runnable) {
+
+    }
+
+    @Override
+    public void postOnEnterAnimationEndDelayed(Runnable runnable, long delay) {
+
+    }
+
+    @Override
+    public void postOnSupportVisible(Runnable runnable) {
+
+    }
+
+    @Override
+    public void postOnSupportVisibleDelayed(Runnable runnable, long delay) {
+
+    }
+
     /**
      * 类似 {@link Activity#setResult(int, Intent)}
      * <p>

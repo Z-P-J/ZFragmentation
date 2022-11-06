@@ -67,7 +67,6 @@ public class SupportHelper {
 
     public static ISupportFragment getTopFragment(FragmentManager fragmentManager, int containerId) {
         List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fragmentManager);
-        if (fragmentList == null) return null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
@@ -224,7 +223,6 @@ public class SupportHelper {
         List<Fragment> willPopFragments = new ArrayList<>();
 
         List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fm);
-        if (fragmentList == null) return willPopFragments;
 
         int size = fragmentList.size();
 

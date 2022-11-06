@@ -554,26 +554,32 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         StatusBarUtils.setLightMode(_mActivity.getWindow());
     }
 
+    @Override
     public synchronized void postOnLazyInit(final Runnable runnable) {
         mLazyInitActionQueue.post(runnable);
     }
 
+    @Override
     public synchronized void postOnLazyInitDelayed(final Runnable runnable, long delay) {
         mLazyInitActionQueue.postDelayed(runnable, delay);
     }
 
+    @Override
     public synchronized void postOnEnterAnimationEnd(final Runnable runnable) {
         mEnterAnimationEndActionQueue.post(runnable);
     }
 
+    @Override
     public synchronized void postOnEnterAnimationEndDelayed(final Runnable runnable, long delay) {
         mEnterAnimationEndActionQueue.postDelayed(runnable, delay);
     }
 
+    @Override
     public synchronized void postOnSupportVisible(final Runnable runnable) {
         mSupportVisibleActionQueue.post(runnable);
     }
 
+    @Override
     public synchronized void postOnSupportVisibleDelayed(final Runnable runnable, long delay) {
         mSupportVisibleActionQueue.postDelayed(runnable, delay);
     }
