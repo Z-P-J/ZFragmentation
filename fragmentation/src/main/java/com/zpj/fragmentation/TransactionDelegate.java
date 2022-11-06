@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import com.zpj.fragmentation.exception.AfterSaveStateTransactionWarning;
 import com.zpj.fragmentation.helper.ResultRecord;
@@ -134,17 +133,15 @@ class TransactionDelegate {
         from = getTopFragmentForStart(from, fm);
 
         int containerId = getArguments((Fragment) to).getInt(FRAGMENTATION_ARG_CONTAINER, 0);
-        if (containerId == 0) {
-            containerId = android.R.id.content;
-            bindContainerId(containerId, to);
-        }
-        if (from == null && containerId == 0) {
-            Log.e(TAG, "There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment()!");
-            return;
-        }
 
-        if (from != null && containerId == 0) {
-            bindContainerId(from.getSupportDelegate().mContainerId, to);
+
+        if (containerId == 0) {
+            if (from == null) {
+                containerId = android.R.id.content;
+                bindContainerId(containerId, to);
+            } else {
+                bindContainerId(from.getSupportDelegate().mContainerId, to);
+            }
         }
 
         // process ExtraTransaction
