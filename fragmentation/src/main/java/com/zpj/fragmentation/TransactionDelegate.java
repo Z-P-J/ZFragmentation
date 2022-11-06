@@ -253,11 +253,16 @@ class TransactionDelegate {
         if (willPopFragments.size() > 0) {
             handleAfterSaveInStateTransactionException(fm, "startWithPopTo()");
             FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
-            if (!FragmentationMagician.isStateSaved(fm)) {
-                mockStartWithPopAnim(SupportHelper.getTopFragment(fm), to, top.getSupportDelegate().mAnimHelper.popExitAnim);
-            }
 
-            safePopTo(fragmentTag, fm, flag, willPopFragments);
+            FragmentationMagician.popBackStackAllowingStateLoss(fm, fragmentTag, flag);
+
+            FragmentTransaction transaction = fm.beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+            for (Fragment fragment : willPopFragments) {
+                transaction.remove(fragment);
+            }
+            transaction.commitAllowingStateLoss();
+            FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
         }
 
         dispatchStartTransaction(fm, from, to, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD);
@@ -620,14 +625,14 @@ class TransactionDelegate {
     private void safePopTo(String fragmentTag, final FragmentManager fm, int flag, List<Fragment> willPopFragments) {
         mSupport.getSupportDelegate().mPopMultipleNoAnim = true;
 
+        FragmentationMagician.popBackStackAllowingStateLoss(fm, fragmentTag, flag);
+
         FragmentTransaction transaction = fm.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         for (Fragment fragment : willPopFragments) {
             transaction.remove(fragment);
         }
         transaction.commitAllowingStateLoss();
-
-        FragmentationMagician.popBackStackAllowingStateLoss(fm, fragmentTag, flag);
         FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
         mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
     }
@@ -671,30 +676,6 @@ class TransactionDelegate {
             } catch (Exception ignored) {
             }
         }, animation.getDuration());
-    }
-
-
-    private void mockStartWithPopAnim(final ISupportFragment from, ISupportFragment to, final Animation exitAnim) {
-        final Fragment fromF = (Fragment) from;
-        final ViewGroup container = findContainerById(fromF, from.getSupportDelegate().mContainerId);
-        if (container == null) return;
-
-        final View fromView = fromF.getView();
-        if (fromView == null) return;
-
-//        container.removeViewInLayout(fromView);
-//        final ViewGroup mock = addMockView(fromView, container);
-//
-//        to.getSupportDelegate().mEnterAnimListener = () -> {
-//            fromView.startAnimation(exitAnim);
-//            postDelayed(() -> {
-//                try {
-//                    mock.removeViewInLayout(fromView);
-//                    container.removeViewInLayout(mock);
-//                } catch (Exception ignored) {
-//                }
-//            }, exitAnim.getDuration());
-//        };
     }
 
     @NonNull

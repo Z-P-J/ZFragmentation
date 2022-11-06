@@ -44,7 +44,6 @@ public class FragmentationMagician {
         FragmentationMagician.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
-//                fragmentManager.popBackStack(tag, 2);
                 if (fragmentManager instanceof FragmentManagerImpl) {
                     FragmentManagerImpl fragmentManagerImpl = ((FragmentManagerImpl) fragmentManager);
                     fragmentManagerImpl.enqueueAction(new PopBackStackState(fragmentManagerImpl, tag, -1), false);
@@ -78,17 +77,11 @@ public class FragmentationMagician {
                 for(index = manager.mBackStack.size() - 1; index >= 0; --index) {
                     bss = (BackStackRecord)manager.mBackStack.get(index);
                     if (mName != null && mName.equals(bss.getName()) || mId >= 0 && mId == bss.mIndex) {
-                        break;
+                        records.add(manager.mBackStack.remove(index));
+                        isRecordPop.add(true);
+                        return true;
                     }
                 }
-
-                if (index < 0) {
-                    return false;
-                }
-
-                records.add(manager.mBackStack.remove(index));
-                isRecordPop.add(true);
-                return true;
             }
             return false;
         }

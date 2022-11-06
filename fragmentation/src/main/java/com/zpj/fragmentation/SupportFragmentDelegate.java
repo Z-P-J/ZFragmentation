@@ -41,7 +41,6 @@ public class SupportFragmentDelegate {
     private boolean mIsSharedElement;
     FragmentAnimator mFragmentAnimator;
     AnimatorHelper mAnimHelper;
-    boolean mLockAnim;
     private int mCustomEnterAnim = Integer.MIN_VALUE, mCustomExitAnim = Integer.MIN_VALUE, mCustomPopExitAnim = Integer.MIN_VALUE;
 
     private Handler mHandler;
@@ -62,7 +61,6 @@ public class SupportFragmentDelegate {
     protected FragmentActivity _mActivity;
     private ISupportActivity mSupport;
     boolean mAnimByActivity = true;
-    EnterAnimListener mEnterAnimListener;
 
     private boolean mRootViewClickable;
 
@@ -147,7 +145,7 @@ public class SupportFragmentDelegate {
     }
 
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if ((mSupport.getSupportDelegate().mPopMultipleNoAnim || mLockAnim)) {
+        if ((mSupport.getSupportDelegate().mPopMultipleNoAnim)) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
                 return mAnimHelper.getNoneAnimFixed();
             }
@@ -623,13 +621,6 @@ public class SupportFragmentDelegate {
         // AnimationListener is not reliable.
         postDelayed(mNotifyEnterAnimEndRunnable, enterAnim.getDuration());
         mSupport.getSupportDelegate().mFragmentClickable = true;
-
-        if (mEnterAnimListener != null) {
-            post((Runnable) () -> {
-                mEnterAnimListener.onEnterAnimStart();
-                mEnterAnimListener = null;
-            });
-        }
     }
 
     private final Runnable mNotifyEnterAnimEndRunnable = new Runnable() {
